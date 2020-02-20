@@ -93,29 +93,38 @@ class IndentationChunker:
     self.current = None
     self.accum = []
     self.ics = indentChars
+    self.next = next
 
   def handle(self, chunk):
+    print(f'got chunk: {chunk}')
     for line in chunk:
       self.handleLine(line)
+
+    self.flush()
 
   def getIndent(self, line):
     if line is '':
       return None
 
-    # Read the indentation up to the length of the string
-
-    return '' if c == 0 else line[:c]
+    # This returns an empty string if c == 0
+    for i, c in enumerate(line):
+      if c not in self.ics:
+        return line[:i]
 
   def handleLine(self, line):
+    # This is written so as to intentionally clarify all of the
+    # different logic branches
     i = self.getIndent(line)
+
+    print(f"Line: {i}: {line}")
 
     if line is '':
       pass
 
-    else if self.current is None:
+    elif self.current is None:
       self.current = i
 
-    else if self.current == i:
+    elif self.current == i:
      pass
 
     else:
@@ -124,19 +133,23 @@ class IndentationChunker:
 
     self.accum.append(line)
 
-
   def flush(self):
+    print(f"flushing: {self.accum}")
     if self.accum:
-      next.handle(self.accum)
+      self.next.handle(self.accum)
       self.accum = []
 
+  def finish(self):
+    self.flush()
+    self.next.finish()
 
-a = NewlineChunker()
+a = IndentationChunker()
+b = NewlineChunker(next=a)
 
 for line in sys.stdin:
-  a.handle(line.rstrip('\n \t'))
+  b.handle(line.rstrip('\n \t'))
 
-a.finish()
+b.finish()
 
 
 
