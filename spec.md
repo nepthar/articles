@@ -35,6 +35,8 @@
 
 3. Body & Paragraphs
 
+  There's no body here. But tha's okay, it's just weird visually.
+
 
 4. Links
 
@@ -42,15 +44,15 @@
 
   Links can point to several things: URLs, sections, footnotes, and inline notes.
 
-  - This is a <link:N3> to inline note number 3.
+  - This is a |link:N3| to inline note number 3.
 
-  - This is a <link:F4> to footnote number 4.
+  - This is a |link:F4| to footnote number 4.
 
-  - This is a <link:F> to the footnote that appears next in the document
+  - This is a |link:F| to the footnote that appears next in the document
 
-  - This is relative <link:/img/panda.jpg> to a an image of a panda.
+  - This is relative |in:/img/panda.jpg| to a an image of a panda.
 
-  - This is a <link:S4> to the section on links.
+  - This is a |link:S4| to the section on links.
 
   - This is a <link:Quotes, Code, Preformatted Text> to the section just below this one. However, this link calls it out by name.ddd
 
@@ -95,31 +97,7 @@
 
 5. Footnotes & Inline Notes
 
-  For those of you who are fans of D.F. Wallace, footnotes and inline notes, would it? Of course not. They follow roughly the same convention as earlier - double-indented paragraphs with a little hint at the start so the parser (and actually reader) knows how to interpret it. For footnotes, mark as "footnote: N", where N is just whatever number it is. Hell, N can be a string.
+  For those of you who are fans of D.F. Wallace, footnotes and inline notes, would it? Of course not. They follow roughly the same convention as earlier - double-indented paragraphs with a little hint at the start so the parser (and actually reader) knows how to interpret it. For footnotes, mark as "footnote: N", where N is just whatever number it is. Hell, N can be a string. For inline notes, make a link to an inline either by ID or by "assumed ID" |N:|, which just means "the next inline note in the document".
 
-
-
-title: What do the Swiss call Swiss cheese?
-title.short: Swiss Cheese
-created.date
-layout: article
-status: draft
-format: html
-author.name: Jordan Parker
-author.email: Jordan@nep.re
-tags: sample cheese
-
-
-#!/usr/bin/env bash
-
-ws_name="article"
-
-# This file is designed to work with Nepthar's shell tools, but it
-# can be used without them. See https://github.com/nepthar/shtools
-
-# Common workspace commands:
-
-article.json-sample()
-{
-  python3 src/articles.py -json ./samples/paragraphs.article
-}
+    note:
+    Like the footnotes, an unnamed inline note just means

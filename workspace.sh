@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-ws_name="article"
+ws_name="articles"
 
 # This file is designed to work with Nepthar's shell tools, but it
 # can be used without them. See https://github.com/nepthar/shtools
 
 # Common workspace commands:
 
-article.json-sample()
+articles.of()
 {
-  python3 src/articles.py -json ./samples/paragraphs.article
+  python3 src/articles.py < "$1"
 }
