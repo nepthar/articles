@@ -33,10 +33,12 @@ class PipelineElement:
   next = None
 
 
-class StripRightWhitespace(PipelineElement):
+class StripRight(PipelineElement):
+
+  StripChars = '\n\t '
 
   def handle(self, line):
-    self.next.handle(line.rstrip("\n \t"))
+    self.next.handle(line.rstrip(self.StripChars))
 
   def finish(self):
     self.next.finish()
