@@ -213,7 +213,7 @@ class FrameDumper(PipelineElement):
     self.next.finish()
 
 
-class FrameDecoder(PipelineElement):
+class RawFrameTyper(PipelineElement):
 
   def __init__(self):
     self.metadata = False

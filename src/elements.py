@@ -3,6 +3,8 @@ class Span:
     self.text = text
     self.style = style
 
+Span.Empty = Span('', {})
+
 
 class Element:
   def ids(self):
@@ -15,8 +17,13 @@ class UnknownElement(Element)
     self.frame = frame
 
 
-class HRElement(Element):
-  pass
+class ImageElement(element):
+  def __init__(self, src, span):
+    self.src = src
+    self.span = span
+
+  def alt(self):
+    return self.span.text
 
 
 class HeadingElement(Element):
@@ -40,9 +47,11 @@ class FootnoteElement(Element):
   def __init__(self, span):
     self.span = span
 
+
 class InlineNoteElement(Element):
   def __init__(self, span):
     self.span = span
+
 
 class BlockQuoteElement(Element):
   def __init__(self, span):

@@ -4,8 +4,11 @@
 # 4. Parsed that way.
 
 import sys
+import gc
 from nouns import *
 from pipeline import *
+
+gc.disable()
 
 
 a = Accumulator()
@@ -15,7 +18,7 @@ elements = [
   NewlineFramer(),
   IndentFramer(),
   CommentFramer(),
-  FrameDecoder(),
+  RawFrameTyper(),
   Logger(),
   a
 ]

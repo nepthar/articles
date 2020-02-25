@@ -1,3 +1,12 @@
+HEY YOU!
+
+Make this a collection of unix pipe things.
+
+article =
+
+  $ removeComments | process indents | newline sections | frame | decodeFrames | renderHTML
+
+
 0. The Art of Articles
 
   I want to build another markdown for my own personal use. Some of you out there may feel that this is irresponsible. Nevertheless, I'm going to press forward. There will be things here that are simply impossible. That's OK because you can always go in and manually edit the generated HTML or whatever. Honestly, that's not such a bad tradeoff.
