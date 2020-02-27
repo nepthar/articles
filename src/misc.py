@@ -32,3 +32,4 @@ def commonPrefix(stringList):
     prefix = i + 1
 
   return prefix
+

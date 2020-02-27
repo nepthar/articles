@@ -1,72 +1,8 @@
-from misc import *
-from frames import *
+#!/usr/bin/env python3
+
+
 import sys
-
-Blockquote = '    '
-Paragraph = '  '
-
-
-class Pipeline:
-
-  StripChars = '\r\n\t '
-
-  def __init__(self, elements=[]):
-    if elements:
-      self.head = elements[0]
-      self.tail = elements[0]
-      for e in elements[1:]:
-        self.append(e)
-    else:
-      self.head = None
-      self.tail = None
-
-  def append(self, nextElement):
-    if self.head and self.tail:
-      self.tail.next = nextElement
-      self.tail = nextElement
-    else:
-      self.head = nextElement
-      self.tail = nextElement
-
-  def process(self, fileHandle):
-    if self.head:
-      for line in fileHandle:
-        self.head.handle(line.rstrip(self.StripChars))
-      self.head.finish()
-    else:
-      raise Exception("Empty Pipeline")
-
-
-class PipelineElement:
-  next = None
-
-  def warn(self, message):
-    print(message, file=sys.stderr)
-
-  def finish(self):
-    self.next.finish()
-
-
-class MetadataReader(PipelineElement):
-  def __init__(self):
-    self.metadata = {}
-    self.done = False
-
-  def handle(self, line):
-    if self.done:
-      self.next.handle(line)
-    else:
-      if line is not '':
-        key, x, val = line.partition(': ')
-        if x is ': ':
-          self.metadata[key] = val
-        else:
-          self.warn(f"Bad KV Pair: {line}")
-
-  def finish(self):
-    self.done = True
-    self.next.finish()
-
+from pipeline import *
 
 class IndentSegmenter(PipelineElement):
   """ Calls finish whenever indent level changes.
@@ -133,6 +69,27 @@ class SegmentSanity(PipelineElement):
     self.segment = []
 
 
+class MetadataReader(PipelineElement):
+  def __init__(self):
+    self.metadata = {}
+    self.done = False
+
+  def handle(self, line):
+    if self.done:
+      self.next.handle(line)
+    else:
+      if line is not '':
+        key, x, val = line.partition(': ')
+        if x is ': ':
+          self.metadata[key] = val
+        else:
+          self.warn(f"Bad KV Pair: {line}")
+
+  def finish(self):
+    self.done = True
+    self.next.finish()
+
+
 class TextReflowHandler(PipelineElement):
   def __init__(self):
     self.accum = []
@@ -162,10 +119,17 @@ class TextReflowHandler(PipelineElement):
     self.flush()
     self.next.finish()
 
+m = MetadataReader()
 
-class LinePrinter(PipelineElement):
-  def handle(self, line):
-    print(line)
+elements = [
+  EmptyLineSegmenter(),
+  IndentSegmenter(),
+  m,
+  SegmentSanity(),
+  TextReflowHandler(),
+  LinePrinter()
+]
 
-  def finish(self):
-    print("")
+Pipeline(elements).process(sys.stdin)
+print(m.metadata)
+

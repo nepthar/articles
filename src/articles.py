@@ -14,7 +14,7 @@ gc.disable()
 a = Accumulator()
 
 elements = [
-  StripRightWhitespace(),
+  StripRight(),
   NewlineFramer(),
   IndentFramer(),
   CommentFramer(),

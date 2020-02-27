@@ -6,6 +6,12 @@ article =
 
   $ removeComments | process indents | newline sections | frame | decodeFrames | renderHTML
 
+Two choices:
+
+- Get into internal data models right away
+- Stay in line-delinated text as long as possible.
+
+I think option 2 is where I'm headed.
 
 0. The Art of Articles
 
