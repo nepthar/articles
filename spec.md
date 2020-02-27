@@ -116,3 +116,6 @@ I think option 2 is where I'm headed.
 
     note:
     Like the footnotes, an unnamed inline note just means
+
+
+What do I do about comments?

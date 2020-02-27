@@ -5,25 +5,20 @@
 
 import sys
 import gc
-from nouns import *
 from pipeline import *
 
 gc.disable()
 
-
-a = Accumulator()
+m = MetadataReader()
 
 elements = [
-  StripRight(),
-  NewlineFramer(),
-  IndentFramer(),
-  CommentFramer(),
-  RawFrameTyper(),
-  Logger(),
-  a
+  EmptyLineSegmenter(),
+  IndentSegmenter(),
+  m,
+  SegmentSanity(),
+  TextReflowHandler(),
+  LinePrinter()
 ]
-pipeline = Pipeline(elements)
-pipeline.process(sys.stdin)
 
-for x in a.result():
-  print(x)
+Pipeline(elements).process(sys.stdin)
+print(m.metadata)
