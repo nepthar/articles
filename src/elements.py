@@ -1,64 +1,83 @@
-class Span:
-  def __init__(self, text, style=dict()):
-    self.text = text
-    self.style = style
+from spans import *
 
-Span.Empty = Span('', {})
-
+PreviewLength = 8
 
 class Element:
+  renderClass = None
+  def __init__(self, spans, **kwargs):
+    assert(isinstance(spans, list))
+    self.spans = spans
+    self.meta = kwargs
+
   def ids(self):
     """ A list of slugs that uniquely(ish) identify this element """
     return []
 
+  def getClass(self):
+    return self.renderClass
 
-class UnknownElement(Element)
+  @property
+  def preview(self):
+    if self.spans:
+      return ""
+    else:
+      pv = self.spans[0][:PreviewLength]
+      return f"{pv}..."
+
+  def __str__(self):
+    return f'{self.__class__.__name__}'
+
+
+class UnknownElement(Element):
+  renderClass = 'text'
   def __init__(self, frame):
+    super().__init__([])
     self.frame = frame
 
 
-class ImageElement(element):
-  def __init__(self, src, span):
-    self.src = src
-    self.span = span
+class ImageElement(Element):
+  def src(self):
+    return self.meta['src']
 
   def alt(self):
     return self.span.text
 
 
 class HeadingElement(Element):
-  def __init__(self, level, span, sectionId=None):
-    self.level = level
-    self.span = span
-
-  def ids(self):
-    if self.sectionId:
-      return (self.sectionId, self.span.text)
-    else:
-      return (self.span.text,)
+  def getClass(self):
+    lvl = self.meta.get('level', '0')
+    return f'h{lvl}'
 
 
 class ParagraphElement(Element):
-  def __init__(self, span):
-    self.span = span
+  renderClass = 'text'
 
 
 class FootnoteElement(Element):
-  def __init__(self, span):
-    self.span = span
+  renderClass = 'footnote'
 
 
 class InlineNoteElement(Element):
-  def __init__(self, span):
-    self.span = span
+  renderClass = 'inline'
 
 
 class BlockQuoteElement(Element):
-  def __init__(self, span):
-    self.span = span
+  renderClass = 'quote'
 
 
-class FormattedTextElement(Element):
-  def __init__(self, span, fmt='text'):
-    self.span = span
-    self.fmt = fmt
+class FixedWidthBlockElement(Element):
+  renderClass = 'fixed'
+
+
+class CodeBlockElement(Element):
+  renderClass = 'code'
+
+
+class Article:
+  def __init__(self):
+    self.meta = {}
+    self.elements = []
+
+  def append(self, element):
+    self.elements.append(element)
+
