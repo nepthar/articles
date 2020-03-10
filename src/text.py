@@ -4,7 +4,6 @@ Styles = {
   'h1': {'class': 'h1'},
   'h2': {'class': 'h2'},
   'h3': {'class': 'h3'},
-
 }
 
 class Text:

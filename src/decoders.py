@@ -51,80 +51,98 @@ class TitleDecoder(Decoder):
     return [HeadingElement(spans)]
 
 
-class UnknownDecoder(Decoder):
-  spanner = Spanner.Fixed
-  def canDecode(self, frame):
-    return True
-
-  def decode(self, frame):
-    spans = self.spanner.span(frame.lines)
-    return UnknownElement(spans, frame)
-
-
-class SimpleBlockDecoder(Decoder):
-  def __init__(self, mkElement, spanner):
+class BlockDecoder(Decoder):
+  """ Simple block handling """
+  def __init__(self, kind, mkElement, spanner):
+    self.kind = kind
     self.new = mkElement
     self.sp = spanner
 
   def decodeBlock(self, blockLines, value):
     elems = []
     for span in self.sp.span(blockLines):
-      elem = self.new(spans)
+      elem = self.new([span])
       if value:
         elem.meta['subtype'] = value
 
     return elems
 
-# todo
 
-class UnlabeledBlockDecoder(Decoder):
+class BlockDecodeDispatcher(Decoder):
   prefix = Text.BlockPrefix
-  spanner = Spanner.Fixed
+
+  def __init__(self, decoders=[], default=None):
+    self.decodeMap = { d.kind: d for d in decoders }
+    if default:
+      self.default = self.decodeMap[default]
+    else:
+      self.default = None
+
+  def addDecoder(self, decoder):
+    self.decodeMap[decoder.kind] = decoder
+
+  def setDefault(self, default):
+    self.default = self.decodeMap[default]
 
   def decode(self, frame):
-    spans = self.spanner.span(frame.lines)
-    return [BlockQuoteElement(spans)]
+    key, value = KeyValue.extract(frame.lines[0])
+    if key and key in self.decodeMap:
+      return self.decodeMap[key].decodeBlock(frame.lines[1:], value)
+    elif self.default:
+      return self.default.decodeBlock(frame.lines, value=None)
+    else:
+      return None
 
 
+class DecoderConfig:
+  def __init__(self, title, paragraph, block, others=[]):
+    self.titleDec = title
+    self.paragraphDec = paragraph
+    self.blockDec = block
+    self.others = others
+
+  def decoders(self):
+    decs = [self.titleDec, self.paragraphDec, self.blockDec]
+    decs.extend(self.others)
+    return decs
 
 
-Decoder.DefaultStack = [
+DecoderConfig.Default = DecoderConfig(
   TitleDecoder(),
   ParagraphDecoder(),
-  BlockDecoder('footnote', FootnoteElement, Spanner.Prose),
-  BlockDecoder('inline', InlineNoteElement, Spanner.Prose),
-  BlockDecoder('fixed', FixedWidthBlockElement, Spanner.Fixed),
-  BlockDecoder('code', CodeBlockElement, Spanner.Fixed),
-  BlockDecoder('quote', BlockQuoteElement, Spanner.Fixed),
-  UnlabeledBlockDecoder()
-]
+  BlockDecodeDispatcher(
+    default='quote',
+    decoders=[
+      BlockDecoder('footnote', FootnoteElement, Spanner.Prose),
+      BlockDecoder('inline', InlineNoteElement, Spanner.Prose),
+      BlockDecoder('fixed', FixedWidthBlockElement, Spanner.Fixed),
+      BlockDecoder('code', CodeBlockElement, Spanner.Fixed),
+      BlockDecoder('quote', BlockQuoteElement, Spanner.Fixed),
+    ]),
+)
 
-BlockDecoders = {
-  'footnote': BlockDecoders(FootnoteElement, Spanner.Prose),
-  'inline': BlockDecoder(InlineNoteElement, Spanner.Prose),
-  'fixed': BlockDecoder(FixedWidthBlockElement, Spanner.Fixed),
-  'code': BlockDecoder(CodeBlockElement, Spanner.Fixed),
-  'quote': BlockDecoder(BlockQuoteElement, Spanner.Fixed),
-  'default': BlockDecoder(BlockQuoteElement, Spanner.Fixed)
-}
 
-class FrameDeocder(PipelineElement):
-  UnknownDecoder = UnknownDecoder()
+class FrameDecoder(PipelineElement):
+  """ Convert raw frames into document elements """
+  def __init__(self, config=DecoderConfig.Default):
+    self.useConfig(config)
 
-  def __init__(self, decoders=Decoder.DefaultStack):
-    self.decoders = decoders
-    self.unknown = unknown
+  def useConfig(self, config):
+    self._config = config
+    self.decoders = config.decoders()
+
+  def addBlockDecoder(self, decoder):
+    self._config.blockDec.addDecoder(decoder)
 
   def handle(self, frame):
-
-
-
     for decoder in self.decoders:
       elements = decoder.tryDecode(frame)
       if elements is not None:
         for e in elements:
           self.next.handle(e)
         return
-    self.warn("Unable to decode frame")
-    self.next.handle(self.UnknownDecoder.decode(frame))
+
+    self.warn(f"Unable to decode {frame}")
+    elem = UnknownElement(Spanner.Fixed.span(frame.lines),frame)
+    self.next.handle(elem)
 

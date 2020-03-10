@@ -3,39 +3,41 @@ from spans import *
 PreviewLength = 8
 
 class Element:
-  renderClass = None
+  kind = None
   def __init__(self, spans, **kwargs):
     assert(isinstance(spans, list))
     self.spans = spans
     self.meta = kwargs
+    self.ids = []
+    self.pid = '-'
 
-  def ids(self):
-    """ A list of slugs that uniquely(ish) identify this element """
-    return []
-
-  def getClass(self):
-    return self.renderClass
-
-  @property
   def preview(self):
-    if self.spans:
+    if not self.spans:
       return ""
     else:
-      pv = self.spans[0][:PreviewLength]
-      return f"{pv}..."
+      pv = self.spans[0].text[:PreviewLength]
+      return f"\"{pv}..\""
+
+  def __repr__(self):
+    return f'{self.__class__.__name__} id={self.pid}'
 
   def __str__(self):
-    return f'{self.__class__.__name__}'
+    s = self.__repr__()
+    return f'<{s} {self.preview()}>'
+
+  def fullText(self):
+    return ''.join(s.text for s in self.spans)
 
 
 class UnknownElement(Element):
-  renderClass = 'text'
+  kind = 'u'
   def __init__(self, spans, frame):
     self.spans = spans
     self.frame = frame
 
 
 class ImageElement(Element):
+  kind = 'img'
   def src(self):
     return self.meta['src']
 
@@ -44,40 +46,32 @@ class ImageElement(Element):
 
 
 class HeadingElement(Element):
-  def getClass(self):
-    lvl = self.meta.get('level', '0')
-    return f'h{lvl}'
+  kind = 's'
 
+  @property
+  def level(self):
+    return self.meta.get('level', '0')
 
 class ParagraphElement(Element):
-  renderClass = 'text'
+  kind = 'p'
 
 
 class FootnoteElement(Element):
-  renderClass = 'footnote'
+  kind = 'f'
 
 
 class InlineNoteElement(Element):
-  renderClass = 'inline'
+  kind = 'i'
 
 
 class BlockQuoteElement(Element):
-  renderClass = 'quote'
+  kind = 'q'
 
 
 class FixedWidthBlockElement(Element):
-  renderClass = 'fixed'
+  kind = 'r'
 
 
 class CodeBlockElement(Element):
-  renderClass = 'code'
-
-
-class Article:
-  def __init__(self):
-    self.meta = {}
-    self.elements = []
-
-  def append(self, element):
-    self.elements.append(element)
+  kind = 'c'
 

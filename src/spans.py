@@ -22,23 +22,6 @@ class Span:
 Span.Empty = Span('', parent=None, style={})
 
 
-# class Spanners(Spanner):
-#   def __init__(self, spanners):
-#     self.spanners = spanners
-
-#   def span(lines, style):
-#     accum = []
-
-
-
-
-
-
-
-  # def append(self, spanner):
-  #   self.spanners.append(spanner)
-
-
 class Spanner:
   pass
 
@@ -62,7 +45,6 @@ class ProseSpanner(Spanner):
 class FixedSpanner(Spanner):
   def span(self, lines):
     return [Span('\n'.join(lines))]
-
 
 
 Spanner.Default = FixedSpanner()

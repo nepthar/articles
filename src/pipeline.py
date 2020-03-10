@@ -6,15 +6,18 @@ Blockquote = '    '
 Paragraph = '  '
 
 class Frame:
-  def __init__(self, lines, prefix=''):
+  __slots__ = ('num', 'lines', 'prefix')
+  def __init__(self, num, lines, prefix=''):
+    assert(lines and lines[0]), "Empty frame"
+    self.num = num
     self.lines = lines
     self.prefix = prefix
 
   def __str__(self):
-    if self.lines:
-      return f"Frame({self.prefix}|{self.lines[0]})"
+    return self.__repr__()
 
-    return f"Frame(empty)"
+  def __repr__(self):
+    return f'<Frame {self.num}, {len(self.lines)} lines>'
 
 
 class Pipeline:
@@ -126,6 +129,7 @@ class EmptyLineSegmenter(PipelineElement):
 class LinesFramer(PipelineElement):
   def __init__(self):
     self.accum = []
+    self.count = 0
 
   def handle(self, line):
     self.accum.append(line)
@@ -140,10 +144,11 @@ class LinesFramer(PipelineElement):
       prefix = Text.commonWsPrefix(lines, ignoreEmpty=True)
       if prefix:
         li = len(prefix)
-        self.next.handle(Frame([l[li:] for l in lines], prefix))
+        self.next.handle(Frame(self.count, [l[li:] for l in lines], prefix))
       else:
-        self.next.handle(Frame(lines))
+        self.next.handle(Frame(self.count, lines))
 
+      self.count += 1
       self.next.finish()
 
     self.accum = []
