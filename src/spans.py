@@ -44,12 +44,12 @@ class Spanner:
 
 
 class ProseSpanner(Spanner):
-  def span(self, lines, style=dict()):
+  def span(self, lines):
     spans = []
     cur = []
     for line in lines:
       if line is '':
-        spans.append(Span(' '.join(cur), style))
+        spans.append(Span(' '.join(cur)))
         cur = []
       else:
         cur.append(line)
@@ -60,8 +60,8 @@ class ProseSpanner(Spanner):
 
 
 class FixedSpanner(Spanner):
-  def span(self, lines, style=dict()):
-    return [Span('\n'.join(lines), style)]
+  def span(self, lines):
+    return [Span('\n'.join(lines))]
 
 
 

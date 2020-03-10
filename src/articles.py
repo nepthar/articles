@@ -57,12 +57,15 @@ class FrameDumper(PipelineElement):
 
   def handle(self, frame):
     self.i += 1
-    lines = '\n'.join(f"    |{frame.prefix}|{l}" for l in frame.lines)
-    print(f"Frame {self.i}\n{lines}\n")
+    lines = '\n'.join(f" |{l}" for l in frame.lines)
+    print(f"Frame {self.i}. Prefix: |{frame.prefix}|\n{lines}\n")
 
   def finish(self):
     print("<flush>")
 
+
+# class ArticleCreator(PipelineElement):
+#   def __init__(self, metaReader):
 
 
 elements = [
@@ -70,9 +73,9 @@ elements = [
   IndentSegmenter(),
   m,
   LinesFramer(),
-#  FrameDeocder(),
-  FrameDumper()
-#  ElementDumper(),
+  FrameDeocder(),
+#  FrameDumper()
+  ElementDumper(),
 #  TerminalRenderer()
 ]
 

@@ -23,11 +23,15 @@ class Decoder:
 
 
 class ParagraphDecoder(Decoder):
+  # TODO: Support for comments
   prefix = Text.ParagraphPrefix
   spanner = ProseSpanner()
 
   def decode(self, frame):
-    return [ParagraphElement([s]) for s in self.spanner.span(frame.lines, dict())]
+    paragraphs = []
+    for s in self.spanner.span(frame.lines):
+      paragraphs.append(ParagraphElement([s]))
+    return paragraphs
 
 
 class TitleDecoder(Decoder):
@@ -38,7 +42,7 @@ class TitleDecoder(Decoder):
     self.style = style if style else {}
 
   def decode(self, frame):
-    spans = self.spanner.span(frame.lines, dict(self.style))
+    spans = self.spanner.span(frame.lines)
 
     # We must have exactly one span at this point for the title.
     if len(spans) != 1:
@@ -48,37 +52,40 @@ class TitleDecoder(Decoder):
 
 
 class UnknownDecoder(Decoder):
+  spanner = Spanner.Fixed
   def canDecode(self, frame):
     return True
 
   def decode(self, frame):
-    return UnknownElement(frame)
+    spans = self.spanner.span(frame.lines)
+    return UnknownElement(spans, frame)
 
 
-class BlockDecoder(Decoder):
-  prefix = Text.BlockPrefix
-
-  def __init__(self, blockKey, mkElement, spanner):
+class SimpleBlockDecoder(Decoder):
+  def __init__(self, mkElement, spanner):
     self.new = mkElement
-    self.blockKey = blockKey
     self.sp = spanner
 
-  def decode(self, frame):
-    if frame.lines:
-      key, _, val = frame.lines[0].partition(': ')
-      if key == self.blockKey:
-        return self.decodeBlock(frame.lines[1:], val)
-    return None
-
   def decodeBlock(self, blockLines, value):
-    spans = self.sp.span(blockLines)
-    if len(spans) != 1:
-      return None
+    elems = []
+    for span in self.sp.span(blockLines):
+      elem = self.new(spans)
+      if value:
+        elem.meta['subtype'] = value
 
-    elem = self.new(spans)
-    elem.meta['subtype'] = value
+    return elems
 
-    return [elem]
+# todo
+
+class UnlabeledBlockDecoder(Decoder):
+  prefix = Text.BlockPrefix
+  spanner = Spanner.Fixed
+
+  def decode(self, frame):
+    spans = self.spanner.span(frame.lines)
+    return [BlockQuoteElement(spans)]
+
+
 
 
 Decoder.DefaultStack = [
@@ -89,19 +96,35 @@ Decoder.DefaultStack = [
   BlockDecoder('fixed', FixedWidthBlockElement, Spanner.Fixed),
   BlockDecoder('code', CodeBlockElement, Spanner.Fixed),
   BlockDecoder('quote', BlockQuoteElement, Spanner.Fixed),
+  UnlabeledBlockDecoder()
 ]
 
+BlockDecoders = {
+  'footnote': BlockDecoders(FootnoteElement, Spanner.Prose),
+  'inline': BlockDecoder(InlineNoteElement, Spanner.Prose),
+  'fixed': BlockDecoder(FixedWidthBlockElement, Spanner.Fixed),
+  'code': BlockDecoder(CodeBlockElement, Spanner.Fixed),
+  'quote': BlockDecoder(BlockQuoteElement, Spanner.Fixed),
+  'default': BlockDecoder(BlockQuoteElement, Spanner.Fixed)
+}
+
 class FrameDeocder(PipelineElement):
-  def __init__(self, decoders=Decoder.DefaultStack, unknown=UnknownDecoder()):
+  UnknownDecoder = UnknownDecoder()
+
+  def __init__(self, decoders=Decoder.DefaultStack):
     self.decoders = decoders
     self.unknown = unknown
 
   def handle(self, frame):
+
+
+
     for decoder in self.decoders:
       elements = decoder.tryDecode(frame)
       if elements is not None:
-        [self.next.handle(e) for e in elements]
+        for e in elements:
+          self.next.handle(e)
         return
+    self.warn("Unable to decode frame")
+    self.next.handle(self.UnknownDecoder.decode(frame))
 
-    unknown = self.unknown.decode(frame)
-    self.next.handle(unknown)

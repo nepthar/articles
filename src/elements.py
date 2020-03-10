@@ -30,8 +30,8 @@ class Element:
 
 class UnknownElement(Element):
   renderClass = 'text'
-  def __init__(self, frame):
-    super().__init__([])
+  def __init__(self, spans, frame):
+    self.spans = spans
     self.frame = frame
 
 

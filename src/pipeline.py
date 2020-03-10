@@ -32,7 +32,6 @@ class Pipeline:
       self.tail = None
 
   def append(self, nextElement):
-    print(f"> Append {nextElement}")
     assert(isinstance(nextElement, PipelineElement))
     if self.head and self.tail:
       self.tail.next = nextElement
@@ -52,16 +51,25 @@ class Pipeline:
 
 class PipelineElement:
   next = None
+  simpleName = None
+
+  def name(self):
+    if self.simpleName:
+      return self.simpleName
+    else:
+      return self.__class__.__name__
+
+  def __repr__(self):
+    return f'<{self.name()}>'
 
   def warn(self, message):
-    print(message, file=sys.stderr)
+    print(f'{self.name()} warn: {message}', file=sys.stderr)
 
   def finish(self):
     self.next.finish()
 
 
 class MetadataReader(PipelineElement):
-
   def __init__(self):
     self.metadata = {}
     self.done = False
@@ -70,12 +78,11 @@ class MetadataReader(PipelineElement):
     if self.done:
       self.next.handle(line)
     else:
-      if line is not '':
-        key, x, val = line.partition(': ')
-        if x is ': ':
-          self.metadata[key] = val
-        else:
-          self.warn(f"Bad KV Pair: {line}")
+      key, val = KeyValue.extract(line)
+      if key:
+        self.metadata[key] = val
+      else:
+        self.warn(f"Bad KV Pair: {line}")
 
   def finish(self):
     self.done = True
@@ -83,9 +90,7 @@ class MetadataReader(PipelineElement):
 
 
 class IndentSegmenter(PipelineElement):
-  """ Calls finish whenever indent level changes.
-  """
-
+  """ Calls finish whenever indent level changes, ignoring empty lines """
   def __init__(self, maxLevels=2):
     self.curIndent = 0
     self.max = maxLevels
@@ -100,7 +105,7 @@ class IndentSegmenter(PipelineElement):
 
 
 class EmptyLineSegmenter(PipelineElement):
-
+  """ Calls finish whenever there's two empty lines in a row """
   def __init__(self, limit=2):
     self.nlCount = 0
     self.limit = limit
@@ -127,15 +132,15 @@ class LinesFramer(PipelineElement):
 
   def finish(self):
     lines = self.accum
-    while lines and self.accum[-1] == '':
+    while lines and lines[-1] == '':
       lines.pop()
 
     if lines:
       # Ignore empty lines when finding a common prefix
-      commonIndent = Text.commonIndent([l for l in lines if l])
-      if commonIndent:
-        lcp = len(commonIndent)
-        self.next.handle(Frame([l[lcp:] for l in lines], commonIndent))
+      prefix = Text.commonWsPrefix(lines, ignoreEmpty=True)
+      if prefix:
+        li = len(prefix)
+        self.next.handle(Frame([l[li:] for l in lines], prefix))
       else:
         self.next.handle(Frame(lines))
 
@@ -143,10 +148,3 @@ class LinesFramer(PipelineElement):
 
     self.accum = []
 
-
-class LinePrinter(PipelineElement):
-  def handle(self, line):
-    print(line)
-
-  def finish(self):
-    print("")
