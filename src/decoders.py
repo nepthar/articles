@@ -1,6 +1,6 @@
 from pipeline import PipelineElement
 from misc import *
-from elements import *
+from document import *
 from spans import *
 from text import *
 
@@ -20,6 +20,27 @@ class Decoder:
       return self.decode(frame)
     else:
       return None
+
+
+class MetadataDecoder(Decoder):
+  def __init__(self):
+    self.done = False
+
+  def canDecode(self, frame):
+    return not self.done
+
+  def decode(self, frame):
+    # Only attempt to decode the first frame seen
+    self.done = True
+
+    md = {}
+    for line in frame.lines:
+      k, v = KeyValue.extract(line)
+      if not k:
+        return None
+      md[k] = v
+
+    return [MetadataElement(md)]
 
 
 class ParagraphDecoder(Decoder):
@@ -95,19 +116,21 @@ class BlockDecodeDispatcher(Decoder):
 
 
 class DecoderConfig:
-  def __init__(self, title, paragraph, block, others=[]):
+  def __init__(self, meta, title, paragraph, block, others=[]):
+    self.metaDec = meta
     self.titleDec = title
     self.paragraphDec = paragraph
     self.blockDec = block
     self.others = others
 
   def decoders(self):
-    decs = [self.titleDec, self.paragraphDec, self.blockDec]
+    decs = [self.metaDec, self.titleDec, self.paragraphDec, self.blockDec]
     decs.extend(self.others)
     return decs
 
 
 DecoderConfig.Default = DecoderConfig(
+  MetadataDecoder(),
   TitleDecoder(),
   ParagraphDecoder(),
   BlockDecodeDispatcher(

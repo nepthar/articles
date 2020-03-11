@@ -29,6 +29,12 @@ class Element:
     return ''.join(s.text for s in self.spans)
 
 
+class MetadataElement(Element):
+  kind = 'meta'
+  def __init__(self, md):
+    super().__init__([], **md)
+
+
 class UnknownElement(Element):
   kind = 'u'
   def __init__(self, spans, frame):
@@ -51,6 +57,7 @@ class HeadingElement(Element):
   @property
   def level(self):
     return self.meta.get('level', '0')
+
 
 class ParagraphElement(Element):
   kind = 'p'
@@ -75,3 +82,8 @@ class FixedWidthBlockElement(Element):
 class CodeBlockElement(Element):
   kind = 'c'
 
+
+class Document:
+  def __init__(self):
+    self.meta = {}
+    self.parts = []

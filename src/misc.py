@@ -30,9 +30,22 @@ def arraySplit(token, arr):
   return splits
 
 
+class Log:
 
-xx = [
-  "1. Eat dinner",
-  "1. Eat nachos",
-  "1  Drive cars"
-]
+  Enabled = True
+  Where = sys.stderr
+
+  @staticmethod
+  def warn(msg, *args):
+    if Enabled:
+      if args:
+        msg = msg.format(args)
+      print(f"warn: {msg}", file=Where)
+
+  @staticmethod
+  def log(msg, *args):
+    if Enabled:
+      if args:
+        msg = msg.format(args)
+      print(msg, file=Where)
+

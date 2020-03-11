@@ -11,75 +11,13 @@ from collections import Counter
 
 from pipeline import *
 from decoders import *
+from debug import *
 
 from renderers import *
+from misc import *
 
 gc.disable()
 
-m = MetadataReader()
-
-
-class AnyPrinter(PipelineElement):
-  def __init__(self):
-    self.i = 0
-
-  def handle(self, item):
-    print(f"{item}")
-
-  def finish(self):
-    print("<flush>")
-
-
-class ElementDumper(PipelineElement):
-  def __init__(self):
-    self.i = 0
-
-  def spanString(self, span):
-    unNewlined = span.text.replace('\n', '\\n')
-    return f'  | {unNewlined}'
-
-
-  def handle(self, elem):
-    l = [f'--[ {self.i}: {elem.__class__.__name__} :: {elem.kind} ]--']
-    l.extend(self.spanString(s) for s in elem.spans)
-    l.append(f'--[ {self.i}: end ]--')
-    l.append('\n')
-    print('\n'.join(l))
-    self.i += 1
-
-
-  def finish(self):
-    print("-- finish --")
-
-
-class FrameDumper(PipelineElement):
-  def __init__(self):
-    self.i = 0
-
-  def handle(self, frame):
-    self.i += 1
-    lines = '\n'.join(f" |{l}" for l in frame.lines)
-    print(f"Frame {self.i}. Prefix: |{frame.prefix}|\n{lines}\n")
-
-  def finish(self):
-    print("<flush>")
-
-
-class Accumulator(PipelineElement):
-  def __init__(self):
-    self.accum = []
-
-  def handle(self, element):
-    self.accum.append(element)
-
-  def finish(self):
-    pass
-
-# class DeduceHeadingLevels(PipelineElement):
-#   def __init__(self):
-#     pass
-
-#   def handle(self, elem):
 
 class IdentifyElements(PipelineElement):
   def __init__(self):
@@ -94,31 +32,29 @@ class IdentifyElements(PipelineElement):
     if isinstance(elem, HeadingElement):
       elem.ids.append(elem.fullText())
 
-    print(f"Elem: {elem}\n  pid: {newId}\n  others: {elem.ids}")
     self.next.handle(elem)
 
 
+class AnythingPrinter(PipelineElement):
+
+  def handle(self, thing):
+    print(thing)
 
 
 
-
-# class ArticleCreator(PipelineElement):
-#   def __init__(self, metaReader):
-
-a = Accumulator()
+# a = Accumulator()
 elements = [
-  EmptyLineSegmenter(),
   IndentSegmenter(),
-  m,
-  LinesFramer(),
+  #LinePrinter()
+  WriteNewlinesOnFinish(),
+  EmptyLineFramer(),
+#  FrameDumper(),
   FrameDecoder(),
-#  FrameDumper()
-#  ElementDumper(),
-  IdentifyElements(), a
-#  TerminalRenderer()
+  RawTextRenderer(),
+  AnythingPrinter()
 ]
 
 Pipeline(elements).process(sys.stdin)
-print(m.metadata)
+# print(m.metadata)
 
-print(a.accum)
+# print(a.accum)

@@ -7,6 +7,11 @@ author.name: Jordan Parker
 author.email: Jordan@nep.re
 
 
+  Here's some preamble before the start of the first section. this should be its own paragraph.
+
+
+Abstract
+
   If you haven't listened already, I highly recommend checking out Dan Carlin's
   Hardcore History podcast. Dan frequently reminds his listeners that he's not a
   historian, which is fantastic because it gives him some liberty to speculate
@@ -46,6 +51,10 @@ Second Sample Title (H1)
 
   Here's the text of what will end up being 2.2.1.
 
+    This particular bit contains a quote.
+
+  And another paragraph.
+
 
 ... Wow. Does this Visually make sense (H3 Level)
 
@@ -59,3 +68,4 @@ Section 3 (H1)
 
 Section 4 (H1): Do I want to allow a section so long that it actually could span
 multiple lines? I guess I really don't see why not.
+
