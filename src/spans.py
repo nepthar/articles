@@ -1,25 +1,26 @@
 class Span:
-  def __init__(self, text, parent=None, style=None):
+  def __init__(self, text, styles=[]):
     self.text = text
-    self.st = style if style else dict()
-    self.parent = parent
-
-  def clearStyle(self):
-    self.st.clear()
-
-  def getStyle(self, key, default=None):
-    if key in self.st:
-      return self.st[key]
-    elif self.parent:
-      return self.parent.getStyle(key, default)
-    else:
-      return default
-
-  def setStyle(self, key, value=''):
-    self.st[key] = value
+    self.style = set(styles)
 
 
-Span.Empty = Span('', parent=None, style={})
+
+  # def clearStyle(self):
+  #   self.st.clear()
+
+  # def getStyle(self, key, default=None):
+  #   if key in self.st:
+  #     return self.st[key]
+  #   elif self.parent:
+  #     return self.parent.getStyle(key, default)
+  #   else:
+  #     return default
+
+  # def setStyle(self, key, value=''):
+  #   self.st[key] = value
+
+
+Span.Empty = Span('')
 
 
 class Spanner:

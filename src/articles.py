@@ -1,60 +1,48 @@
-#!/usr/bin/env python3
-# 1. All of the lines of the file are in an array  array
-# 2. Comment lines are removed
-# 3. Split into chunks on two consecutive newlines
-# 4. Parsed that way.
-
-import sys
-import gc
-import textwrap
 from collections import Counter
 
-from pipeline import *
-from decoders import *
-from debug import *
-
-from renderers import *
-from misc import *
-
-gc.disable()
+from elements import *
+from pipeline import PipelineElement
 
 
-class IdentifyElements(PipelineElement):
+
+class Article:
   def __init__(self):
-    self.cnt = Counter()
+    self.meta = {}
+    self.body = []
+    self.links = {}
+    self.sections = []
 
-  def handle(self, elem):
-    num = self.cnt[elem.kind]
-    newId = f'{elem.kind}{num}'
-    self.cnt[elem.kind] += 1
-    elem.pid = newId
-
-    if isinstance(elem, HeadingElement):
-      elem.ids.append(elem.fullText())
-
-    self.next.handle(elem)
+  @property
+  def title(self):
+    return self.meta['title']
 
 
-class AnythingPrinter(PipelineElement):
+class ArticleBuilder(PipelineElement):
 
-  def handle(self, thing):
-    print(thing)
+  def __init__(self):
+    self.article = Article()
+    self.idCounts = Counter()
+
+  def addIDs(self, element):
+    num = self.idCounts[element.kind]
+    element.pid = f'{element.kind}{num}'
+    self.idCounts[element.kind] += 1
+
+    # Section - Use the text contents as an ID as well
+    if element.kind == 'section':
+      element.ids.append(element.fullText())
 
 
+  def handle(self, element):
 
-# a = Accumulator()
-elements = [
-  IndentSegmenter(),
-  #LinePrinter()
-  WriteNewlinesOnFinish(),
-  EmptyLineFramer(),
-#  FrameDumper(),
-  FrameDecoder(),
-  RawTextRenderer(),
-  AnythingPrinter()
-]
+    self.addIDs(element)
 
-Pipeline(elements).process(sys.stdin)
-# print(m.metadata)
+    if isinstance(element, MetadataElement):
+      self.article.meta = element.meta
+    else:
+      self.article.body.append(element)
 
-# print(a.accum)
+  def finish(self):
+    self.next.handle(self.article)
+    return self.next.finish()
+

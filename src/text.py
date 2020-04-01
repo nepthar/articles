@@ -27,7 +27,7 @@ class Text:
         If the list has less than two elements or there is no common prefix, this
         returns an empty string. This ignores empty lines.
     """
-    # Ignore empty lines
+    # Ignore empty lines if desired
     candidates = [l for l in stringList if l] if ignoreEmpty else stringList
 
     listLength = len(candidates)

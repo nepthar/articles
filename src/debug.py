@@ -38,6 +38,7 @@ class ElementDumper(PipelineElement):
 
   def finish(self):
     print("-- finish --")
+    return self.next.finish()
 
 
 class FrameDumper(PipelineElement):
@@ -51,8 +52,8 @@ class FrameDumper(PipelineElement):
     self.next.handle(frame)
 
   def finish(self):
-    print("<flush>")
-    self.next.finish()
+    print("<finish>")
+    return self.next.finish()
 
 
 class Accumulator(PipelineElement):
@@ -62,85 +63,20 @@ class Accumulator(PipelineElement):
   def handle(self, element):
     self.accum.append(element)
 
-  def finish(self):
-    pass
 
+class HTMLFrameDumper(PipelineElement):
+  def __init__(self):
+    self.i = 0
 
+  def handle(self, frame):
+    if self.i == 0:
+      self.next.handle("<html><body>")
 
-
-class TermColors:
-  clear = '\033[0m'
-
-  fg = {
-    'reset': '\033[0m',
-    'bold': '\033[01m',
-    'underline': '\033[04m',
-    'strike': '\033[08m',
-
-    'black': '\033[30m',
-    'red': '\033[31m',
-    'green': '\033[32m',
-    'orange': '\033[33m',
-    'blue': '\033[34m',
-    'purple': '\033[35m',
-    'cyan': '\033[36m',
-    'lightgrey': '\033[37m',
-    'darkgrey': '\033[90m',
-    'lightred': '\033[91m',
-    'lightgreen': '\033[92m',
-    'yellow': '\033[93m',
-    'lightblue': '\033[94m',
-    'pink': '\033[95m',
-    'lightcyan': '\033[96m',
-  }
-
-
-
-class TerminalRenderer(PipelineElement):
-
-  fixed = set(('code', 'fixed'))
-
-  styleMap = {
-    'h0': ('bold', 'underline'),
-    'h1': ('bold', 'underline'),
-    'h2': ('underline'),
-    'quote': ('lightgrey'),
-    'code': ('green',),
-  }
-
-  def __init__(self, width=76):
-    self.tw = textwrap.TextWrapper(width=width)
-
-  def printSpan(self, span):
-
-    print(self.tw.fill(span.text))
-
-  def printFixed(self, cls, span):
-    print(span.text)
-
-
-  def getNumberedLines(self, prefix, span):
-    i = 0
-    numbered = []
-    for line in span.text.splitlines():
-      numbered.append(f'{prefix}{i}: {line}')
-    return '\n'.join(numbered)
-
-  def styleString(self, rc, span):
-    if rc in self.styleMap:
-      styles = [TermColors.fg[x] for x in self.styleMap[rc]]
-      ss = ''.join(styles)
-      return f'{ss}{span.text}{TermColors.clear}'
-    else:
-      return span.text
-
-  def handle(self, elem):
-    rc = elem.renderClass
-
-    styledJoined = ''.join(self.styleString(rc, s) for s in elem.spans)
-
-    print(styledJoined)
-    print('')
+    self.i += 1
+    self.next.handle(f"<h2>Frame {self.i}, Prefix:|{frame.prefix}|</h2>")
+    fmt = '\n'.join(frame.lines)
+    self.next.handle(f"<pre>{fmt}</pre>")
 
   def finish(self):
-    pass
+    self.next.handle("</body></html>")
+    return self.next.finish()

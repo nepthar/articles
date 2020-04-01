@@ -3,6 +3,7 @@ from misc import Log
 import sys
 
 
+# TODO: This should go somewhere else, I think
 class Frame:
   __slots__ = ('num', 'lines', 'prefix')
   def __init__(self, num, lines, prefix=''):
@@ -46,8 +47,7 @@ class Pipeline:
       for line in fileHandle:
         self.head.handle(line.rstrip(self.StripChars))
 
-      # TODO: Do we need finish?
-      self.head.finish()
+      return self.head.finish()
     else:
       raise Exception("Empty Pipeline")
 
@@ -62,7 +62,20 @@ class PipelineElement:
     return f'<{self.name()}>'
 
   def finish(self):
-    self.next.finish()
+    return self.next.finish()
+
+
+# class Placeholder(PipelineElement):
+#   def __init__(self, thing):
+#     self.underlying = thing
+#     self.enabled = True
+
+#   def handle(self, x):
+#     if self.enabled:
+#       self.underlying.handle(x)
+#     else:
+#       self.next.handle(x)
+
 
 
 class IndentSegmenter(PipelineElement):
@@ -72,14 +85,17 @@ class IndentSegmenter(PipelineElement):
   def __init__(self, maxLevels=2):
     self.curIndent = 0
     self.max = maxLevels
+    self.prevEmpty = False
 
   def handle(self, line):
-    if line is not '':
+    if line is not '' and self.prevEmpty:
       i = min(Text.indentLevel(line), self.max)
       if i != self.curIndent:
         self.curIndent = i
         self.next.handle('')
         self.next.handle('')
+
+    self.prevEmpty = line is ''
     self.next.handle(line)
 
 
@@ -122,9 +138,11 @@ class EmptyLineFramer(PipelineElement):
 
   def finish(self):
     self.flushFrame()
-    self.next.finish()
+    return self.next.finish()
 
 
+# I could alternatively just have the Pipeline instance issue two empty
+# newlines at the end of the file?
 class WriteNewlinesOnFinish(PipelineElement):
   def handle(self, x):
     self.next.handle(x)
@@ -132,4 +150,4 @@ class WriteNewlinesOnFinish(PipelineElement):
   def finish(self):
     self.next.handle('')
     self.next.handle('')
-    self.next.finish()
+    return self.next.finish()

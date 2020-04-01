@@ -1,6 +1,6 @@
 from pipeline import PipelineElement
 from misc import *
-from document import *
+from elements import *
 from spans import *
 from text import *
 
@@ -85,6 +85,7 @@ class BlockDecoder(Decoder):
       elem = self.new([span])
       if value:
         elem.meta['subtype'] = value
+      elems.append(elem)
 
     return elems
 
@@ -165,7 +166,7 @@ class FrameDecoder(PipelineElement):
           self.next.handle(e)
         return
 
-    self.warn(f"Unable to decode {frame}")
+    Log.warn("Unable to decode {}", frame)
     elem = UnknownElement(Spanner.Fixed.span(frame.lines),frame)
     self.next.handle(elem)
 

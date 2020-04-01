@@ -30,13 +30,13 @@ class Element:
 
 
 class MetadataElement(Element):
-  kind = 'meta'
+  kind = 'metadata'
   def __init__(self, md):
     super().__init__([], **md)
 
 
 class UnknownElement(Element):
-  kind = 'u'
+  kind = 'unknown'
   def __init__(self, spans, frame):
     self.spans = spans
     self.frame = frame
@@ -52,38 +52,33 @@ class ImageElement(Element):
 
 
 class HeadingElement(Element):
-  kind = 's'
+  kind = 'section'
 
   @property
   def level(self):
-    return self.meta.get('level', '0')
+    return self.meta.get('level', '2')
 
 
 class ParagraphElement(Element):
-  kind = 'p'
+  kind = 'paragraph'
 
 
 class FootnoteElement(Element):
-  kind = 'f'
+  kind = 'footnote'
 
 
 class InlineNoteElement(Element):
-  kind = 'i'
+  kind = 'inline'
 
 
 class BlockQuoteElement(Element):
-  kind = 'q'
+  kind = 'quote'
 
 
 class FixedWidthBlockElement(Element):
-  kind = 'r'
+  kind = 'rawtext'
 
 
 class CodeBlockElement(Element):
-  kind = 'c'
+  kind = 'code'
 
-
-class Document:
-  def __init__(self):
-    self.meta = {}
-    self.parts = []

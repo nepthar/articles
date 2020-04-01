@@ -33,19 +33,19 @@ def arraySplit(token, arr):
 class Log:
 
   Enabled = True
-  Where = sys.stderr
+  Out = sys.stderr
 
   @staticmethod
   def warn(msg, *args):
-    if Enabled:
+    if Log.Enabled:
       if args:
         msg = msg.format(args)
-      print(f"warn: {msg}", file=Where)
+      print(f"warn: {msg}", file=Log.Out)
 
   @staticmethod
   def log(msg, *args):
-    if Enabled:
+    if Log.Enabled:
       if args:
         msg = msg.format(args)
-      print(msg, file=Where)
+      print(msg, file=Log.Out)
 
