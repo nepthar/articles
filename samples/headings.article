@@ -1,43 +1,31 @@
-title: What do the Swiss call Swiss cheese?
-title.short: Swiss Cheese
+title: This is a test of available headings
+author: Jordan Parker <jordan@0xaf.me>
 layout: article
-status: published
-format: html
-author.name: Jordan Parker
-author.email: Jordan@nep.re
+status: test
 
 
-  If you haven't listened already, I highly recommend checking out Dan Carlin's
-  Hardcore History podcast. Dan frequently reminds his listeners that he's not a
-  historian, which is fantastic because it gives him some liberty to speculate
-  about what people living in the past may have been thinking or feeling.
-
-  Hardcore History has been on my mind often lately, partly beacuse I'm closer
-  to some of the places where these historical events have taken place and partly
-  because Dan often talks about how he struggles to pick an appropate starting
-  point when he wants to begin a new topic. I find myself spending a good chunk of
-  time answering the "where to begin" question, so much so that actually beginning
-  has been significantly delayed.
+  This is a paragraph before any headings happen. It's in its own
+  section and should appear before the first heading.
 
 
-First Sample Title (H1)
+First Section
 
-  Section 1 has two paragraphs and a header at the H1 level. It has no subsections and thus no H2+ level headers.
+  This first section has no subsections and two paragraphs.
 
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Elit pellentesque habitant morbi tristique senectus et netus et. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Mi proin sed libero enim sed faucibus turpis in. Commodo nulla facilisi nullam vehicula ipsum a arcu cursus vitae. Facilisi etiam dignissim diam quis enim. Venenatis tellus in metus vulputate eu scelerisque felis imperdiet.
-
-
-Second Sample Title (H1)
-
-  Here's a brief introduction to section 2 before the subsections start.
+  This is the second paragraph.
 
 
-. First Subtitle (H2)
 
-  Sit amet tellus cras adipiscing. Scelerisque in dictum non consectetur a erat. Rutrum tellus pellentesque eu tincidunt tortor aliquam nulla facilisi cras. Nam aliquam sem et tortor consequat id porta nibh venenatis. Sit amet nisl purus in mollis nunc sed.
+Second Section
 
+  This is the second section. It has two subsections. This text comes
+  before the start of any subsections
 
-.. Second Subtitle (H2)
+Section Section: First Subsection
+
+  A paragraph of text under the first subheading of the second section.
+
+. The Second Subsection of the Second Section
 
   An intro to section 2.2
 

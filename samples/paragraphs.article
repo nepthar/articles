@@ -1,30 +1,35 @@
-// Manual wrapping
-If you haven't listened already, I highly recommend checking out Dan Carlin's
-Hardcore History podcast. Dan frequently reminds his listeners that he's not a
-historian, which is fantastic because it gives him some liberty to speculate
-about what people living in the past may have been thinking or feeling.
-
-// Automatic wrapping
-Hardcore History has been on my mind often lately, partly beacuse I'm closer to some of the places where these historical events have taken place and partly because Dan often talks about how he struggles to pick an appropate starting point when he wants to begin a new topic. I find myself spending a good chunk of time answering the "where to begin" question, so much so that actually beginning has been significantly delayed.
-
-// Auto wrap some lines, manual wrap others. Probably a mistake
-Hardcore History has been on my mind often lately, partly beacuse I'm closer to some of the places where these historical events have taken place and partly because Dan often talks about how he struggles to pick an appropate starting point when he wants to begin a new topic.
-I find myself spending a good chunk of time answering the "where to begin" question, so much so that actually beginning has been significantly delayed.
-
-// An obnoxious manual wrapping example:
-This
-is
-actually
-all
-one
-paragraph
-believe
-it
-or
-not.
+title: Paragraph Wrapping Test
 
 
-Wsll
+Manual Wrapping
+
+  If you haven't listened already, I highly recommend checking out Dan Carlin's
+  Hardcore History podcast. Dan frequently reminds his listeners that he's not a
+  historian, which is fantastic because it gives him some liberty to speculate
+  about what people living in the past may have been thinking or feeling.
 
 
-now how does that work.
+Automatic Wrapping
+
+  Hardcore History has been on my mind often lately, partly beacuse I'm closer to some of the places where these historical events have taken place and partly because Dan often talks about how he struggles to pick an appropate starting point when he wants to begin a new topic. I find myself spending a good chunk of time answering the "where to begin" question, so much so that actually beginning has been significantly delayed.
+
+
+Mixed Wrapping (Probably a mistake)
+
+  Hardcore History has been on my mind often lately, partly beacuse I'm closer to some of the places where these historical events have taken place and partly because Dan often talks about how he struggles to pick an appropate starting point when he wants to begin a new topic.
+  I find myself spending a good chunk of time answering the "where to begin" question, so much so that actually beginning has been significantly delayed.
+
+
+Obnoxious Wrapping
+
+  This
+  is
+  actually
+  all
+  one
+  paragraph
+  believe
+  it
+  or
+  not.
+

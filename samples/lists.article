@@ -1,0 +1,48 @@
+title: List samples
+layout: article
+status: test
+
+
+Unordered
+
+  These lists are not numbered and should render as the same.
+
+
+Unordered: Spaced
+
+  Here's a list:
+
+  - Doesn't matter the order
+
+  - Should be rendered as ULs. Also this is a slightly longer item that
+    we need to wrap.
+
+  - How nice.
+
+
+Unordered: Unspaced
+
+  There's no support for this yet.
+
+
+Ordered
+
+  These lists are numbered and should also render the same.
+
+
+Ordered: Spaced
+
+  Here's a list:
+
+  . DOES matter the order
+
+  . Should be rendered as ULs. Also this is a slightly longer item that
+    we need to wrap.
+
+  . How nice.
+
+
+Ordered: Unspaced
+
+  There's no support for this yet
+
