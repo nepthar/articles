@@ -33,3 +33,27 @@ Obnoxious Wrapping
   or
   not.
 
+
+Separators
+
+  These things should be
+
+  ---
+
+  Separate sections. That period there is the section separator.
+
+
+BK Separators
+
+  When putting multiple blockquotes in a row, it's hard for the parser to know if you're trying to make one blockquote or many. To assist, you can use the separator character (.) at the paragraph level between them.
+
+    Here's my first blockquote item. How do I know
+    if I'm quoting something that has multiple blocks/verses?
+
+    .. or if It's supposed to be two quotes?
+    Sometimes it's hard to know
+
+    ---
+
+    But that period separates the blockquotes pretty well
+
