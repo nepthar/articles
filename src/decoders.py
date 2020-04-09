@@ -93,7 +93,10 @@ class BlockDecoder(Decoder):
 class BlockDecodeDispatcher(Decoder):
   prefix = Text.BlockPrefix
 
-  def __init__(self, decoders=[], default=None):
+  def __init__(self, decoders=None, default=None):
+    if decoders is None:
+      decoders = []
+      
     self.decodeMap = { d.kind: d for d in decoders }
     if default:
       self.default = self.decodeMap[default]

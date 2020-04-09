@@ -25,6 +25,13 @@ class AnythingPrinter(PipelineElement):
     pass
 
 
+class Tail(PipelineElement):
+  def handle(self, thing):
+    pass
+
+  def finish(self):
+    print('Pipeline finished', file=sys.stderr)
+
 
 # a = Accumulator()
 elements = [
@@ -32,13 +39,14 @@ elements = [
   #LinePrinter()
   WriteNewlinesOnFinish(),
   EmptyLineFramer(),
-  HTMLFrameDumper(),
+  FrameDumper(),
   # FrameDecoder(),
   # ArticleBuilder(),
   # SimpleHTMLRenderer(),
 #  ReturnArticle()
   #ElementDumper(),
-  AnythingPrinter()
+  AnythingPrinter(),
+  Tail()
 ]
 
 Pipeline(elements).process(sys.stdin)

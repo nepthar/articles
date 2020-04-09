@@ -65,16 +65,26 @@ class PipelineElement:
     return self.next.finish()
 
 
-# class Placeholder(PipelineElement):
-#   def __init__(self, thing):
-#     self.underlying = thing
-#     self.enabled = True
+class EmptyLineFramer(PipelineElement):
+  def __init__(self):
+    self.emptyCount = 0
+    self.currentIndent = 0
+    self.accum = []
 
-#   def handle(self, x):
-#     if self.enabled:
-#       self.underlying.handle(x)
-#     else:
-#       self.next.handle(x)
+  def handle(self, line):
+    if line is '':
+      self.emptyCount += 1
+    else:
+      self.emptyCount = 0
+
+    prefix = Text.prefix(line)
+
+
+
+
+
+
+
 
 
 
@@ -99,7 +109,7 @@ class IndentSegmenter(PipelineElement):
     self.next.handle(line)
 
 
-class EmptyLineFramer(PipelineElement):
+class OldEmptyLineFramer(PipelineElement):
 
   def __init__(self, limit=2):
     self.emptyCount = 0

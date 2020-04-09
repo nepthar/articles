@@ -1,8 +1,9 @@
-class Span:
-  def __init__(self, text, styles=[]):
-    self.text = text
-    self.style = set(styles)
+# Styles: emphasis, strong, strikethrough, underline
 
+class Span:
+  def __init__(self, text, **style):
+    self.text = text
+    self.style = style
 
 
   # def clearStyle(self):

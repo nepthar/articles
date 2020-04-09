@@ -8,6 +8,7 @@ Notes:
 - Section break: 2 empty (\n\n\n)
 - Other break:   1 empty (\n\n)
 - Continuation:  0 empty (\n)
+- Frame Break:   "  ." on its own line
 
 article =
 

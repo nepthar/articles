@@ -60,7 +60,6 @@ class SimpleHTMLRenderer(PipelineElement):
     else:
       self.next.handle(self.Unknown.format(kind=k, text=text))
 
-
   def handle(self, article):
     headerString = self.HeaderTemplate.format(title=article.title)
     self.next.handle(headerString)

@@ -8,6 +8,21 @@ class Text:
   TitlePrefix = ''
   LenIndent = len(Indent)
 
+  AnyIndent = '<Any>'
+
+  @staticmethod
+  def prefix(line):
+    if not line:
+      return Text.AnyIndent
+
+    if line.startswith(Text.BlockPrefix):
+      return Text.BlockPrefix
+
+    if line.startswith(Text.ParagraphPrefix):
+      return Text.ParagraphPrefix
+
+    return Text.TitlePrefix
+
   @staticmethod
   def wsSplit(line):
     lstripped = line.lstrip()

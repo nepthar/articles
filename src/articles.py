@@ -4,7 +4,6 @@ from elements import *
 from pipeline import PipelineElement
 
 
-
 class Article:
   def __init__(self):
     self.meta = {}
