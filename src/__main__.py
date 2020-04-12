@@ -13,6 +13,9 @@ from renderers import *
 from misc import *
 from articles import *
 
+from serde import FrameSerde
+from framing import DefaultFramer
+
 gc.disable()
 
 
@@ -33,23 +36,27 @@ class Tail(PipelineElement):
     print('Pipeline finished', file=sys.stderr)
 
 
-# a = Accumulator()
+class FrameSer(PipelineElement):
+  def __init__(self):
+    self.frames = []
+    self.fs = FrameSerde()
+
+  def handle(self, frame):
+    self.frames.append(frame)
+
+
+  def finish(self):
+    print("<onfinish>")
+    for i, f in enumerate(self.frames):
+      print(f'{i}: {self.fs.serialize(f)}')
+
+
+
+
 elements = [
-  IndentSegmenter(),
-  #LinePrinter()
-  WriteNewlinesOnFinish(),
-  EmptyLineFramer(),
-  FrameDumper(),
-  # FrameDecoder(),
-  # ArticleBuilder(),
-  # SimpleHTMLRenderer(),
-#  ReturnArticle()
-  #ElementDumper(),
-  AnythingPrinter(),
+  DefaultFramer(),
+  FrameSer(),
   Tail()
 ]
 
 Pipeline(elements).process(sys.stdin)
-# print(m.metadata)
-
-# print(a.accum)

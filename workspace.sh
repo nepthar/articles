@@ -8,8 +8,8 @@ ws_name="articles"
 # project root
 
 
-articles.a() {
-  python3 ./src
+articles.test-basic() {
+  python3 ./src < ./samples/basic.article
 }
 
 

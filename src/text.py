@@ -11,6 +11,17 @@ class Text:
   AnyIndent = '<Any>'
 
   @staticmethod
+  def removeIndent(line, level):
+    if level == 0:
+      return line
+    else:
+      toRemove = Text.Indent * level
+      if line.startswith(toRemove):
+        return line[len(toRemove):]
+      else:
+        raise ValueError('Line not at indent level')
+
+  @staticmethod
   def prefix(line):
     if not line:
       return Text.AnyIndent
@@ -31,10 +42,15 @@ class Text:
 
   @staticmethod
   def indentLevel(line):
-    if line.startswith(Text.Indent):
-      return 1 + Text.indentLevel(line[Text.LenIndent:])
-    else:
-      return 0
+    if line is '':
+      return -1
+
+    counter = 0
+    while line.startswith(Text.Indent):
+      counter += 1
+      line = line[Text.LenIndent:]
+
+    return counter
 
   @staticmethod
   def commonWsPrefix(stringList, ignoreEmpty=False):

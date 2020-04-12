@@ -43,16 +43,20 @@ class ElementDumper(PipelineElement):
 
 class FrameDumper(PipelineElement):
   def __init__(self):
-    self.i = 0
+    self.frames = []
 
   def handle(self, frame):
-    self.i += 1
-    lines = '\n'.join(f" |{l}" for l in frame.lines)
-    print(f"Frame {self.i}. Prefix: |{frame.prefix}|\n{lines}\n")
-    self.next.handle(frame)
+    self.frames.append(frame)
+
 
   def finish(self):
-    print("<finish>")
+    for i, f in enumerate(self.frames):
+
+      print(f"{i}: {f}")
+      if f.lines:
+        print('\n'.join(f"  |{l}" for l in f.lines))
+
+      print('')
     return self.next.finish()
 
 

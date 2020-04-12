@@ -1,0 +1,50 @@
+title: Edgecases
+
+
+  The article begins with a Level 1 frame. Interesting.
+
+
+Regular Section Title
+
+  And a paragraph below it
+
+Subsection Title
+
+  And another paragraph
+
+
+Second Section Title
+That spans two lines
+
+Subsection title immediately.
+
+  Subsection paragraph.
+
+    With inner blockquote.
+
+
+Test Blockquote With Mixed Paragraph
+
+  This is a paragraph.
+
+    Below it, is a block quote.
+  But what's this? The indentation changed. This is weird.
+    Okay, how do we handle it?
+
+  This is another paragraph
+
+
+No New Lines Here
+  We're just off to the races with no visual separation
+    Only our eyes to help us.
+  Pretty strange, isn't it. This isn't going to look good.
+
+
+
+  There's more than two newlines above which should trigger a section
+  break.
+
+  It's going to render all goofy.
+But Now Here's a Subsection
+    That begins with a quote. Jeez this is dumb.
+  And ends with a paragraph.
