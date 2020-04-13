@@ -40,6 +40,7 @@ class DefaultFramer(PipelineElement):
   def frameFromLines(lines):
 
 
+
   def __init__(self):
     self.accum = []
     self.emptyLineCount = 0

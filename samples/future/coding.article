@@ -48,14 +48,14 @@ desc: A coding article with no sections and lots of inline code blocks
     x = 42;
     foobar(x); // the type of `x` will be inferred from here
 
-  The underscore `_` is a special name - or rather, a “lack of name”. It basically means to throw away something:
+  The underscore `self` is a special name - or rather, a “lack of name”. It basically means to throw away something:
 
     code: rust
     // this does *nothing* because 42 is a constant
-    let _ = 42;
+    let self = 42;
 
     // this calls `get_thing` but throws away its result
-    let _ = get_thing();
+    let self = get_thing();
 
   Names that start with an underscore are regular names, it's just that the compiler won't warn about them being unused:
 

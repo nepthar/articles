@@ -33,7 +33,6 @@ class ArticleBuilder(PipelineElement):
 
 
   def handle(self, element):
-
     self.addIDs(element)
 
     if isinstance(element, MetadataElement):

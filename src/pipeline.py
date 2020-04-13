@@ -1,5 +1,4 @@
-from text import *
-from misc import Log
+import sys
 
 
 class PipelineElement:
@@ -15,11 +14,24 @@ class PipelineElement:
     return self.next.finish()
 
 
+class OutputWriter(PipelineElement):
+  next = None
+
+  def __init__(self, file=sys.stdout):
+    self.file = file
+
+  def handle(self, item):
+    print(item, file=self.file)
+
+  def finish(self):
+    return None
+
+
 class Pipeline:
 
   StripChars = '\r\n\t '
 
-  def __init__(self, elements=[]):
+  def __init__(self, elements=None):
     if elements:
       self.head = elements[0]
       self.tail = elements[0]

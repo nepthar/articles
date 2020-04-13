@@ -1,5 +1,7 @@
 import json
 import framing
+import spans
+from misc import Log
 
 
 class DeserializeError(ValueError):
@@ -48,27 +50,66 @@ def is_listof(l, klass):
     raise DeserializeError(f'Not list: {l}')
 
   for i in l:
-    isType(i, klass)
+    is_type(i, klass)
   return l
 
 
-class FrameSerde:
+class Serde:
+  Class = None
 
+  def serialize(self, item):
+    pass
+
+  def deserialize(self, string):
+    pass
+
+
+class FrameSerde(Serde):
+  """ Frame {kind} {level} [json array of lines] """
   Class = framing.Frame
 
-  @staticmethod
-  def serialize(frame):
+  def serialize(self, frame):
     s = json.dumps(frame.lines)
     return f'Frame {frame.kind} {frame.level} {s}'
 
-  @staticmethod
   def deserialize(self, frameString):
     (frame, kind, level, js) = frameString.split(maxsplit=3)
 
     is_equal(frame, 'Frame')
-    is_in(kind, Frame.Kinds)
+    is_in(kind, framing.Frame.Kinds)
     ilvl = is_int(level)
-    lines = is_list_of(isJson(js), str)
+    lines = is_listof(is_json(js), str)
 
-    return Frame(kind, ilvl, lines)
+    return framing.Frame(kind, ilvl, lines)
+
+
+class SpanSerde(Serde):
+  """ Span {json encoded test} {json encoded style dict} """
+  Class = spans.Span
+
+  def serialize(self, span):
+    text = json.dumps(span.text)
+    style = json.dumps(span.style)
+
+    return f'Span {text} {style}'
+
+  def deserialize(self, string):
+    (span, _, rest) = string.partition(' ')
+
+    is_equal(span, 'Span')
+    d = json.JSONDecoder()
+
+    text = ''
+    style = None
+
+    try:
+      (text, lastChar) = d.raw_decode(rest)
+      style = d.decode(rest[lastChar:])
+    except json.decoder.JSONDecodeError as e:
+      raise DeserializeError('Failed to decode Span text or style')
+
+    span = spans.Span(text)
+    span.style = style
+
+    return span
 

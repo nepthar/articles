@@ -10,6 +10,12 @@ class Text:
 
   AnyIndent = '<Any>'
 
+  SlugRegex =
+
+  @staticmethod
+  def isSlug(string):
+
+
   @staticmethod
   def removeIndent(line, level):
     if level == 0:

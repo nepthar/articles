@@ -72,31 +72,13 @@ class TitleDecoder(Decoder):
     return [HeadingElement(spans)]
 
 
-class BlockDecoder(Decoder):
-  """ Simple block handling """
-  def __init__(self, kind, mkElement, spanner):
-    self.kind = kind
-    self.new = mkElement
-    self.sp = spanner
-
-  def decodeBlock(self, blockLines, value):
-    elems = []
-    for span in self.sp.span(blockLines):
-      elem = self.new([span])
-      if value:
-        elem.meta['subtype'] = value
-      elems.append(elem)
-
-    return elems
-
-
 class BlockDecodeDispatcher(Decoder):
   prefix = Text.BlockPrefix
 
   def __init__(self, decoders=None, default=None):
     if decoders is None:
       decoders = []
-      
+
     self.decodeMap = { d.kind: d for d in decoders }
     if default:
       self.default = self.decodeMap[default]
@@ -133,25 +115,10 @@ class DecoderConfig:
     return decs
 
 
-DecoderConfig.Default = DecoderConfig(
-  MetadataDecoder(),
-  TitleDecoder(),
-  ParagraphDecoder(),
-  BlockDecodeDispatcher(
-    default='quote',
-    decoders=[
-      BlockDecoder('footnote', FootnoteElement, Spanner.Prose),
-      BlockDecoder('inline', InlineNoteElement, Spanner.Prose),
-      BlockDecoder('fixed', FixedWidthBlockElement, Spanner.Fixed),
-      BlockDecoder('code', CodeBlockElement, Spanner.Fixed),
-      BlockDecoder('quote', BlockQuoteElement, Spanner.Fixed),
-    ]),
-)
-
 
 class FrameDecoder(PipelineElement):
   """ Convert raw frames into document elements """
-  def __init__(self, config=DecoderConfig.Default):
+  def __init__(self, config):
     self.useConfig(config)
 
   def useConfig(self, config):

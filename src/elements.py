@@ -1,9 +1,10 @@
 from spans import *
 
-PreviewLength = 8
 
 class Element:
   kind = None
+  PreviewLength = 8
+
   def __init__(self, spans, **kwargs):
     assert(isinstance(spans, list))
     self.spans = spans
@@ -15,7 +16,7 @@ class Element:
     if not self.spans:
       return ""
     else:
-      pv = self.spans[0].text[:PreviewLength]
+      pv = self.spans[0].text[:self.PreviewLength]
       return f"\"{pv}..\""
 
   def __repr__(self):
@@ -30,20 +31,23 @@ class Element:
 
 
 class MetadataElement(Element):
-  kind = 'metadata'
+  kind = 'md'
+
   def __init__(self, md):
     super().__init__([], **md)
 
 
 class UnknownElement(Element):
-  kind = 'unknown'
+  kind = 'unk'
+
   def __init__(self, spans, frame):
-    self.spans = spans
+    super().__init__(spans)
     self.frame = frame
 
 
 class ImageElement(Element):
   kind = 'img'
+
   def src(self):
     return self.meta['src']
 
@@ -52,7 +56,7 @@ class ImageElement(Element):
 
 
 class HeadingElement(Element):
-  kind = 'section'
+  kind = 'h'
 
   @property
   def level(self):
@@ -60,23 +64,27 @@ class HeadingElement(Element):
 
 
 class ParagraphElement(Element):
-  kind = 'paragraph'
+  kind = 'p'
 
 
 class FootnoteElement(Element):
-  kind = 'footnote'
+  kind = 'fn'
 
 
 class InlineNoteElement(Element):
-  kind = 'inline'
+  kind = 'in'
+
+
+class MarginNoteElement(Element):
+  kind = 'mn'
 
 
 class BlockQuoteElement(Element):
-  kind = 'quote'
+  kind = 'q'
 
 
 class FixedWidthBlockElement(Element):
-  kind = 'rawtext'
+  kind = 'pre'
 
 
 class CodeBlockElement(Element):

@@ -1,24 +1,33 @@
-# Styles: emphasis, strong, strikethrough, underline
+from typing import NamedTuple
+from misc import Log
+
+
+class Style(NamedTuple):
+  ident: str
+  description: str
+
 
 class Span:
+
+  StyleValueRegex
+
+  Styles = {s.ident: s for s in [
+    Style('b', 'bold/emphasis'),
+    Style('i', 'italic',),
+    Style('ul', 'underline'),
+    Style('strk', 'strikethrough'),
+    Style('c', 'arbitrary css class'),
+    Style('sub', 'subscript'),
+    Style('sup', 'superscript'),
+#    Style('cite', 'quote with citation'),
+    Style('scaps', 'small caps'),
+    Style('var', 'inline variable or keyword'),
+    Style('l', 'link')
+  ]}
+
   def __init__(self, text, **style):
     self.text = text
-    self.style = style
-
-
-  # def clearStyle(self):
-  #   self.st.clear()
-
-  # def getStyle(self, key, default=None):
-  #   if key in self.st:
-  #     return self.st[key]
-  #   elif self.parent:
-  #     return self.parent.getStyle(key, default)
-  #   else:
-  #     return default
-
-  # def setStyle(self, key, value=''):
-  #   self.st[key] = value
+      self.style[k] = v
 
 
 Span.Empty = Span('')
@@ -26,7 +35,6 @@ Span.Empty = Span('')
 
 class Spanner:
   pass
-
 
 class ProseSpanner(Spanner):
   def span(self, lines):
