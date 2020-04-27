@@ -9,12 +9,12 @@ from collections import Counter
 from pipeline import *
 from decoders import *
 from debug import *
-from renderers import *
+#from render import *
 from misc import *
 from articles import *
 
-from serde import FrameSerde
-from framing import DefaultFramer
+from serde import *
+from framing import *
 
 gc.disable()
 
@@ -55,7 +55,10 @@ class FrameSer(PipelineElement):
 
 elements = [
   DefaultFramer(),
-  FrameSer(),
+  FrameDumper(),
+#  AnythingPrinter()
+#  FrameSer()
+
   Tail()
 ]
 
