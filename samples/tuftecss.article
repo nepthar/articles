@@ -93,11 +93,11 @@ Figures
 
   Tufte emphasizes tight integration of graphics with text. Data, graphs, and figures are kept with the text that discusses them. In print, this means they are not relegated to a separate page. On the web, that means readability of graphics and their accompanying text without extra clicks, tab-switching, or scrolling.
 
-  Additional information ^{can be found here|http://reddit.com}.
+  Additional information {can be found here|http://reddit.com}.
 
   Addinl info can be found at http://reddit.com.
 
-  Here's a link to the ^{figures|Figures} section.
+  Here's a link to the {figures|Figures} section.
 
   Figures should try to use the figure element, which by default are constrained to the main column. Don’t wrap figures in a paragraph tag. Any label or margin note goes in a regular margin note inside the figure. For example, most of the time one should introduce a figure directly into the main flow of discussion, like so:
 

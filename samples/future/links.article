@@ -7,9 +7,9 @@ Simple Links
 
   Links are created by the right brace ({), then the contents of the link.
 
-  This is an {absolute link|www.something.com} inline. Here's a ^{relative|img/bird.jpg}.
+  This is an {absolute link|www.something.com} inline. Here's a {relative|img/bird.jpg}.
 
-  This is a link ^{thingy|l1} described in the link table below.
+  This is a link {thingy|l1} described in the link table below.
 
     links:
     1: www.thingy.com
@@ -18,9 +18,9 @@ Simple Links
 
 Links to Sections
 
-  Sections are also linkable. Here's a ^{link|Simple Links} to the "Simple Links" seciton above.
+  Sections are also linkable. Here's a {link|Simple Links} to the "Simple Links" seciton above.
 
-  Here's a link with no explicit text provided, just the note that it's linking to the ^{Links to Sections} section above.
+  Here's a link with no explicit text provided, just the note that it's linking to the <Links to Sections|st:em> section above.
 
 
 Links to Notes
@@ -39,13 +39,17 @@ Resolving Links
   3. Relative URL
 
 
+Span Samples
 
-{text blah` blah blah|<span info>}
+  {text blah` blah blah|<span info>}
 
-Examples:
+  Examples:
 
-{text blah blah blah|st:smallcaps,em,ul|link:http://www.absolutelink.com}
+  {text blah blah blah|st:smallcaps,em,ul|link:http://www.absolutelink.com}
 
-There's a section called {Cat Food} above, which is now linked to.
+  There's a section called {Cat Food} above, which is now linked to.
 
-Here's a {link|Cat Food} to the section called "Cat Food".
+  Here's a {link|Cat Food} to the section called "Cat Food".
+
+
+
