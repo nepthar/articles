@@ -4,16 +4,21 @@ import sys
 
 
 class KeyValue:
+  """
+  Simple Key<>Value pairs with strict rules
+  1. Keys must be \w chars or a period
+  2. Values can't contain newline characters and must be present
+  3. Format is key: value. The ': ' is specifically looked for
+  """
 
   # https://regexr.com
-  KVRegex = re.compile(r'^([\w\.]+):( ?)(.*)$')
+  KVRegex = re.compile(r'^([\w\.]+): (.*)$')
 
   @staticmethod
   def extract(line):
     ex = KeyValue.KVRegex.match(line)
     if ex:
-      key, _, val = ex.groups()
-      return (key, val)
+      return ex.groups()
     else:
       return (None, None)
 
