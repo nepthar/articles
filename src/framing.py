@@ -36,15 +36,11 @@ class DefaultFramer(PipelineElement):
   MaxIndent = 2
   SectionEmptyLines = 2
 
-  @staticmethod
-  def frameFromLines(lines):
-
-
-
   def __init__(self):
     self.accum = []
     self.emptyLineCount = 0
     self.currentIndent = 0
+
 
   def flush(self):
     lines = self.accum
@@ -52,7 +48,6 @@ class DefaultFramer(PipelineElement):
       lines.pop()
 
     if lines:
-
       self.next.handle(Frame('text', self.currentIndent, lines))
 
     self.currentIndent = -1

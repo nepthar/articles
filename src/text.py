@@ -10,10 +10,10 @@ class Text:
 
   AnyIndent = '<Any>'
 
-  SlugRegex =
 
   @staticmethod
   def isSlug(string):
+    return False
 
 
   @staticmethod

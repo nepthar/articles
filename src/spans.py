@@ -9,8 +9,6 @@ class Style(NamedTuple):
 
 class Span:
 
-  StyleValueRegex
-
   Styles = {s.ident: s for s in [
     Style('b', 'bold/emphasis'),
     Style('i', 'italic',),
@@ -19,7 +17,6 @@ class Span:
     Style('c', 'arbitrary css class'),
     Style('sub', 'subscript'),
     Style('sup', 'superscript'),
-#    Style('cite', 'quote with citation'),
     Style('scaps', 'small caps'),
     Style('var', 'inline variable or keyword'),
     Style('l', 'link')
@@ -27,7 +24,7 @@ class Span:
 
   def __init__(self, text, **style):
     self.text = text
-      self.style[k] = v
+    self.style = style
 
 
 Span.Empty = Span('')
