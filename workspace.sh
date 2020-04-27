@@ -1,17 +1,15 @@
-#!/usr/bin/env bash
+# workspace.sh // Common Vars & Operations
 
-ws_name="articles"
+workspace="articles"
 
-# This file is designed to work with Nepthar's shell tools, but it
-# can be used without them. See https://github.com/nepthar/shtools
-# Functions prefixed here with "articles." should be run from the
-# project root
-
+# This file is designed to work with shell tools, but it can be used
+# without them by sourcing this directly. If used with shell tools, the
+# commands prefixed with '{{name}}.' will be run from the same dir as
+# this file in a subshell.
 
 articles.test-basic() {
   python3 ./src < ./samples/basic.article
 }
-
 
 articles.pwd() {
   echo $PWD
@@ -21,13 +19,13 @@ articles.pwd() {
 
 articles.todo() {
   cat << EOF
-TODO:
-  - Merge framing and decoding. Unfortunately, you have to because of the two
-    consecutive section titles problem :(
+    TODO:
 
-  - Write a console renderer
+      - Write a console renderer
 
-  - Write a template-based HTML renderer
+      - Write a terminal manual renderer!!
+
+      - Write a template-based HTML renderer
 EOF
 }
 
