@@ -45,7 +45,7 @@ class MetadataDecoder(Decoder):
 
 class ParagraphDecoder(Decoder):
   # TODO: Support for comments
-  prefix = Text.ParagraphPrefix
+  prefix = Text.BodyPrefix
   spanner = ProseSpanner()
 
   def decode(self, frame):

@@ -3,9 +3,13 @@
 class Text:
 
   Indent = '  '
-  ParagraphPrefix = Indent
+  BodyPrefix = Indent
   BlockPrefix = Indent + Indent
   TitlePrefix = ''
+  CmtPrefix = BodyPrefix + '//'
+  ControlPrefix = 'ctl: '
+  BreakPrefix = BodyPrefix + '---'
+
   LenIndent = len(Indent)
 
   AnyIndent = '<Any>'
@@ -35,8 +39,8 @@ class Text:
     if line.startswith(Text.BlockPrefix):
       return Text.BlockPrefix
 
-    if line.startswith(Text.ParagraphPrefix):
-      return Text.ParagraphPrefix
+    if line.startswith(Text.BodyPrefix):
+      return Text.BodyPrefix
 
     return Text.TitlePrefix
 

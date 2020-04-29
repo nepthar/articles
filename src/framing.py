@@ -3,56 +3,145 @@ from text import Text
 from enum import Enum
 
 
-# Maybe use these instead?
+# kinds of lines and frames
 class Kind(Enum):
   Title   = 'ttl'
   Body    = 'bdy'
   Comment = 'cmt'
   Block   = 'blk'
   Break   = 'brk'
-  Control = 'ctl'
   Empty   = 'emt'
   Unknown = 'unk'
 
 
-# class ClassifiedLine:
-#   def __init__(self, kind, line):
+class Line:
 
+  Kinds = set(Kind)
 
-# class LineClasifier(PipelineElement):
+  def __init__(self, kind, line):
+    assert(kind in self.Kinds)
+    self.kind = kind
+    self.line = line
 
-#   Kinds = set(Kind)
-
-#   def __init__(self):
-#     self.prefixMap = (
-#       # 4 Characters
-#       ('    ', Kind.Block),
-#       ('  //', Kind.Comment),
-
-#       # 3 Characters
-#       ('   ', Kind.Unknown),
-#       ('  \t', Kind.Unknown),
-
-#       # 2 Characters
-#       ('  ', Kind.Body),
-#       (' \t', Kind.Unknown),
-
-#       # 1 Character
-#       ('\t', Kind.Unknown),
-#       (' ', Kind.Unknown),
-#     )
-
-#   def handle(self, line):
-#     if line:
-#       for prefix, kind in self.prefixMap:
-#         if line.startswith(prefix):
-#           return ClassifiedLine(kind, line[len(prefix):])
-
-
-
+  def __str__(self):
+    return f"{self.kind.value}: {self.line}"
 
 
 class Frame:
+
+  Kinds = set(
+    Kind.Title, Kind.Body, Kind.Comment, Kind.Block, Kind.Break, Kind.Unknown
+  )
+
+  def __init__(self, kind, lines=None):
+    assert(kind in self.Kinds)
+    self.kind = kind
+    self.lines = lines if lines else []
+
+
+class LineClasifier(PipelineElement):
+  """ Classifies the type of line based on prefix. This info can later
+      be used by the framer
+  """
+
+  Prefixes = (
+    # Known correct prefixes
+    (Kind.Block, Text.BlockPrefix),
+    (Kind.Comment, Text.CmtPrefix + ' '),
+    (Kind.Comment, Text.CmtPrefix),
+    (Kind.Body, Text.BodyPrefix),
+    (Kind.Control, Text.ControlPrefix),
+
+    # Bad prefixes. These are typos.
+    (Kind.Unknown, ' '),
+    (Kind.Unknown, '\t')
+  )
+
+  InvalidFirstChars = set(' \t')
+
+  EmptyLine = Line(Kind.Empty, '')
+
+  def __init__(self):
+    # Since we're doing prefix checks, these must be ordered longest
+    # to shortest.
+    withLengths = ((k, p, len(p)) for k, p in self.Prefixes)
+
+    self.prefixList = tuple(
+      sorted(withLengths, reverse=True, key=lambda x: x[2])
+    )
+
+  def handle(self, line):
+    if line:
+      for kind, prefix, lenPrefix in self.prefixList:
+        if line.startswith(prefix):
+          self.next.handle(Line(kind, line[lenPrefix:]))
+
+      else:
+        if line[0] in self.InvalidFirstChars:
+          self.next.handle(Line(Kind.Unknown, line))
+
+        else:
+          self.next.handle(Line(Kind.Title, line))
+
+    else:
+      self.next.handle(self.EmptyLine)
+
+
+class ClassificationFramer(PipelineElement):
+
+  BreakEmptyLines = 2
+  BreakFrame = Frame(Kind.Break, '<Section Break>')
+
+  def __init__(self):
+    self.accum = []
+    self.emptyCount = 0
+    self.currentKind = None
+
+  def flush(self):
+    lines = self.accum
+    # Remove starting newlines
+    while lines and lines[0] == '':
+      lines.pop(0)
+
+    # Remove ending newlines
+    while lines and lines[-1] == '':
+      lines.pop()
+
+    if lines:
+      self.next.handle(Frame(self.currentKind, lines))
+
+    self.accum.clear()
+    self.currentKind = None
+
+  def handle(self, classified):
+    if classified.kind is Kind.Empty:
+      self.emptyCount += 1
+
+      if self.emptyCount < self.BreakEmptyLines:
+        if self.currentKind == Kind.Block:
+          self.accum.append('')
+        else:
+          self.flush()
+
+      elif self.emptyCount == self.BreakEmptyLines:
+        self.flush()
+        self.next.handle(self.BreakFrame)
+
+      else: # self.emptyCount > self.BreakEmptyLines
+        # Ignore extra empty lines
+        pass
+
+    else:
+      self.emptyCount = 0
+
+      if classified.kind is not self.currentKind:
+        self.flush()
+        self.currentKind = classified.kind
+
+      self.accum.append(classified.line)
+
+
+class OldFrame:
 
   Kinds = set(Kind)
 
@@ -75,59 +164,7 @@ class Frame:
     return f'<frame {partsStr}>'
 
 
-class LineClassifier(PipelineElement):
-
-  PrefixInfo = (
-    (4, '    ', Kind.Block),
-    (4, '  //', Kind.Comment),
-    (3, '   ', Kind.Unknown),
-    (2, '  ', Kind.Body),
-    (1, ' ', Kind.Unknown),
-  )
-
-  @staticmethod
-  def classifyAndStripPrefix(line):
-    if line:
-      for lgth, pfx, kind in LineClassifier.PrefixInfo:
-        if line.startswith(pfx):
-          return (kind, line[lgth:])
-
-      if line[:1].isspace():
-        return (Kind.Unknown, line)
-
-      return (Kind.Title, line)
-
-    else:
-      return (Kind.Empty, line)
-
-  def handle(self, line):
-    self.next.handle(self.classifyAndStripPrefix(line))
-
-  def finish(self):
-    self.next.finish()
-
-
-# class ClassifiedLineFramer(PipelineElement):
-
-#   SectionEmptyLines = 2
-
-#   def __init__(self):
-#     self.accum = []
-#     self.emptyCount = 0
-#     self.currentKind = Kind.Empty
-
-#   def flush(self):
-#     lines = self.accum
-#     while lines and lines[-1][0] == Kind.Empty:
-#       lines.pop()
-
-#     if lines:
-#       frame = Frame(self.currentKind)
-#       self.next.handle()
-
-#   def handle(self, line):
-
-class DefaultFramer(PipelineElement):
+class OldFramer(PipelineElement):
   """ The Framer is responsible for breaking up the document into frames
       Each frame carries the raw lines that make it up and the indent
       level.
@@ -150,7 +187,7 @@ class DefaultFramer(PipelineElement):
       lines.pop()
 
     if lines:
-      self.next.handle(Frame('text', self.currentIndent, lines))
+      self.next.handle(OldFrame('text', self.currentIndent, lines))
 
     self.currentIndent = -1
     self.accum = []
@@ -161,7 +198,7 @@ class DefaultFramer(PipelineElement):
 
       if self.emptyLineCount == self.SectionEmptyLines:
         self.flush()
-        self.next.handle(Frame('section'))
+        self.next.handle(OldFrame('section'))
 
       elif self.currentIndent is not self.MaxIndent:
         self.flush()

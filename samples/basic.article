@@ -40,7 +40,9 @@ Section 1.2
   dignissim diam quis enim. Venenatis tellus in metus vulputate eu scelerisque
   felis imperdiet.
 
-    table: data.csv
+    This is a second ending quote. We must make sure it does not
+    gobble up the two lines separating this from
+    the start of Section 2.
 
 
 Section 2
@@ -53,14 +55,17 @@ Section 2
   dignissim diam quis enim. Venenatis tellus in metus vulputate eu scelerisque
   felis imperdiet.
 
-    code: nuts
     The default blockquote. Just indented, no hints as to what it is.
     A poem
-    A song
-    The default.
-    These linebreaks should be preserved.
+      A song
+        The default.
+    These linebreaks should be preserved along with
+      the indents.
 
-    This is not a new section.
+    This is not a new section. It's part of the previous block
+
+
+    This, however, is is a new quote block.
 
   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
   incididunt ut labore et dolore magna aliqua. Elit pellentesque habitant morbi
@@ -70,17 +75,19 @@ Section 2
   dignissim diam quis enim. Venenatis tellus in metus vulputate eu scelerisque
   felis imperdiet.
 
+  Great, we've introduced another line thing?
+
 
 Section 3 - Blockquote Tests
 
   Introduction to this blockquote tests.
 
-    code: argument
+    quote: argument
     This is a "block" (as opposed to a paragraph) which has a hint to
     the parser about what type it is. The parser will try to find
     something that is registered to handle "hint1" types of blocks.
 
-    margin: argument, argument2
+    quote: argument, argument2
     This is a second quote which could be confusing to separate from the
     first. If you're a computer, that is. We must handle this
     gracefully.

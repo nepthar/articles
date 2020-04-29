@@ -54,9 +54,9 @@ class FrameSer(PipelineElement):
 
 
 elements = [
-  DefaultFramer(),
-  FrameDumper(),
-#  AnythingPrinter()
+  LineClasifier(),
+#  FrameDumper(),
+  AnythingPrinter(),
 #  FrameSer()
 
   Tail()
