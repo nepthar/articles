@@ -1,9 +1,24 @@
 from spans import *
 
+# todo: Work on the preview code. Ugh.
 
 class Element:
   kind = None
   PreviewLength = 8
+
+  @staticmethod
+  def previewText(inThing):
+    if not inThing:
+      return '<empty>'
+
+    if isinstance(inThing, str):
+      if len(inThing) <= Element.PreviewLength:
+        return inThing
+      else:
+        return inThing[:Element.PreviewLength] + '..'
+
+    return Element.previewText(str(inThing))
+
 
   def __init__(self, spans, **kwargs):
     assert(isinstance(spans, list))
@@ -14,17 +29,16 @@ class Element:
 
   def preview(self):
     if not self.spans:
-      return ""
+      return "<empty>"
     else:
       pv = self.spans[0].text[:self.PreviewLength]
       return f"\"{pv}..\""
 
-  def __repr__(self):
-    return f'{self.__class__.__name__} id={self.pid}'
-
   def __str__(self):
-    s = self.__repr__()
-    return f'<{s} {self.preview()}>'
+    return f'{self.__class__.__name__}(id={self.pid} {self.preview()})'
+
+  def __repr__(self):
+    return f'<{self.__class__.__name__} {self.pid}>'
 
   def fullText(self):
     return ''.join(s.text for s in self.spans)
@@ -90,3 +104,6 @@ class FixedWidthBlockElement(Element):
 class CodeBlockElement(Element):
   kind = 'code'
 
+
+class CommentElement(Element):
+  kind = 'comment'
