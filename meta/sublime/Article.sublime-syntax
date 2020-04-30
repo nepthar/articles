@@ -22,8 +22,8 @@ contexts:
 
     - match: '^([\w\.]+)(: )(.*)$'
       captures:
-        1: variable.language
-        2: punctuation.definition.tag
+        1: support.type
+        2: keyword.operator.assignment
         3: text
 
     - match: ^$
