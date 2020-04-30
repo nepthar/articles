@@ -1,24 +1,27 @@
 
 
-class Text:
+class TextConfig:
 
   Indent = '  '
   BodyPrefix = Indent
   BlockPrefix = Indent + Indent
   TitlePrefix = ''
   CmtPrefix = BodyPrefix + '//'
-  ControlPrefix = 'ctl: '
+  # Unused: ControlPrefix = 'ctl: '
   BreakPrefix = BodyPrefix + '---'
 
   LenIndent = len(Indent)
 
   AnyIndent = '<Any>'
 
+  def __init__(self):
+    # In the future, this could be used to overwrite defaults.
+    # or something. I just don't like globals.
+    pass
 
   @staticmethod
   def isSlug(string):
     return False
-
 
   @staticmethod
   def removeIndent(line, level):
@@ -91,3 +94,6 @@ class Text:
         return prefix
       else:
         return ''
+
+
+Text = TextConfig()
