@@ -17,6 +17,10 @@ class Decoder:
 
   def tryDecode(self, frame):
     if self.canDecode(frame):
+      result = self.decode(frame)
+      if result is None:
+        cn = self.__class__.__name__
+        raise ValueError(f'{cn} claimed to be able to decode, but failed')
       return self.decode(frame)
     else:
       return None
@@ -44,7 +48,6 @@ class MetadataDecoder(Decoder):
 
 
 class ParagraphDecoder(Decoder):
-  # TODO: Support for comments
   prefix = Text.BodyPrefix
   spanner = ProseSpanner()
 
@@ -113,7 +116,6 @@ class DecoderConfig:
     decs = [self.metaDec, self.titleDec, self.paragraphDec, self.blockDec]
     decs.extend(self.others)
     return decs
-
 
 
 class FrameDecoder(PipelineElement):
