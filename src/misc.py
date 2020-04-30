@@ -5,14 +5,17 @@ import sys
 
 class KeyValue:
   """
-  Simple Key<>Value pairs with strict rules
-  1. Keys must be \w chars or a period
-  2. Values can't contain newline characters and must be present
+  Key<>Value pairs with strict rules for simplicitiy.
+  1. Keys must be \w(alphanumeric or underscore) chars or a period
+  2. Values can't contain newline characters and must be present (for
+     boolean things, use "key: true" or similar)
   3. Format is key: value. The ': ' is specifically looked for
   """
 
   # https://regexr.com
   KVRegex = re.compile(r'^([\w\.]+): (.*)$')
+
+  Invalid = (None, None)
 
   @staticmethod
   def extract(line):
@@ -20,7 +23,25 @@ class KeyValue:
     if ex:
       return ex.groups()
     else:
-      return (None, None)
+      return KeyValue.Invalid
+
+  @staticmethod
+  def toDict(lines):
+    parsed = []
+
+    for line in lines:
+      result = KeyValue.extract(line)
+      if result is KeyValue.Invalid:
+        raise Exception(f'Invalid KeyValue Line: "{line}"')
+      parsed.append(result)
+
+    d = {}
+    for k, v in parsed:
+      if k in d:
+        raise Exception(f'Defined twice: {k}')
+      d[k] = v
+
+    return d
 
 
 def arraySplit(token, arr):
