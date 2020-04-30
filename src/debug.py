@@ -52,7 +52,7 @@ class FrameDumper(PipelineElement):
   def finish(self):
     for i, f in enumerate(self.frames):
 
-      print(f"{i}: {f}")
+      print(f"{i}: {f.kind.name} Frame")
       if f.lines:
         print('\n'.join(f"  |{l}" for l in f.lines))
 

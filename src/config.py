@@ -1,8 +1,7 @@
-from __main__ import FrameSer
+#from __main__ import FrameSer
 from decoders import *
 from blocks import BlockDecoder
-from framing import DefaultFramer
-from pipeline import OutputWriter
+
 
 
 class Default:
@@ -11,6 +10,8 @@ class Default:
     return DecoderConfig(
       MetadataDecoder(),
       TitleDecoder(),
+      BreakDecoder(),
+      CommentDecoder(),
       ParagraphDecoder(),
       BlockDecodeDispatcher(
         default='quote',
@@ -23,16 +24,16 @@ class Default:
         ]),
     )
 
-  @staticmethod
-  def framingPipeline():
-    return [
-      DefaultFramer(),
-      FrameSer(),
-      OutputWriter()
-    ]
+  # @staticmethod
+  # def framingPipeline():
+  #   return [
+  #     DefaultFramer(),
+  #     FrameSer(),
+  #     OutputWriter()
+  #   ]
 
-  @staticmethod
-  def textRenderPipeline():
-    decoders = Default.decoderConfig()
-    return []
+  # @staticmethod
+  # def textRenderPipeline():
+  #   decoders = Default.decoderConfig()
+  #   return []
 

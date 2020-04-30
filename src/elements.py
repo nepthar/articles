@@ -69,6 +69,10 @@ class ImageElement(Element):
     return self.span.text
 
 
+class BreakElement(Element):
+  kind = 'bk'
+
+
 class HeadingElement(Element):
   kind = 'h'
 

@@ -2,6 +2,7 @@ from pipeline import PipelineElement
 from text import Text
 from enum import Enum
 
+# todo: Consider "control" kind
 
 # kinds of lines and frames
 class Kind(Enum):
@@ -26,13 +27,16 @@ class Line:
   def __str__(self):
     return f"{self.kind.value}: {self.line}"
 
+  def __repr__(self):
+    return f'<Line {self.kind.name}>'
+
 
 class Frame:
 
-  Kinds = set(
+  Kinds = set((
     Kind.Title, Kind.Body, Kind.Comment,
     Kind.Block, Kind.Break, Kind.Unknown
-  )
+  ))
 
   def __init__(self, kind, lines=None):
     assert(kind in self.Kinds)
@@ -41,6 +45,9 @@ class Frame:
 
   def __str__(self):
     return f'Frame({self.kind.name}, nlines={len(self.lines)})'
+
+  def __repr__(self):
+    return f'<Frame {self.kind.name} len={len(self.lines)})'
 
 
 class LineClasifier(PipelineElement):
@@ -54,7 +61,6 @@ class LineClasifier(PipelineElement):
     (Kind.Comment, Text.CmtPrefix + ' '),
     (Kind.Comment, Text.CmtPrefix),
     (Kind.Body, Text.BodyPrefix),
-    (Kind.Control, Text.ControlPrefix),
 
     # Bad prefixes. These are typos.
     (Kind.Unknown, ' '),
@@ -79,6 +85,7 @@ class LineClasifier(PipelineElement):
       for kind, prefix, lenPrefix in self.prefixList:
         if line.startswith(prefix):
           self.next.handle(Line(kind, line[lenPrefix:]))
+          break
 
       else:
         if line[0] in self.InvalidFirstChars:
@@ -114,7 +121,7 @@ class ClassificationFramer(PipelineElement):
     if lines:
       self.next.handle(Frame(self.currentKind, lines))
 
-    self.accum.clear()
+    self.accum = []
     self.currentKind = None
 
   def handle(self, classified):
@@ -143,3 +150,7 @@ class ClassificationFramer(PipelineElement):
         self.currentKind = classified.kind
 
       self.accum.append(classified.line)
+
+  def finish(self):
+    self.flush()
+    self.next.finish()

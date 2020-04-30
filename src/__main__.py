@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-
-
 import sys
 import gc
 import textwrap
@@ -16,6 +14,10 @@ from articles import *
 from serde import *
 from framing import *
 
+import config
+
+
+# Command line tool. Who cares.
 gc.disable()
 
 
@@ -51,13 +53,16 @@ class FrameSer(PipelineElement):
       print(f'{i}: {self.fs.serialize(f)}')
 
 
+#dc = Default.decoderConfig()
 
 
 elements = [
   LineClasifier(),
-#  FrameDumper(),
-  AnythingPrinter(),
+  ClassificationFramer(),
+  #FrameDumper(),
+  FrameDecoder(config.Default.decoderConfig()),
 #  FrameSer()
+  AnythingPrinter(),
 
   Tail()
 ]

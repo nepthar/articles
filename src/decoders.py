@@ -1,16 +1,17 @@
 from pipeline import PipelineElement
 from misc import *
+from framing import *
 from elements import *
 from spans import *
 from text import *
 
 
 class Decoder:
-  prefix = None
+  kind = None
   spanner = None
 
   def canDecode(self, frame):
-    return frame.prefix == self.prefix
+    return frame.kind == self.kind
 
   def decode(self, frame):
     return None
@@ -27,6 +28,7 @@ class Decoder:
 
 
 class MetadataDecoder(Decoder):
+  kind = Kind.Title
   def __init__(self):
     self.done = False
 
@@ -48,18 +50,33 @@ class MetadataDecoder(Decoder):
 
 
 class ParagraphDecoder(Decoder):
-  prefix = Text.BodyPrefix
+  kind = Kind.Body
   spanner = ProseSpanner()
 
   def decode(self, frame):
-    paragraphs = []
-    for s in self.spanner.span(frame.lines):
-      paragraphs.append(ParagraphElement([s]))
-    return paragraphs
+    return [ParagraphElement(self.spanner.span(frame.lines))]
+
+
+class CommentDecoder(Decoder):
+  kind = Kind.Comment
+  spanner = ProseSpanner()
+
+  def decode(self, frame):
+    return [CommentElement(self.spanner.span(frame.lines))]
+
+
+class BreakDecoder(Decoder):
+  kind = Kind.Break
+  spanner = None
+
+  Response = (BreakElement([]),)
+
+  def decode(self, frame):
+    return self.Response
 
 
 class TitleDecoder(Decoder):
-  prefix = Text.TitlePrefix
+  kind = Kind.Title
   spanner = ProseSpanner()
 
   def __init__(self, style=None):
@@ -76,7 +93,7 @@ class TitleDecoder(Decoder):
 
 
 class BlockDecodeDispatcher(Decoder):
-  prefix = Text.BlockPrefix
+  kind = Kind.Block
 
   def __init__(self, decoders=None, default=None):
     if decoders is None:
@@ -105,17 +122,18 @@ class BlockDecodeDispatcher(Decoder):
 
 
 class DecoderConfig:
-  def __init__(self, meta, title, paragraph, block, others=[]):
-    self.metaDec = meta
-    self.titleDec = title
-    self.paragraphDec = paragraph
-    self.blockDec = block
-    self.others = others
+  def __init__(self, *decoders):
+    self.decoders = decoders
+    # for d in decoders:
+    #   self.registerDecoder(d.kind, d)
 
-  def decoders(self):
-    decs = [self.metaDec, self.titleDec, self.paragraphDec, self.blockDec]
-    decs.extend(self.others)
-    return decs
+    # self.metaDec = meta
+    # self.titleDec = title
+    # self.paragraphDec = paragraph
+    # self.blockDec = block
+    # self.others = others
+
+
 
 
 class FrameDecoder(PipelineElement):
@@ -125,10 +143,10 @@ class FrameDecoder(PipelineElement):
 
   def useConfig(self, config):
     self._config = config
-    self.decoders = config.decoders()
+    self.decoders = config.decoders
 
-  def addBlockDecoder(self, decoder):
-    self._config.blockDec.addDecoder(decoder)
+  # def addBlockDecoder(self, decoder):
+  #   self._config.blockDec.addDecoder(decoder)
 
   def handle(self, frame):
     for decoder in self.decoders:
