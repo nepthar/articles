@@ -7,6 +7,7 @@ from text import *
 
 
 class Decoder:
+  """ Decodes a Frame to one or more elements """
   kind = None
   spanner = None
 
@@ -29,6 +30,7 @@ class Decoder:
 
 class MetadataDecoder(Decoder):
   kind = Kind.Title
+
   def __init__(self):
     self.done = False
 
@@ -68,7 +70,6 @@ class CommentDecoder(Decoder):
 class BreakDecoder(Decoder):
   kind = Kind.Break
   spanner = None
-
   Response = (BreakElement([]),)
 
   def decode(self, frame):
@@ -124,16 +125,6 @@ class BlockDecodeDispatcher(Decoder):
 class DecoderConfig:
   def __init__(self, *decoders):
     self.decoders = decoders
-    # for d in decoders:
-    #   self.registerDecoder(d.kind, d)
-
-    # self.metaDec = meta
-    # self.titleDec = title
-    # self.paragraphDec = paragraph
-    # self.blockDec = block
-    # self.others = others
-
-
 
 
 class FrameDecoder(PipelineElement):
@@ -144,9 +135,6 @@ class FrameDecoder(PipelineElement):
   def useConfig(self, config):
     self._config = config
     self.decoders = config.decoders
-
-  # def addBlockDecoder(self, decoder):
-  #   self._config.blockDec.addDecoder(decoder)
 
   def handle(self, frame):
     for decoder in self.decoders:
@@ -159,4 +147,3 @@ class FrameDecoder(PipelineElement):
     Log.warn("Unable to decode {}", frame)
     elem = UnknownElement(Spanner.Fixed.span(frame.lines),frame)
     self.next.handle(elem)
-

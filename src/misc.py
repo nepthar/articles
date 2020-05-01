@@ -32,13 +32,13 @@ class KeyValue:
     for line in lines:
       result = KeyValue.extract(line)
       if result is KeyValue.Invalid:
-        raise Exception(f'Invalid KeyValue Line: "{line}"')
+        raise ValueError(f'Invalid KeyValue Line: "{line}"')
       parsed.append(result)
 
     d = {}
     for k, v in parsed:
       if k in d:
-        raise Exception(f'Defined twice: {k}')
+        raise ValueError(f'Defined twice: {k}')
       d[k] = v
 
     return d

@@ -19,7 +19,6 @@ class Element:
 
     return Element.previewText(str(inThing))
 
-
   def __init__(self, spans, **kwargs):
     assert(isinstance(spans, list))
     self.spans = spans
