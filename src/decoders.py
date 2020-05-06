@@ -8,6 +8,12 @@ from text import *
 
 class Decoder:
   """ Decodes a Frame to one or more elements """
+  # TODO: Maybe each frame produces just one element? See how this plays out.
+  #       Hm. Not sure. I think we want to successfully decode zero elements.
+  #       For instance, when a frame is a single period, ["."], we want it
+  #       to be ignored. This adds suport for separation without issuing a
+  #       break frame. If you can keep this functionality, we could say each
+  #       frame decodes to one or zero elements. PATTERN MATCHING!
   kind = None
   spanner = None
 
@@ -52,11 +58,16 @@ class MetadataDecoder(Decoder):
 
 
 class ParagraphDecoder(Decoder):
+  noParagraphChar = '.'
   kind = Kind.Body
   spanner = ProseSpanner()
 
   def decode(self, frame):
-    return [ParagraphElement(self.spanner.span(frame.lines))]
+    lines = frame.lines
+    if len(lines) == 1 and lines[0] == self.noParagraphChar:
+      return ()
+    else:
+      return [ParagraphElement(self.spanner.span(lines))]
 
 
 class CommentDecoder(Decoder):
@@ -113,28 +124,19 @@ class BlockDecodeDispatcher(Decoder):
     self.default = self.decodeMap[default]
 
   def decode(self, frame):
-    key, value = KeyValue.extract(frame.lines[0])
+    key, argString = KeyValue.extract(frame.lines[0])
     if key and key in self.decodeMap:
-      return self.decodeMap[key].decodeBlock(frame.lines[1:], value)
+      return self.decodeMap[key].decodeBlock(frame.lines[1:], argString)
     elif self.default:
-      return self.default.decodeBlock(frame.lines, value=None)
+      return self.default.decodeBlock(frame.lines, None)
     else:
       return None
 
 
-class DecoderConfig:
-  def __init__(self, *decoders):
-    self.decoders = decoders
-
-
 class FrameDecoder(PipelineElement):
   """ Convert raw frames into document elements """
-  def __init__(self, config):
-    self.useConfig(config)
-
-  def useConfig(self, config):
-    self._config = config
-    self.decoders = config.decoders
+  def __init__(self, decoders):
+    self.decoders = decoders
 
   def handle(self, frame):
     for decoder in self.decoders:

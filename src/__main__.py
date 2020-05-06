@@ -6,15 +6,13 @@ from collections import Counter
 
 from pipeline import *
 from decoders import *
+from blocks import *
 from debug import *
-#from render import *
 from misc import *
 from articles import *
 
 from serde import *
 from framing import *
-
-import config
 
 
 # Command line tool. Who cares.
@@ -53,17 +51,34 @@ class FrameSer(PipelineElement):
       print(f'{i}: {self.fs.serialize(f)}')
 
 
-#dc = Default.decoderConfig()
+decoders = [
+  MetadataDecoder(),
+  TitleDecoder(),
+  BreakDecoder(),
+  CommentDecoder(),
+  ParagraphDecoder(),
+  BlockDecodeDispatcher(
+    decoders=[
+      FootnoteDecoder(),
+      MarginNoteDecoder(),
+      InlineNoteDecoder(),
+      FixedTextDecoder(),
+      QuoteDecoder(),
+      CodeDecoder(),
+      NoteDecoder()],
+    default='note'
+  )
+]
+
 
 
 elements = [
   LineClasifier(),
   ClassificationFramer(),
   #FrameDumper(),
-  FrameDecoder(config.Default.decoderConfig()),
+  FrameDecoder(decoders),
 #  FrameSer()
   AnythingPrinter(),
-
   Tail()
 ]
 

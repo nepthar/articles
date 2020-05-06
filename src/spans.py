@@ -7,6 +7,7 @@ class Style(NamedTuple):
   description: str
 
 
+# TODO: Consider having the spans only contain a start, end, and style
 class Span:
 
   Styles = {s.ident: s for s in [
@@ -14,7 +15,7 @@ class Span:
     Style('i', 'italic',),
     Style('ul', 'underline'),
     Style('strk', 'strikethrough'),
-    Style('c', 'arbitrary css class'),
+    Style('c', 'css class'),
     Style('sub', 'subscript'),
     Style('sup', 'superscript'),
     Style('scaps', 'small caps'),
@@ -31,7 +32,9 @@ Span.Empty = Span('')
 
 
 class Spanner:
-  pass
+  def span(self, lines):
+    raise NotImplementedError
+
 
 class ProseSpanner(Spanner):
   def span(self, lines):

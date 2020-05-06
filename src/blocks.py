@@ -1,22 +1,68 @@
-
-
-
-
+from spans import Spanner
+from elements import *
 
 class BlockDecoder:
-  """ Simple block handling """
-  def __init__(self, kind, mkElement, spanner):
-    self.kind = kind
-    self.new = mkElement
-    self.sp = spanner
+  # The block identifier prefix ("quote: ")
+  kind = None
 
-  def decodeBlock(self, blockLines, value):
-    elems = []
-    for span in self.sp.span(blockLines):
-      elem = self.new([span])
-      if value:
-        elem.meta['subtype'] = value
-      elems.append(elem)
+  def decodeBlock(self, blockLines, argString):
+    raise NotImplementedError
 
-    return elems
 
+class SimpleBlockDecoder(BlockDecoder):
+  kind = None
+  spanner = None
+  element = None
+
+  def decodeBlock(self, lines, argString):
+    e = self.element(self.spanner.span(lines))
+    e.args = argString
+    return (e,)
+
+
+class NoteDecoder(SimpleBlockDecoder):
+  kind = 'note'
+  spanner = Spanner.Prose
+  element = NoteElement
+
+
+class FootnoteDecoder(SimpleBlockDecoder):
+  kind = 'footnote'
+  spanner = Spanner.Prose
+  element = FootnoteElement
+
+
+class MarginNoteDecoder(SimpleBlockDecoder):
+  kind = 'margin'
+  spanner = Spanner.Prose
+  element = MarginNoteElement
+
+
+class InlineNoteDecoder(SimpleBlockDecoder):
+  kind = 'inline'
+  spanner = Spanner.Prose
+  element = InlineNoteElement
+
+
+class FixedTextDecoder(SimpleBlockDecoder):
+  kind = 'fixed'
+  spanner = Spanner.Fixed
+  element = FixedWidthBlockElement
+
+
+class QuoteDecoder(SimpleBlockDecoder):
+  # TODO: Have this handle quote attribution instead of just being a
+  # simple decoder.
+  kind = 'quote'
+  spanner = Spanner.Fixed
+  element = BlockQuoteElement
+
+
+class CodeDecoder(BlockDecoder):
+  kind = 'code'
+  spanner = Spanner.Fixed
+
+  def decodeBlock(self, lines, argString):
+    e = CodeBlockElement(self.spanner.span(lines))
+    e.lang = argString
+    return (e,)

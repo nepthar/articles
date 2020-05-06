@@ -84,6 +84,10 @@ class ParagraphElement(Element):
   kind = 'p'
 
 
+class NoteElement(Element):
+  kind = 'note'
+
+
 class FootnoteElement(Element):
   kind = 'fn'
 

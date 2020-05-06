@@ -26,7 +26,6 @@ class ElementDumper(PipelineElement):
     unNewlined = span.text.replace('\n', '\\n')
     return f'  | {unNewlined}'
 
-
   def handle(self, elem):
     l = [f'--[ {self.i}: {elem.__class__.__name__} :: {elem.kind} ]--']
     l.extend(self.spanString(s) for s in elem.spans)
