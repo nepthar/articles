@@ -16,6 +16,9 @@ Section 1 - Live and Let Die.
 
 Section 1.1
 
+  . Maybe I could make these comments. Interesting.
+  . Of course,
+
   // This is a line comment. Interesting
   // this should be a comment
   The way subsections are distinguished from sections is by looking at the
@@ -63,8 +66,7 @@ Section 2
       the indents.
 
     This is not a new section. It's part of the previous block
-
-
+  -
     This, however, is is a new quote block.
 
   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
@@ -86,7 +88,7 @@ Section 3 - Blockquote Tests
     This is a "block" (as opposed to a paragraph) which has a hint to
     the parser about what type it is. The parser will try to find
     something that is registered to handle "hint1" types of blocks.
-
+  .
     quote: argument, argument2
     This is a second quote which could be confusing to separate from the
     first. If you're a computer, that is. We must handle this

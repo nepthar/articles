@@ -1,7 +1,7 @@
-title: Edgecases
+title: Edgecases & Quirks
 
 
-  The article begins with a Level 1 frame. Interesting.
+  The article begins with a Level 1 (paragraph) frame. Interesting.
 
 
 Regular Section Title
@@ -54,3 +54,36 @@ No New Lines Here
 But Now Here's a Subsection
     That begins with a quote. Jeez this is dumb.
   And ends with a paragraph.
+
+
+Let's talk empty paragraphs
+  .
+
+  The above paragraph is empty. That line basically doesn't exist.
+  .
+
+  But the paragraph above will end with an extra period.
+
+  .
+  .
+  .
+  .
+
+  The above dots will be a paragraph consisiting of a bunch of periods
+
+    However, when we blockquote
+  .
+    The periods will act as quote separators, since they change the indent
+  .
+    I think this is a decent tradeoff to keep parsing simple.
+  .
+    A ParagraphFrame containing a single period should successfully
+    decode to zero elements.
+
+  However, the decoder could successfully decode a ParagraphFrame that
+  was completely empty (zero lines) into an empty ParagraphElement frame.
+  I'm not sure what would happen there. I guess we'll just see.
+
+
+There should not be a newline at the end of this file
+and that's okay.
