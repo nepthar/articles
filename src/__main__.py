@@ -4,15 +4,19 @@ import gc
 import textwrap
 from collections import Counter
 
-from pipeline import *
-from decoders import *
+
+
+from articles import *
 from blocks import *
 from debug import *
-from misc import *
-from articles import *
-
-from serde import *
+from decoders import *
+from elements import *
 from framing import *
+from misc import *
+from pipeline import *
+from serde import *
+from spans import *
+from text import *
 
 
 # Command line tool. Who cares.
@@ -22,7 +26,7 @@ gc.disable()
 class AnythingPrinter(PipelineElement):
 
   def handle(self, thing):
-    print(thing)
+    print(thing.__dict__)
 
   def finish(self):
     pass
@@ -77,7 +81,7 @@ elements = [
   ClassificationFramer(),
   #FrameDumper(),
   FrameDecoder(decoders),
-#  FrameSer()
+  ArticleBuilder(),
   AnythingPrinter(),
   Tail()
 ]

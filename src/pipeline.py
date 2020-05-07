@@ -29,7 +29,7 @@ class OutputWriter(PipelineElement):
 
 class Pipeline:
 
-  StripChars = '\r\n\t '
+  RightStripChars = '\r\n\t '
 
   def __init__(self, elements=None):
     if elements:
@@ -53,7 +53,7 @@ class Pipeline:
   def process(self, fileHandle):
     if self.head:
       for line in fileHandle:
-        self.head.handle(line.rstrip(self.StripChars))
+        self.head.handle(line.rstrip(self.RightStripChars))
 
       return self.head.finish()
     else:

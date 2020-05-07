@@ -3,6 +3,19 @@ from collections import Counter
 from elements import *
 from pipeline import PipelineElement
 
+"""
+Decision: We have to figure out how to deal with new sections. Maybe I should
+just pass them along to the renderer? Hm...
+"""
+
+class Section:
+  def __init__(self):
+    self.elements = []
+
+  def __repr__(self):
+    if self.elements:
+      return f'<Section {self.elements[0].preview()}>'
+
 
 class Article:
   def __init__(self):
@@ -21,26 +34,40 @@ class ArticleBuilder(PipelineElement):
   def __init__(self):
     self.article = Article()
     self.idCounts = Counter()
+    self.section = Section()
 
-  def addIDs(self, element):
+  def applyElementRules(self, element):
     num = self.idCounts[element.kind]
     element.pid = f'{element.kind}{num}'
     self.idCounts[element.kind] += 1
 
-    # Section - Use the text contents as an ID as well
-    if element.kind == 'section':
+    # Heading-specific stuff
+    if element.kind == 'h':
       element.ids.append(element.fullText())
 
+      if not self.section.elements:
+        element.meta['level'] = '1'
+
+  def newSection(self):
+    if self.section.elements:
+      self.article.sections.append(self.section)
+      self.section = Section()
 
   def handle(self, element):
-    self.addIDs(element)
+    self.applyElementRules(element)
 
     if isinstance(element, MetadataElement):
       self.article.meta = element.meta
+
+    elif isinstance(element, BreakElement):
+      self.newSection()
+
     else:
-      self.article.body.append(element)
+      self.section.elements.append(element)
+
 
   def finish(self):
+    self.newSection()
     self.next.handle(self.article)
     return self.next.finish()
 
