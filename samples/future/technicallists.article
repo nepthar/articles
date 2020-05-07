@@ -1,0 +1,103 @@
+title: How to Set Up Wireguard on a Raspberry Pi
+from: https://engineerworkshop.com/2020/02/20/how-to-set-up-wireguard-on-a-raspberry-pi/
+block.default: code: shell
+
+
+WireGuard is rapidly becoming the go-to VPN, with even Linus Torvalds himself praising it. In fact, Torvalds is such a fan, he has merged it directly into the Linux kernel. But why is WireGuard receiving so much praise and should you use it? Keep reading to find out.
+
+<break>
+
+
+WireGuard VPN Overview
+
+Benefits of WireGuard
+
+  - Performance and Speed: In benchmarks, WireGuard outclasses both OpenVPN and IPsec in not only throughput, but also latency.
+
+  - Ease of Deployment: Setting up a VPN can sometimes be a bit of a bear. With WireGuard, setting up the VPN server is easy and only takes a few steps. It'll take even fewer steps when the WireGuard packages find their way into Raspbian.
+
+  - Security: A VPN makes your remote laptop just another device on the network, just as if you were at home. In doing so, this allows you to access all of your network's resources locally. If you don't utilize a VPN, then you have to port forward to make your homelab's local resources available over the internet. Do this enough times and the firewall that separates your home network from the internet starts to look like swiss cheese with all of the holes you've punched through it with those port forwards. VPNs allow you to minimize your network's attack surfaces to a single (very secure) port forward for the VPN server. WireGuard uses the latest, state-of-the-art cryptography.
+
+  - Low overhead -> Better Battery Life: WireGuard, as described by its developer, isn't a chatty protocol. The client sends its request and then shuts up. It tries to avoid keep alive handshakes if they're not needed. As a result, when you're working on a laptop on wireless, your wireless card has a higher likelihood of being able to idle down which leads to better battery life. (An idle wifi card uses something like ~20 mW at idle but can easily climb to ~2W under load). Anecdotally, in my own testing, I have noticed a significant improvement in battery life when working remotely on WireGuard compared to OpenVPN.
+
+How The WireGuard VPN Tunnel Works
+
+    img:
+    https://engineerworkshop.com/content/images/2020/02/RPiWireguard--1-.jpg
+    alt: Diagram of wireguard-connected network
+    display: center, hpad 10%, vpad 10%
+    other: metadata
+
+  The above diagram depicts how setting up the WireGuard VPN tunnel works with a Raspberry Pi. With WireGuard, a tunnel is created with a virtual network interface (wg0 in this case). These interfaces are created on both the client and on the RPi VPN server, enabling them to talk to each other.
+
+  In order for the client to be able to locate the RPi VPN server across the internet, a dynamic DNS provider is required. This allows us to track our homelab's public IP address with a URL. When our WireGuard client requests the URL, an IP address is returned corresponding to our router's WAN address. In my case, I simply use this site's URL (engineerworkshop.com) since I am self hosted.
+
+  In a process known as port forwarding, when our WireGuard client sends a request to engineerworkshop.com on port 51900, the router takes that request and forwards it on to the Raspberry Pi, connected to the router on eth0 with IP address 10.0.20.149 also on port 51900. This is a form of network address translation (NAT).
+
+  < Clip >
+
+
+Install WireGuard On The Raspberry Pi
+
+1. Currently, WireGuard is not included in the Raspbian distribution, therefore we will need to add the Debian distro:
+
+    echo "deb http://deb.debian.org/debian/ unstable main" | sudo tee --append /etc/apt/sources.list
+
+2. Next, install the Debian distro keys:
+
+    sudo apt-key adv --keyserver   keyserver.ubuntu.com --recv-keys 04EE7237B7D453EC
+    sudo apt-key adv --keyserver   keyserver.ubuntu.com --recv-keys 648ACFD622F3D138
+
+3. Prevent RPi from using the Debian distro for normal Raspbian packages:
+
+    sudo sh -c 'printf "Package: *\nPin: release a=unstable\nPin-Priority: 90\n" > /etc/apt/preferences.d/limit-unstable'
+
+4. Update your package list:
+
+    sudo apt update
+
+5. Install WireGuard:
+
+    sudo apt install wireguard
+
+
+Set Up and Configure the WireGuard VPN Server
+
+Generate security keys
+
+  To ensure that not just anyone gets access to our network and ensure a secure connection, we'll first need to generate a set of public/private key pairs with the following commands (execute them one line at a time in your RPi):
+
+    sudo su
+    cd /etc/wireguard
+    umask 077
+    wg genkey | tee server_private_key | wg pubkey > server_public_key
+    wg genkey | tee client_private_key | wg pubkey > client_public_key
+
+  Retrieve the keys generated above with:
+
+    cat server_private_key
+    cat server_public_key
+    cat client_private_key
+    cat client_public_key
+
+  We'll need these for later when we create the server and client configuration files below.
+
+Generate server configuration (wg0.conf)
+
+  Copy this into your thingy:
+
+    code: text
+    [Interface]
+    Address = 10.253.3.2/32
+    PrivateKey = <insert client_private_key>
+    DNS = 1.1.1.1
+
+    [Peer]
+    PublicKey = <insert server_public_key>
+    Endpoint = <insert vpn_server_address>:51900
+    AllowedIPs = 0.0.0.0/0, ::/0
+
+
+Done! And that's how you set up a wireguard!
+
+  Wasn't that easy?

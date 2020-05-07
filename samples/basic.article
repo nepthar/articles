@@ -16,25 +16,6 @@ Section 1 - Live and Let Die.
 
 Section 1.1
 
-  . Maybe I could make these comments. Interesting.
-  . Of course,
-
-  // This is a line comment. Interesting
-  // this should be a comment
-  The way subsections are distinguished from sections is by looking at the
-  number of empty lines preceeding it. In this case, "Section 1" has two empty
-  lines at the top while "Section 1.1" only has one.
-  // This is also a comment. The two paragraphs should get split.
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-  incididunt ut labore et dolore magna aliqua. Elit pellentesque habitant morbi
-  tristique senectus et netus et. Felis bibendum ut tristique et egestas quis
-  ipsum suspendisse. Mi proin sed libero enim sed faucibus turpis in. Commodo
-  nulla facilisi nullam vehicula ipsum a arcu cursus vitae. Facilisi etiam
-  dignissim diam quis enim. Venenatis tellus in metus vulputate eu scelerisque
-  felis imperdiet.
-
-Section 1.2
-
   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
   incididunt ut labore et dolore magna aliqua. Elit pellentesque habitant morbi
   tristique senectus et netus et. Felis bibendum ut tristique et egestas quis
@@ -48,7 +29,7 @@ Section 1.2
     the start of Section 2.
 
 
-Section 2
+Section 2 - Live and Let Diet
 
   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
   incididunt ut labore et dolore magna aliqua. Elit pellentesque habitant morbi
@@ -66,8 +47,9 @@ Section 2
       the indents.
 
     This is not a new section. It's part of the previous block
-  -
-    This, however, is is a new quote block.
+  .
+    This, however, is is a new quote block. It's separated from the previous
+    blockquote by that little period up there to the left.
 
   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
   incididunt ut labore et dolore magna aliqua. Elit pellentesque habitant morbi
@@ -99,16 +81,17 @@ Section 3 - Blockquote Tests
 
     hint3: arg3
     This
-    is
-    a
-    weird
-    block.
+      is
+        a
+      weird
+    block
+    .
 
 
 
 
-
-
+    This block quote is now part of its own major section. So section 4
+    below is actually section 5? Jeez, how stupid
 
 
 

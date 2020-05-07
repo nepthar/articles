@@ -1,0 +1,33 @@
+title: Potential Table Stuff
+
+
+Section 4.01 - TABLES
+
+  I'm not planning on supporting tables just yet, but here's how they
+  could look.
+
+    script: pytable
+    import csv
+    data = csv.load()
+    make_table(headers=data[0], data=data[1:])
+
+  Did I just introduce scripting on the sly? Yep. Here's another way to
+  maybe do tables:
+
+    table:
+    title: Crops harvested per year
+    ---
+    Year, Carrots, Peas, "Sauce, Apple", Tomatoes
+    2012, 3, 4, 5, 6
+    2011, 4, 5, 7, 7
+
+  Another:
+
+    table: Prisoner's Dilemma
+    ---
+    Them/You,           You Stay Silent,      You Betray
+    They Stay Silent,   Draw,                 Win!
+    They Betray,        Lose!,                Both Lose
+
+  Or maybe just don't use tables? Honestly, markup stuff and tables just
+  always felt like a hack to me anyway. It'll be a while beofre I get to this.

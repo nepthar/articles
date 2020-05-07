@@ -46,3 +46,51 @@ Ordered: Unspaced
 
   There's no support for this yet
 
+
+More List Shit
+
+  This section contains a list of ingredients:
+
+  - flour
+  - oil
+  - water
+
+  Now here's some step-by-step instructions:
+
+  // This is a comment that won't render.. I'm not sure these
+  // instructions are accurate. TODO: Verify them.
+  1. Prehead the oven to 156,000K
+  2. Mix the ingredients together
+  3. Put yourself in the oven
+
+  The way subsections are distinguished from sections is by looking at the
+  number of empty lines preceeding it. In this case, "Section 1" has two empty
+  lines at the top while "Section 1.1" only has one.
+  // This is also a comment. The two paragraphs should get split.
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+  incididunt ut labore et dolore magna aliqua. Elit pellentesque habitant morbi
+  tristique senectus et netus et. Felis bibendum ut tristique et egestas quis
+  ipsum suspendisse. Mi proin sed libero enim sed faucibus turpis in. Commodo
+  nulla facilisi nullam vehicula ipsum a arcu cursus vitae. Facilisi etiam
+  dignissim diam quis enim. Venenatis tellus in metus vulputate eu scelerisque
+  felis imperdiet.
+
+Section 1.2
+
+  We're going to try our hand at another feature - a dictionary. A dictionary is
+  an unordered list where the first part is hilighted. Here's one now.
+
+  - Ease of Use:
+  It's gotta be easy to make one of thise things or else nobody
+  is going to do it. Unfortunately, I can't make it beautifully aligned unless
+  I move to some kidn of stack-based parsing system. Oh well.
+
+  - Beautiful:
+  The text should absolutely look beautiful. I think it would be more beauitful
+  if the first line of the "definition" could be indented, but that's life.
+
+  - Short:
+  And to the point.
+
+  - Visual separation:
+  The most important parser is your eyes.
