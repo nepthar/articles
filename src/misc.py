@@ -3,6 +3,17 @@ import re
 import sys
 
 
+def addIf(key, a, b):
+  """ Add a[key] to b if a[key] exists """
+  if key in a:
+    b[key] = a[key]
+
+
+def flatten(iterable):
+  for i in iterable:
+    yield from i
+
+
 class KeyValue:
   """
   Key<>Value pairs with strict rules for simplicitiy.

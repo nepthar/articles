@@ -3,53 +3,108 @@ layout: article
 status: test
 
 
-Simple Links
+Spans of Text
 
-  Links are created by the right brace ({), then the contents of the link.
+  Text is internally broken down into `spans`. A span is a bit of text that shares the same styling and may link to something. The simplest way to make a span is to just type normal text. No modification to the style is made and it doesn't link to anything.
 
-  This is an {absolute link|www.something.com} inline. Here's a {relative|img/bird.jpg}.
+  If we want to modify the way a bit of text looks, we have to instruct Articles to create a separate span for it. That is done with the carrots: <>.
+    As an example: <this text is all one span>.
 
-  This is a link {thingy|l1} described in the link table below.
+  The previous sentence, read by Articles, would produce the following spans: ["As an example: ", "this text is all one span", "."].
+
+Styling Spans
+
+  In the example above, no special styling occurs. In order to style spans, we use styling hints after the span in braces: {}. To underline & bold the example span above:
+    As an example: <this text is all one span>{b,ul}.
+  This would create the following spans: ["As an example: ", Span("this text is all one span", style=['b', 'ul']), "."]
+
+Linking Spans to Destinations
+
+  Links are created by spans followed by parens: (). The anatomy is <link text>(link destination). A link destination can be one of several things:
+    1. A text slug which is defined in a "links" table below
+    2. The title of a section
+    3. URL Relative to this domain
+    4. Absolute URL anywhere else, any protocol
+
+  The spanner will attempt to resolve links in that order.
+
+  This is an <inline absolute link>(www.somewebsite.com).
+  This is a <inline relative link>(/data/census.csv).
+  This is an <out of line link>(1) which is read from the links table below.
+  This is another <out of line slug>(slugs) link. A slug can also just be... as slug! Here's a link to the <parts> below.
 
     links:
-    1: www.thingy.com
-    2: http://reddit.com
+    pats: www.parts.com/catalog/126
+    slugs: http://www.slughouse.com
+    1: reddit.com/r/spacedicks
+
+Markdown-Style Stuff
+
+  One of the cool things about markdown is the implicit styling. This happens as a translation step and text is basically just replaced with what you see below.
+
+  V0 support
+    *tacos*   -> <tacos>{b}     Bold
+    /tacos/   -> <tacos>{i}     Italic
+    `tacos`   -> <tacos>{var}   Variable/Keyword
+
+  Brainstorming:
+    -tacos-   -> <tacos>{stk}   strike
+    _tacos_   -> <tacos>{ul}    underline
+    \tacos\   -> <tacos>{ri}    reverse italic
+    |Tacos|   -> <tacos>{scp}   Small Caps Title
+    tacos^2   -> tacos<2>{sup}  Superscript
+    tacos~2   -> tacos<2>{sub}  Subscript
+
+    ${tacos}  -> <>${tacos}     Variable expansion????
 
 
-Links to Sections
+Alternatives Considered
 
-  Sections are also linkable. Here's a {link|Simple Links} to the "Simple Links" seciton above.
+  Pipe separated {link text|b,ul|www.google.com} with styling inline. Examples
+    Here is two to the third power: 2{3|sup}. And something I {really|ul} mean. But how about a {link|google.com} to a search engine? Then a slug link would looke {like this|slug} while a title link is just {The Section Title}.
 
-  Here's a link with no explicit text provided, just the note that it's linking to the <Links to Sections|st:em> section above.
+  Links in carrots with pipes <like this|www.google.com> How would I do styling if I did it this way? I was thinking split the thing on pipes. So if you wanted a style with no link, it would be <kinda funy||scaps,b,c:customClass>
 
+  What about something lelse like <double carrot<www.google.com>? Visually unbalanced. OR <double slash//www.google.com>
 
-Links to Notes
+  <carrots and parens(www.google.com)> Maybe that. <styled linke(www.google.com){b,ul}>
 
-  There's three types of notes at the moment: inline, margine, and foot.
+  Then styled is just
 
-  You can link like this:
-
-
-Resolving Links
-
-  Links are resolved in the following order:
-
-  1. Section title
-  2. Absolute URL (Just sees if it can open links)
-  3. Relative URL
-
-
-Span Samples
-
-  {text blah` blah blah|<span info>}
-
-  Examples:
-
-  {text blah blah blah|st:smallcaps,em,ul|link:http://www.absolutelink.com}
-
-  There's a section called {Cat Food} above, which is now linked to.
-
-  Here's a {link|Cat Food} to the section called "Cat Food".
+    <tacos(www.google.com)>
+    <tacos>(www.google.com)
+    <
 
 
 
+Okay, yeah, now I'm thinking I'll have it all in one.
+  <link text(url){style}> OR
+  <link text{style}>      OR
+  <link text(url)>        OR
+  <link text>
+
+
+vs
+
+  <link text>(url){style}
+  <link text>{style}
+  <link text>
+
+Future.
+
+  {ccss:styled-paragraph,ul}
+  This is a paragraph of text. As you can see, the entire thing is supposed to be rendered with class="styled-pargraph" in it.
+
+    table: 3x3, spaced, header
+
+
+ This is a <link(google.com)>
+
+
+ Tlksjdflksjdf l;skdfjl;ksdjf l;ksdjf
+ lkjsal';akfjsldkfjasdfk here's a <link>(1)
+
+  links:
+  1: somewhere.
+
+ this is a <link>(google.com)

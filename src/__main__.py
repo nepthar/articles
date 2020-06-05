@@ -18,6 +18,8 @@ from serde import *
 from spans import *
 from text import *
 
+from render.simplehtml import *
+
 
 # Command line tool. Who cares.
 gc.disable()
@@ -26,7 +28,7 @@ gc.disable()
 class AnythingPrinter(PipelineElement):
 
   def handle(self, thing):
-    print(thing.__dict__)
+    print(thing)
 
   def finish(self):
     pass
@@ -82,6 +84,7 @@ elements = [
   #FrameDumper(),
   FrameDecoder(decoders),
   ArticleBuilder(),
+  SimpleHTMLRenderer(),
   AnythingPrinter(),
   Tail()
 ]

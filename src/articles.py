@@ -46,7 +46,7 @@ class ArticleBuilder(PipelineElement):
       element.ids.append(element.fullText())
 
       if not self.section.elements:
-        element.meta['level'] = '1'
+        element.meta['level'] = '2'
 
   def newSection(self):
     if self.section.elements:

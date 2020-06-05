@@ -3,7 +3,11 @@ from spans import *
 # todo: Work on the preview code. Ugh.
 
 class Element:
-  kind = None
+  """ An Element is the Articles representation of bits of a document.
+      It typically mirrors HTML/CSS concepts - tags, for instance
+  """
+  tag = None
+  attrs = None
   PreviewLength = 8
 
   @staticmethod
@@ -39,19 +43,20 @@ class Element:
   def __repr__(self):
     return f'<{self.__class__.__name__} {self.pid}>'
 
+
   def fullText(self):
     return ''.join(s.text for s in self.spans)
 
 
 class MetadataElement(Element):
-  kind = 'md'
+  tag = 'metadata'
 
   def __init__(self, md):
     super().__init__([], **md)
 
 
 class UnknownElement(Element):
-  kind = 'unk'
+  tag = 'unknown'
 
   def __init__(self, spans, frame):
     super().__init__(spans)
@@ -59,58 +64,71 @@ class UnknownElement(Element):
 
 
 class ImageElement(Element):
-  kind = 'img'
+  tag = 'img'
 
-  def src(self):
-    return self.meta['src']
-
-  def alt(self):
-    return self.span.text
+  @property
+  def props(self):
+    p = { 'src': self.meta['src'] }
+    if 'alt' in self.meta:
+      p['alt'] = self.meta['alt']
+    return p
 
 
 class BreakElement(Element):
-  kind = 'bk'
+  tag = 'bk'
 
 
 class HeadingElement(Element):
-  kind = 'h'
-
   @property
-  def level(self):
-    return self.meta.get('level', '2')
+  def tag(self):
+    return 'h' + self.meta.get('level', '3')
 
 
 class ParagraphElement(Element):
-  kind = 'p'
+  tag = 'p'
 
 
 class NoteElement(Element):
-  kind = 'note'
+  tag = 'note'
+
+  @property
+  def props(self):
+    return {
+      'class': 'attn',
+      'level': self.props.get('level', 'info')
+    }
 
 
 class FootnoteElement(Element):
-  kind = 'fn'
-
-
-class InlineNoteElement(Element):
-  kind = 'in'
+  tag = 'note'
+  props = { 'class': 'footer' }
 
 
 class MarginNoteElement(Element):
-  kind = 'mn'
+  tag = 'note'
+  props = { 'class': 'margin' }
 
 
 class BlockQuoteElement(Element):
-  kind = 'q'
+  tag = 'blockquote'
 
 
 class FixedWidthBlockElement(Element):
-  kind = 'pre'
+  tag = 'pre'
 
 
 class CodeBlockElement(Element):
-  kind = 'code'
+  tag = 'pre'
+
+  @property
+  def props(self):
+    p = { 'class': 'code' }
+    if 'lang' in self.meta:
+      p['lang'] = self.meta['lang']
+    return p
+
+
 
 
 class CommentElement(Element):
-  kind = 'comment'
+  tag = 'hidden'
