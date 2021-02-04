@@ -33,7 +33,7 @@ contexts:
     - meta_scope: 'text.article.body'
     # Comments begin with a '//' and finish at the end of the line
 
-    - match: '^    (quote|foot|inline|margin|fixed|code|img|data|raw): ?(.*)$'
+    - match: '^    (quote|foot|inline|margin|fixed|code|img|data|raw|table): ?(.*)$'
       scope: text.body.block
       captures:
         1: support.type

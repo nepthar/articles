@@ -1,60 +1,113 @@
 import sys
 
+# Notes:
+# To keep handlers simple, we enforce that they return arrays (or iterables)
+# I alternatively considered having each handler have a "next" handler, and
+# instead of returning results, it would call "next" for each result it created.
+# I decied against this ultimately because I think it results in the absolute
+# simplest handler/pipelines.
 
-class PipelineElement:
-  next = None
+class Handler:
+  """ An abstraction for dealing with data in chunks. A handler is the class
+      that goes into a Pipeline. Each handler operates on the data and optionally
+      pushes additional data down the pipeline.
 
-  def name(self):
+      The two man functions, handle and finish, must both return lists.
+  """
+
+  def handle(self, i) -> list:
+    """ Handle a bit of incoming data.
+        Return a list of resuts, which may be empty
+    """
+    raise NotImplementedError
+
+  def finish(self) -> list:
+    """ Any cleanup/finlization work that should happen when the stream is over
+        Return a list of results, which may be empty
+    """
+    return []
+
+  def spy(self, file=sys.stderr):
+    """ Return a handler that behaves like this one, except it prints out the
+        input and results to STDERR or the specified file
+    """
+    return SpyHandler(self, file)
+
+  def __str__(self):
     return self.__class__.__name__
 
-  def __repr__(self):
-    return f'<{self.name()}>'
 
-  def finish(self):
-    return self.next.finish()
-
-
-class OutputWriter(PipelineElement):
-  next = None
-
-  def __init__(self, file=sys.stdout):
+class SpyHandler(Handler):
+  """ Spies on the underlying handler by writing the inputs/ouputs to the given
+      file descriptor. Does not change behavior.
+  """
+  def __init__(self, underlying, file):
+    self.prefix = str(underlying)
+    self.underlying = underlying
     self.file = file
 
-  def handle(self, item):
-    print(item, file=self.file)
+  def handle(self, i):
+    ret = self.underlying.handle(i)
+    print(f"{self.prefix}({i}) -> {ret}", file=self.file)
+    return ret
 
   def finish(self):
-    return None
+    ret = self.underlying.finish()
+    print(f"{self.prefix}(finish) -> {ret}", file=self.file)
+    return ret
+
+  def __str__(self):
+    return f"Spy({self.underlying})"
 
 
-class Pipeline:
+class SimpleHandler(Handler):
+  """ Makes a handler out of a simple function. If the function returns None,
+      SimpleHandler returns an empty tuple. The function is defined as a class
+      property or static method called `function`
+  """
+  def handle(self, i):
+    ret = self.__class__.function(i)
+    return () if ret is None else [ret]
 
-  RightStripChars = '\r\n\t '
 
-  def __init__(self, elements=None):
-    if elements:
-      self.head = elements[0]
-      self.tail = elements[0]
-      for e in elements[1:]:
-        self.append(e)
-    else:
-      self.head = None
-      self.tail = None
+class Pipeline(Handler):
+  """ A pipeline is an ordered sequence of handlers. The pipeline accumulates
+      results as it goes and makes them available via the results method.
+  """
 
-  def append(self, nextElement):
-    assert(isinstance(nextElement, PipelineElement))
-    if self.head and self.tail:
-      self.tail.next = nextElement
-      self.tail = nextElement
-    else:
-      self.head = nextElement
-      self.tail = nextElement
+  def __init__(self, handlers=None):
+    self.results = []
+    self.handlers = handlers if handlers else list()
 
-  def process(self, fileHandle):
-    if self.head:
-      for line in fileHandle:
-        self.head.handle(line.rstrip(self.RightStripChars))
+  def _on_data(self, data):
+    """ Run the actual pipeline, optionally calling finish on handlers """
+    finish = len(data) == 0
 
-      return self.head.finish()
-    else:
-      raise Exception("Empty Pipeline")
+    for h in self.handlers:
+      data = [o for i in data for o in h.handle(i)]
+      if finish:
+        data.extend(h.finish())
+
+    return data
+
+  def append(self, next_handler):
+    self.handlers.append(next_handler)
+
+  def handle(self, i):
+    ret = self._on_data([i])
+    self.results.extend(ret)
+    return ret
+
+  def finish(self):
+    ret = self._on_data([])
+    self.results.extend(ret)
+    return ret
+
+  def results(self):
+    return self.accum
+
+  def process(self, iterable):
+    for item in iterable:
+      self.handle(item)
+    self.finish()
+    return self.results

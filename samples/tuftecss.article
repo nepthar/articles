@@ -28,6 +28,7 @@ Setions and Headings
 
   Organize your document with an article element inside your body tag. Inside that, use section tags around each logical grouping of text and headings.
 
+  // Like this.3
   Tufte CSS uses h1 for the document title, p with class subtitle for the document subtitle, h2 for section headings, and h3 for low-level headings. More specific headings are not supported. If you feel the urge to reach for a heading of level 4 or greater, consider redesigning your document:
 
     quote:
@@ -44,6 +45,8 @@ Text
     See Tufte’s comment in the Tufte book fonts thread.
 
   As always, these design choices are merely one approach that Tufte CSS provides by default. Other approaches, such as changing color on click or mouseover, or using highlighting or color instead of underlining to denote links, could also be made to work. The goal is to make sentences readable without interference from links, as well as to make links immediately identifiable even by casual web users.
+
+  Absolutely no distractions. I was just typing. mistakes were made. anyway, ho
 
 
 Epigraphs
@@ -93,11 +96,11 @@ Figures
 
   Tufte emphasizes tight integration of graphics with text. Data, graphs, and figures are kept with the text that discusses them. In print, this means they are not relegated to a separate page. On the web, that means readability of graphics and their accompanying text without extra clicks, tab-switching, or scrolling.
 
-  Additional information {can be found here|http://reddit.com}.
+  Additional information ''can be found here''<http://reddit.com>
 
   Addinl info can be found at http://reddit.com.
 
-  Here's a link to the {figures|Figures} section.
+  Here's a link to the <Figures> section.
 
   Figures should try to use the figure element, which by default are constrained to the main column. Don’t wrap figures in a paragraph tag. Any label or margin note goes in a regular margin note inside the figure. For example, most of the time one should introduce a figure directly into the main flow of discussion, like so:
 

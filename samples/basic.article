@@ -1,107 +1,125 @@
-first: WHY IS THIS NOT A THING????
-title: This is a simple test article
-author: Jordan Parker <nepthar@gmail.com>
-extra.meta: data
+A basic sample article
+J. Parker, {{today}}
+
+  Hi there. This is text formatting strategy that I'm working on called
+  Articles. I want to be able to write in plain text and then publish it to a
+  blog or something. I'd like your feedback on the structure and visual
+  clarity of the spec. By the way, this part of the document is called the
+  "preamble". Cool.
 
 
-Section 1 - Live and Let Die.
+Abstract
 
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-  incididunt ut labore et dolore magna aliqua. Elit pellentesque habitant morbis
-  tristique senectus et netus et. Felis bibendum ut tristique et egestas quis
-  ipsum suspendisse. Mi proin sed libero enim sed faucibus turpis in. Commodo
-  nulla facilisi nullam vehicula ipsum a arcu cursus vitae. Facilisi etiam
-  dignissim diam quis enim. Venenatis tellus in metus vulputate eu scelerisque
-  felis imperdiet.
+  I keep notes in text, and I want something that I can publish. I like some,
+  but not all parts of markdown. The goal of Articles (working title) is to
+  take all of the good parts of markdown without the visually awful title
+  stuff and make a "plain text first" opinionated, easily parseable format
+  for long form writing, documentation, etc.
 
-Section 1.1
-
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-  incididunt ut labore et dolore magna aliqua. Elit pellentesque habitant morbi
-  tristique senectus et netus et. Felis bibendum ut tristique et egestas quis
-  ipsum suspendisse. Mi proin sed libero enim sed faucibus turpis in. Commodo
-  nulla facilisi nullam vehicula ipsum a arcu cursus vitae. Facilisi etiam
-  dignissim diam quis enim. Venenatis tellus in metus vulputate eu scelerisque
-  felis imperdiet.
-
-    This is a second ending quote. We must make sure it does not
-    gobble up the two lines separating this from
-    the start of Section 2.
+  Articles takes a lot of inspiration from RFCs, which I think are a good
+  example of succinct, visually clear writing. In fact, I plan to write an
+  RFC formatter.
 
 
-Section 2 - Live and Let Diet
+The second Major Section
 
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-  incididunt ut labore et dolore magna aliqua. Elit pellentesque habitant morbi
-  tristique senectus et netus et. Felis bibendum ut tristique et egestas quis
-  ipsum suspendisse. Mi proin sed libero enim sed faucibus turpis in. Commodo
-  nulla facilisi nullam vehicula ipsum a arcu cursus vitae. Facilisi etiam
-  dignissim diam quis enim. Venenatis tellus in metus vulputate eu scelerisque
-  felis imperdiet.
+  This is the second major section. It's going to talk about paragraphs,
+  titles, and sections. The most basic of Article's features.
 
-    The default blockquote. Just indented, no hints as to what it is.
-    A poem
-      A song
-        The default.
-    These linebreaks should be preserved along with
-      the indents.
+Major Section 2, Minor Section 1: Titles
 
-    This is not a new section. It's part of the previous block
-  .
-    This, however, is is a new quote block. It's separated from the previous
-    blockquote by that little period up there to the left.
+  There are two types of section headings, major and minor. At the top of
+  this document, "Abstract" is a major heading while the title of this
+  current section, "Major Section 2, Minor Section 1: Titles", is a minor
+  heading. The difference is in how much visual space comes before the heading.
 
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-  incididunt ut labore et dolore magna aliqua. Elit pellentesque habitant morbi
-  tristique senectus et netus et. Felis bibendum ut tristique et egestas quis
-  ipsum suspendisse. Mi proin sed libero enim sed faucibus turpis in. Commodo
-  nulla facilisi nullam vehicula ipsum a arcu cursus vitae. Facilisi etiam
-  dignissim diam quis enim. Venenatis tellus in metus vulputate eu scelerisque
-  felis imperdiet.
+  Titles are easily distinguished from the rest of the text because they are
+  not indented at all. Two consecutive empty lines (or three consecutive
+  newline characters) form a "major section break". Any title that comes
+  right after a "major section break" is considered a Major Title, while
+  other titles are minor titles.
 
-  Great, we've introduced another line thing?
+  If you were writing something extremely lengthy, like a book, you would do
+  something like have each chapter as its own article file, thus giving you
+  three logical levels of sections. Beyond that, the base Article system
+  won't support anything more deeply nested.
 
+Paragraphs
 
-Section 3 - Blockquote Tests
+  Paragraphs are very simple and (I think?) quite similar to markdown.
+  Standard "plain" paragraph text is distinguished by the fact that it is
+  indented by two spaces, giving it some nice visual separation from titles.
 
-  Introduction to this blockquote tests.
+  Although in this article, I use an empty line (minor section break) between
+  titles and paragraphs, it is not necessary.
 
-    quote: argument
-    This is a "block" (as opposed to a paragraph) which has a hint to
-    the parser about what type it is. The parser will try to find
-    something that is registered to handle "hint1" types of blocks.
-  .
-    quote: argument, argument2
-    This is a second quote which could be confusing to separate from the
-    first. If you're a computer, that is. We must handle this
-    gracefully.
+  Note that if you write two paragraphs without an empty line separating
+  them, Articles will consider them to be the same paragraph. This allows
+  you to either word-wrap using your text editor or manually, whichever you
+  like.
 
-  Another paragraph now continues. But finally, here's a block to end
-  this section
-
-    hint3: arg3
-    This
-      is
-        a
-      weird
-    block
-    .
+  As an example, this sentence and the one below it are a paragraph. I like
+  turtles.
 
 
+Blocks
+
+  The third major, and arguably the most interesting component of Articles is
+  block text. "Block Text" behaves very differently from regular text. It's
+  the mechanism by which one can things like quotes, poetry, lyrics, images,
+  tables, code blocks, etc.
+
+  Blocks are indented by 4 spaces. Here's an example:
+
+    This is a block quote
+    isn't it nice
+    it keeps all these linebreaks
+    so just indent twice :)
+
+  This is a very simple block quote which will be handled by Article's
+  "default block decoder" which will be sure to preserve line breaks in the
+  text.
+
+  But that's just the beginning. Whenever a block is encountered, the first
+  line is examined to see if there is a block directive. In the following
+  example, there is a 'code' block directive given.
+
+    code: python, 3.8
+    def select_decoder(name, *args)
+      # Fetch the right decoder for the given name and args.
+      # In the case of this particular block, this function would be called
+      # with:
+      # name = 'code'
+      # args = ['python', '3.8']
 
 
-    This block quote is now part of its own major section. So section 4
-    below is actually section 5? Jeez, how stupid
+      # Uh oh, there's two empty newlines there. # But that's okay, blocks
+      # are immune to section breaks!
+    return CodeDecoder(args[0])
+
+  How do we know the code block ended? A code block ends either when the
+  document itself ends, or we return to a lower level of indentation.
 
 
+Lists
 
-Section 4 - Starting a section with a block
+  Lists are created by indenting one more space than a paragraph. Following along, a Title has an indent of 0, a paragraph has an indent of 2, a list has an indent of 3, and a block has an indent of 4+. Is this confusing? Maybe. But we're going to go with it for now.
 
-    foot:
-    This section starts with a block. Maybe it's a quote. Let's call
-    it that.
+  There are two types of lists in text form and they're purely cosmetic: compact and sparse. A compact list is like as shopping list where the items are very brief:
 
-  And that's how the section begins.
+   - eggs
+   - milk
+   - goats
 
+  A sparse list is what you'd use to contain more data. The only difference is that there are spaces between the list items.
 
-A Major Section Title is a Strange Thing to End and Article With
+   1. Eggs, the kind that you had back in those days when you were on the
+      farm and everything was perfect and great.
+
+   2. Milk, ideally form some kind of weird bird. I guess. Notice how these
+      items can wrap to align the start of the text? That's just done so it
+      looks neat and tidy.
+
+   3. You could also use dashes, or whatever you like.
+
+  This isn't necessary. The spaces between lines may be omitted - the list parser will understand.

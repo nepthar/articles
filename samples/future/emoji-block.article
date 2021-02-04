@@ -1,0 +1,30 @@
+title: Notice Block
+layout: article
+status: draft
+format: html
+author.name: Jordan Parker
+author.email: Jordan@nep.re
+
+
+  Sometimes, you have a little introduction paragraph, but then you want to call visual attention to something. The way to do this in an article is by a notice block. Here's a few examples below.
+
+    attn:
+    This is just a default attention. It renders in some kind of stand out way.
+
+    attn: warning
+    A bit more visually standoutish, perhaps in some bright color.
+
+    attn: :shrug:
+    This will render a notice with the "shrug" emoji.
+
+    attn: 💣
+    This is a regular notice that will render an icon of a bomb.
+
+    attn: danger ⚠️
+    An attention block rendered in the "danger" theme/color with that emoji as
+    the symbol
+
+    attn: danger :warning:
+    An attention block rendered in "danger" theme with the same emoji as above, except it's using the emoji substitution thingy.
+
+  There ya go.

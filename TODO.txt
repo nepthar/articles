@@ -1,0 +1,7 @@
+todo:
+
+- Finalize lists (block vs paragraph)
+- Finalize links/spans. I think you can just ask people at this point
+- Code it up, you idiot.
+
+(This should be a simple list)p

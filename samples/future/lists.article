@@ -19,6 +19,10 @@ Unordered: Spaced
 
   - How nice.
 
+  - It's also okay to make a really long line that just wraps manually but
+  starts right under the dash. The Paragraph spanner should just handle that
+  without issue.
+
 
 Unordered: Unspaced
 

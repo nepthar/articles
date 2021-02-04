@@ -5,12 +5,21 @@ status: test
 
 Spans of Text
 
-  Text is internally broken down into `spans`. A span is a bit of text that shares the same styling and may link to something. The simplest way to make a span is to just type normal text. No modification to the style is made and it doesn't link to anything.
+  Text is internally broken down into `spans`. A span is a bit of text that shares the same styling and may link to something. The simplest way to make a span is to just type normal text. No modification to the style is made and it doesn't link to anything. Maybe I could make 'single quoted spans'{b,ul}.
 
   If we want to modify the way a bit of text looks, we have to instruct Articles to create a separate span for it. That is done with the carrots: <>.
     As an example: <this text is all one span>.
 
   The previous sentence, read by Articles, would produce the following spans: ["As an example: ", "this text is all one span", "."].
+
+
+  Maybe I could make 'this text is all one span'. We need a glyph that is commonly found on keyboards but isn't generally used in regular text.
+
+  link 'check this out'<1>
+
+  You could follow Set{1,2,3} link {Check out this}(reddit.com) link
+
+  What if you want to really\b,ul\ make your point? 2'3'\sup
 
 Styling Spans
 
@@ -30,8 +39,10 @@ Linking Spans to Destinations
 
   This is an <inline absolute link>(www.somewebsite.com).
   This is a <inline relative link>(/data/census.csv).
-  This is an <out of line link>(1) which is read from the links table below.
+  This is an ''out of line link''<1> which is read from the links table below.
   This is another <out of line slug>(slugs) link. A slug can also just be... as slug! Here's a link to the <parts> below.
+
+  But also we <make links like this>
 
     links:
     pats: www.parts.com/catalog/126
@@ -83,6 +94,20 @@ Okay, yeah, now I'm thinking I'll have it all in one.
   <link text(url)>        OR
   <link text>
 
+  <link text|slug{style}>
+
+  <some altered text|{b,ul}>
+
+  |When we start a paragraph| it looks like this.
+
+  <When we start a paragraph|{smcaps}> it looks like this
+
+  I've got a <note|1> here
+
+  But maybe it would be better with a <note>(1)
+
+  Then a <note>{style}
+
 
 vs
 
@@ -97,8 +122,10 @@ Future.
 
     table: 3x3, spaced, header
 
+  I Just don't understand how I really want to ot his. I want to make a <simple> link. I want to <make a complicated link>(www.google.com).  How about a <slug link>(slugs). How does a <slug link>(1) look with a number? What about an inline note<i3>?
 
- This is a <link(google.com)>
+
+  This is a <link(google.com)>
 
 
  Tlksjdflksjdf l;skdfjl;ksdjf l;ksdjf

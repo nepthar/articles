@@ -38,7 +38,7 @@ Separators
 
   These things should be
 
-  ---
+  ...
 
   Separate sections. That period there is the section separator.
 
@@ -53,7 +53,7 @@ BK Separators
     .. or if It's supposed to be two quotes?
     Sometimes it's hard to know
 
-    ---
+    ...
 
     But that period separates the blockquotes pretty well
 

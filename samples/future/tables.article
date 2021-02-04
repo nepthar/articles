@@ -14,8 +14,7 @@ Section 4.01 - TABLES
   Did I just introduce scripting on the sly? Yep. Here's another way to
   maybe do tables:
 
-    table:
-    title: Crops harvested per year
+    table: Crops harvested per year
     ---
     Year, Carrots, Peas, "Sauce, Apple", Tomatoes
     2012, 3, 4, 5, 6

@@ -97,3 +97,6 @@ class TextConfig:
 
 
 Text = TextConfig()
+
+
+def collect_prose()

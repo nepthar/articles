@@ -4,7 +4,7 @@ workspace="articles"
 
 # This file is designed to work with shell tools, but it can be used
 # without them by sourcing this directly. If used with shell tools, the
-# commands prefixed with '{{name}}.' will be run from the same dir as
+# commands prefixed with 'articles' will be run from the same dir as
 # this file in a subshell.
 
 articles.todo() {
@@ -24,15 +24,18 @@ cat << TODO
 
   - Finish Serde package so you can have language interp
 
-  - Links & Spans: {defines a span|sup,c:custCSS1,c:custCSS2}, adds a link^, {multi word link}^
+  - Links & Spans: Finish defining:
+    - ''Multi word link''<1>
+    - Single word <slug> link
+    - Multi ''word slug link''<multi>
+    - Link to a footnote<f1>.
+    - Bleh
 
-  - Lists, ordered lists
+  - Lists, ordered lists (v1)
 
   - Section auto-numbering, TOC generation
 
-  - Images
-
-  -
+  - What else?
 
 TODO
 }
@@ -40,13 +43,6 @@ TODO
 articles.test-basic() {
   python3 ./src < ./samples/basic.article
 }
-
-articles.pwd() {
-  echo $PWD
-  echo $SHLVL
-  ws.info
-}
-
 
 articles.unused-code()
 {
