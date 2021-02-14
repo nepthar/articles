@@ -9,10 +9,10 @@ def spy(member_func, member=False):
   log = logging.getLogger()
   def wrapped(*args, **kwargs):
     result = member_func(*args, **kwargs)
-    if log.isEnabledFor(logging.DEBUG):
+    if True: #log.isEnabledFor(logging.DEBUG):
       argstr = f"{args[1:]}" if member else f"{args}"
       kwargstr = f", {kwargs}" if kwargs else ''
-      log.debug(f"{prefix}({argstr}{kwargstr}) -> {result}")
+      print(f"{prefix}({argstr}{kwargstr}) -> {result}")
     return result
   return wrapped
 

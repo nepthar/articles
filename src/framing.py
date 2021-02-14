@@ -1,5 +1,5 @@
 from .pipeline import Handler
-
+from .misc import spy
 
 class Frame:
   # The prefixes, if any, that this frame may begin with
@@ -16,7 +16,7 @@ class Frame:
     self.empty_count = 0
 
   def add(self, line):
-    self.empty_count = self.empty_count + 1 if len(line) == 0 else 0
+    self.empty_count = 0 if line else self.empty_count + 1
     if self.prefix:
       line = line.removeprefix(self.prefix)
     self.lines.append(line)
@@ -26,12 +26,14 @@ class Frame:
     if self.finished:
       return False
 
-    if len(line) == 0:
+    if line:
+      # nonempty line, prefix must match if it exists
+      if self.prefix and not line.startswith(self.prefix):
+        return False
+    else:
+      # empty line, must be under max empty lines
       if self.empty_count >= self.MaxEmptyLines:
         return False
-
-    elif self.prefix and not line.startswith(self.prefix):
-      return False
 
     return True
 
@@ -61,10 +63,9 @@ class EmptyFrame(Frame):
   def __init__(self, start_count):
     super().__init__()
     self.empty_count = start_count
-    print(f"New empty {start_count}")
 
   def belongs(self, line):
-    return len(line) == 0
+    return not line
 
   def add(self, line):
     self.empty_count += 1
@@ -78,28 +79,38 @@ class EmptyFrame(Frame):
   def __repr__(self):
     return f"<EmptyFrame lines={self.empty_count}>"
 
+
 class UnknownFrame(Frame):
+  """ An unknown frame will continue to accumulate until an empty line """
   pass
+
 
 class InvalidFrame(Frame):
   Prefixes = ['\t', '  \t', ' ']
 
+
 class CommentFrame(Frame):
   Prefixes = ['// ', '  // ']
+
 
 class TitleFrame(Frame):
   Prefixes = ['']
 
+
 class ParagraphFrame(Frame):
   Prefixes = ['  ']
+
+
 
 class BlockFrame(Frame):
   Prefixes = ['    ']
   MaxEmptyLines = 4
 
+
 class ListFrame(Frame):
   Prefixes = ['   ']
   MaxEmptyLines = 1
+
 
 class LineFramer(Handler):
   """ A handler that takes text line by line and frames it """
@@ -117,11 +128,11 @@ class LineFramer(Handler):
 
   def handle(self, line):
     ret = None
-    self.empty_count = self.empty_count + 1 if len(line) == 0 else 0
+    self.empty_count = self.empty_count + 1 if line else 0
 
     if not self.frame.belongs(line):
       ret = self.frame.finish()
-      self.frame = self.nextFrame(line)
+      self.frame = self._nextFrame(line)
 
     self.frame.add(line)
     return [ret] if ret else []
@@ -130,8 +141,8 @@ class LineFramer(Handler):
     ret = self.frame.finish()
     return [ret] if ret else []
 
-  def nextFrame(self, line):
-    if len(line) == 0:
+  def _nextFrame(self, line):
+    if not line:
       # Empty count has already been incremented for this line, which
       # will be sent to the frame right away, so subtract one
       return EmptyFrame(self.empty_count - 1)
