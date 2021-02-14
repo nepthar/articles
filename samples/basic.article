@@ -1,14 +1,11 @@
-A basic sample article
-J. Parker, {{today}}
+Writing Improvement Proposal: Articles
+J. Parker <nepthar@gmail.com>                                      March 2021
 
   Hi there. This is text formatting strategy that I'm working on called
   Articles. I want to be able to write in plain text and then publish it to a
   blog or something. I'd like your feedback on the structure and visual
   clarity of the spec. By the way, this part of the document is called the
   "preamble". Cool.
-
-
-
 
 Abstract
 
@@ -60,11 +57,22 @@ Paragraphs
   you to either word-wrap using your text editor or manually, whichever you
   like.
 
-  // This is a comment
-
   As an example, this sentence and the one below it are a paragraph. I like
   turtles.
 
+Comments
+
+  Sometimes, it might be useful to leave comments in your writing that don't get published. Articles turns lines that start with '// ' or '  // ' to become comments and will group them together like paragraphs. Put differently, comments can exist at either the "title level" or "paragraph level" of indentation.
+
+  // This is a paragraph level comment. It will be framed together with
+  // the line below. Comment text flows like paragraph text.
+  This is a paragraph below the comment.
+
+// Here is an example of a title-level comment. Do we wish to keep the
+// section below?
+Unused Title Section
+
+  // There's nothing helpful to say here. No content, just comments
 
 Blocks
 
@@ -127,7 +135,6 @@ Lists
    3. You could also use dashes, or whatever you like.
 
   This isn't necessary. The spaces between lines may be omitted - the list parser will understand.
-
 
 
 
