@@ -1,4 +1,5 @@
 import sys
+import logging
 
 # Notes:
 # To keep handlers simple, we enforce that they return arrays (or iterables)
@@ -41,19 +42,19 @@ class SpyHandler(Handler):
   """ Spies on the underlying handler by writing the inputs/ouputs to the given
       file descriptor. Does not change behavior.
   """
-  def __init__(self, underlying, file):
+  def __init__(self, underlying, loggerName=None):
     self.prefix = str(underlying)
     self.underlying = underlying
-    self.file = file
+    self.log = logging.getLogger(loggerName)
 
   def handle(self, i):
     ret = self.underlying.handle(i)
-    print(f"{self.prefix}({i}) -> {ret}", file=self.file)
+    self.log.debug('%s(%s) -> %s', self.prefix, i, ret)
     return ret
 
   def finish(self):
     ret = self.underlying.finish()
-    print(f"{self.prefix}(finish) -> {ret}", file=self.file)
+    self.log.debug('%s(finish) -> %s', self.prefix, ret)
     return ret
 
   def __str__(self):

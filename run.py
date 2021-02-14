@@ -8,6 +8,11 @@ from src.pipeline import *
 class RightStripCharacters(SimpleHandler):
   function = lambda x: x.rstrip('\r\n\t ')
 
+class Whateverer(SimpleHandler):
+  @staticmethod
+  def handle(x):
+    return x
+
 handlers = [
   RightStripCharacters(),
   LineFramer()
@@ -15,5 +20,7 @@ handlers = [
 
 result = Pipeline(handlers).process(sys.stdin)
 
-print(result)
+for r in result:
+  print(r.debug())
+  print('')
 

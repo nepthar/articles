@@ -1,45 +1,26 @@
 from .pipeline import Handler
 
-def spy(member_func):
-  prefix = 'spy' #f"{member_func.__qualname__}"
-  def wrapped(*args, **kwargs):
-    result = member_func(*args, **kwargs)
-    print(f"{prefix}({args[1:]},{kwargs}) -> {result}")
-    return result
-  return wrapped
-
 
 class Frame:
-
   # The prefixes, if any, that this frame may begin with
   Prefixes = []
-
-  # Whether or not this frame contains any content
-  NoContent = True
 
   # The number of empty lines that may be present in this frame before
   # the frame terminates
   MaxEmptyLines = 0
 
-  # If a frame's lines contain 'prose', then whitespace, including
-  # linebreaks, will be mashed together. If not, all linebreaks and
-  # spaces will be preserved
-  Prose = True
-
   def __init__(self, prefix=None):
+    self.finished = False
     self.lines = []
     self.prefix = prefix
-    self.finished = not self.NoContent
     self.empty_count = 0
 
   def add(self, line):
     self.empty_count = self.empty_count + 1 if len(line) == 0 else 0
-
     if self.prefix:
       line = line.removeprefix(self.prefix)
     self.lines.append(line)
 
-  #@spy
   def belongs(self, line):
     """ Test whether or not this line belongs to this frame """
     if self.finished:
@@ -55,29 +36,53 @@ class Frame:
     return True
 
   def finish(self):
+    """ Signal that this frame is finished and return self if the frame
+        should be used, or None if it should be ignored (see EmptyFrame).
+    """
     self.finished = True
     if self.empty_count > 0:
+      # Strip trailing empty whitespace
       self.lines = self.lines[:-self.empty_count]
 
-    if self.Prose:
-      self.content = [' '.join(self.lines)]
-    else:
-      self.content = self.lines
-    return True
+    return self
+
+  def __repr__(self):
+    pfx = 'None' if self.prefix is None else f"'{self.prefix}'"
+    return f"<{self.__class__.__name__} lines={len(self.lines)} prefix={pfx}>"
+
+  def debug(self):
+    ret = [self.__repr__()]
+    ret.extend(f" |{l}" for l in self.lines)
+    return '\n'.join(ret)
 
 
 class EmptyFrame(Frame):
-  NoContent = True
+  """ A special kind of frame that consists only of empty lines """
+  def __init__(self, start_count):
+    super().__init__()
+    self.empty_count = start_count
+    print(f"New empty {start_count}")
+
+  def belongs(self, line):
+    return len(line) == 0
+
+  def add(self, line):
+    self.empty_count += 1
+
+  def finish(self):
+    """ This empty frame should be ignored unless it's more than one line """
+    if self.empty_count > 1:
+      self.lines = [''] * self.empty_count
+      return self
+
+  def __repr__(self):
+    return f"<EmptyFrame lines={self.empty_count}>"
 
 class UnknownFrame(Frame):
-  Prose = False
-
-class BreakFrame(Frame):
-  NoContent = True
+  pass
 
 class InvalidFrame(Frame):
   Prefixes = ['\t', '  \t', ' ']
-  Prose = False
 
 class CommentFrame(Frame):
   Prefixes = ['// ', '  // ']
@@ -91,16 +96,13 @@ class ParagraphFrame(Frame):
 class BlockFrame(Frame):
   Prefixes = ['    ']
   MaxEmptyLines = 4
-  Prose = False
 
 class ListFrame(Frame):
   Prefixes = ['   ']
   MaxEmptyLines = 1
-  Prose = False
-
 
 class LineFramer(Handler):
-
+  """ A handler that takes text line by line and frames it """
   @staticmethod
   def prefix_map(frame_classes):
     """ Generate a list of prefix -> Frame class """
@@ -109,40 +111,32 @@ class LineFramer(Handler):
 
   def __init__(self, frame_classes=None):
     fcs = frame_classes if frame_classes else Frame.__subclasses__()
-    self.pm = LineFramer.prefix_map(fcs)
-    self.frame = None
-
-    for p, fc in self.pm:
-      print(f" - >{p}<")
+    self.prefix_map = LineFramer.prefix_map(fcs)
+    self.frame = EmptyFrame(0)
+    self.empty_count = 0
 
   def handle(self, line):
-    ret = []
-    if self.frame and self.frame.belongs(line):
-      self.frame.add(line)
-      return []
+    ret = None
+    self.empty_count = self.empty_count + 1 if len(line) == 0 else 0
 
-    if self.frame:
-      self.frame.finish()
-      ret = [self.frame]
+    if not self.frame.belongs(line):
+      ret = self.frame.finish()
+      self.frame = self.nextFrame(line)
 
-    self.frame = self.next_frame(line)
-    if self.frame:
-      self.frame.add(line)
-
-    return ret
+    self.frame.add(line)
+    return [ret] if ret else []
 
   def finish(self):
-    if self.frame:
-      self.frame.finish()
-      return [self.frame]
+    ret = self.frame.finish()
+    return [ret] if ret else []
 
-    return []
-
-  def next_frame(self, line):
+  def nextFrame(self, line):
     if len(line) == 0:
-      return None
+      # Empty count has already been incremented for this line, which
+      # will be sent to the frame right away, so subtract one
+      return EmptyFrame(self.empty_count - 1)
 
-    for pfx, frame_class in self.pm:
+    for pfx, frame_class in self.prefix_map:
       if line.startswith(pfx):
         return frame_class(prefix=pfx)
 
