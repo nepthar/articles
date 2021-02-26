@@ -51,6 +51,12 @@ Text
 
 Epigraphs
 
+  As always, these design choices are merely one approach that Tufte CSS provides by default. Other approaches, such as changing color on click or mouseover, or using highlighting or color instead of underlining to denote links, could also be made to work. The goal is to make sentences readable without interference from links, as well as to make links immediately identifiable even by casual web users.
+
+   - Eggs
+   - Milk
+   - Butter
+
     quote:
     The English language . . . becomes ugly and inaccurate because our thoughts are foolish, but the slovenliness of our language makes it easier for us to have foolish thoughts.
       - George Orwell, “Politics and the English Language”
@@ -86,7 +92,6 @@ Sidenotes, Footnotes, and Marginal Notes
 
     foot:
     This is the first footnote.
-
 
     foot:
     This is the second footnote.

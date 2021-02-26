@@ -1,19 +1,8 @@
-from pipeline import PipelineElement
-from misc import *
-from framing import *
-from elements import *
-from spans import *
-from text import *
+
 
 
 class Decoder:
   """ Decodes a Frame to one or more elements """
-  # TODO: Maybe each frame produces just one element? See how this plays out.
-  #       Hm. Not sure. I think we want to successfully decode zero elements.
-  #       For instance, when a frame is a single period, ["."], we want it
-  #       to be ignored. This adds suport for separation without issuing a
-  #       break frame. If you can keep this functionality, we could say each
-  #       frame decodes to one or zero elements. PATTERN MATCHING!
   kind = None
   spanner = None
 

@@ -1,5 +1,29 @@
+import re
+
 from .pipeline import Handler
-from .misc import spy
+from .misc import spy, KeyValue
+
+
+def match_prefix(prefix, line):
+  """ Match line against a prefix, except the line must exactly match or
+      match without whitespace after
+  """
+
+  lp = len(prefix)
+  ll = len(line)
+
+  if ll < lp:
+    return False
+
+  if ll == lp:
+    return prefix == line
+
+  if ll > lp and line.startswith(prefix):
+    nc = line[lp:lp+1]
+    return nc == '' or not nc.isspace()
+
+  return False
+
 
 class Frame:
   # The prefixes, if any, that this frame may begin with
@@ -9,10 +33,13 @@ class Frame:
   # the frame terminates
   MaxEmptyLines = 0
 
+  WhitespaceCheck = re.compile(r"\s.*")
+
   def __init__(self, prefix=None):
     self.finished = False
     self.lines = []
     self.prefix = prefix
+    self.plen = len(prefix) if prefix else 0
     self.empty_count = 0
 
   def add(self, line):
@@ -27,9 +54,10 @@ class Frame:
       return False
 
     if line:
-      # nonempty line, prefix must match if it exists
-      if self.prefix and not line.startswith(self.prefix):
-        return False
+      # nonempty line
+      if self.prefix is not None:
+        return match_prefix(self.prefix, line)
+
     else:
       # empty line, must be under max empty lines
       if self.empty_count >= self.MaxEmptyLines:
@@ -37,9 +65,16 @@ class Frame:
 
     return True
 
+  def _match_prefix(self, line):
+    """ Line must start with the prefix and have no extra whitespace """
+    if not line.startswith(prefix):
+      return False
+
+    return not Frame.WhitespaceCheck.match(line[self.lenp:])
+
   def finish(self):
-    """ Signal that this frame is finished and return self if the frame
-        should be used, or None if it should be ignored (see EmptyFrame).
+    """ Signal that this frame is finished and return the frame to use
+        (usally self) or None if it should be ignored (see EmptyFrame).
     """
     self.finished = True
     if self.empty_count > 0:
@@ -85,8 +120,14 @@ class UnknownFrame(Frame):
   pass
 
 
-class InvalidFrame(Frame):
-  Prefixes = ['\t', '  \t', ' ']
+# class InvalidFrame(Frame):
+#   Prefixes = ['\t', '  \t', ' ']
+
+
+class MetadataFrame(Frame):
+
+  def belongs(self, line):
+    return not self.finished and KeyValue.KVRegex.match(line)
 
 
 class CommentFrame(Frame):
@@ -101,7 +142,6 @@ class ParagraphFrame(Frame):
   Prefixes = ['  ']
 
 
-
 class BlockFrame(Frame):
   Prefixes = ['    ']
   MaxEmptyLines = 4
@@ -110,6 +150,31 @@ class BlockFrame(Frame):
 class ListFrame(Frame):
   Prefixes = ['   ']
   MaxEmptyLines = 1
+
+
+class BacktrackingFrames(Frame):
+  """ A backtracking frame is used when there is more than one possibility for
+      the current frame. Right now, it's just used for the first frame as
+      either "Metadata" or "Title"
+  """
+  def __init__(self, potentials):
+    self.frames = potentials
+    self.frames.append(UnknownFrame())
+
+  def belongs(self, line):
+    frames_belongs = [f for f in self.frames if f.belongs(line)]
+    if frames_belongs:
+      self.frames = frames_belongs
+      return True
+    else:
+      return False
+
+  def add(self, line):
+    for frame in self.frames:
+      frame.add(line)
+
+  def finish(self):
+    return self.frames[0]
 
 
 class LineFramer(Handler):
@@ -123,7 +188,7 @@ class LineFramer(Handler):
   def __init__(self, frame_classes=None):
     fcs = frame_classes if frame_classes else Frame.__subclasses__()
     self.prefix_map = LineFramer.prefix_map(fcs)
-    self.frame = EmptyFrame(0)
+    self.frame = BacktrackingFrames([EmptyFrame(0), MetadataFrame(), TitleFrame('')])
     self.empty_count = 0
 
   def handle(self, line):
@@ -142,13 +207,19 @@ class LineFramer(Handler):
     return [ret] if ret else []
 
   def _nextFrame(self, line):
+    out = self.__nextFrame(line)
+
+    print(f"In: {line}, out: {out}")
+    return out
+
+  def __nextFrame(self, line):
     if not line:
       # Empty count has already been incremented for this line, which
       # will be sent to the frame right away, so subtract one
       return EmptyFrame(self.empty_count - 1)
 
     for pfx, frame_class in self.prefix_map:
-      if line.startswith(pfx):
+      if match_prefix(pfx, line):
         return frame_class(prefix=pfx)
 
     return UnknownFrame()

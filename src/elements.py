@@ -1,17 +1,15 @@
 from spans import *
 
-# todo: Work on the preview code. Ugh.
-
 class Element:
   """ An Element is the Articles representation of bits of a document.
       It typically mirrors HTML/CSS concepts - tags, for instance
   """
   tag = None
-  attrs = None
   PreviewLength = 8
+  attrs = {}
 
   @staticmethod
-  def previewText(inThing):
+  def preview_text(inThing):
     if not inThing:
       return '<empty>'
 
@@ -21,12 +19,12 @@ class Element:
       else:
         return inThing[:Element.PreviewLength] + '..'
 
-    return Element.previewText(str(inThing))
+    return Element.preview_text(str(inThing))
 
   def __init__(self, spans, **kwargs):
     assert(isinstance(spans, list))
     self.spans = spans
-    self.meta = kwargs
+    self.kwargs = kwargs
     self.ids = []
     self.pid = '-'
 
@@ -37,14 +35,21 @@ class Element:
       pv = self.spans[0].text[:self.PreviewLength]
       return f"\"{pv}..\""
 
+  def from_kw(self, *keys):
+    d = {}
+    for k in keys:
+      if k in self.kwargs:
+        d[k] = self.kwargs[k]
+
+    return d
+
   def __str__(self):
     return f'{self.__class__.__name__}(id={self.pid} {self.preview()})'
 
   def __repr__(self):
     return f'<{self.__class__.__name__} {self.pid}>'
 
-
-  def fullText(self):
+  def text(self):
     return ''.join(s.text for s in self.spans)
 
 
@@ -67,11 +72,8 @@ class ImageElement(Element):
   tag = 'img'
 
   @property
-  def props(self):
-    p = { 'src': self.meta['src'] }
-    if 'alt' in self.meta:
-      p['alt'] = self.meta['alt']
-    return p
+  def attrs(self):
+    return self.from_kw('src', 'alt')
 
 
 class BreakElement(Element):
@@ -79,9 +81,13 @@ class BreakElement(Element):
 
 
 class HeadingElement(Element):
+  def __init__(self, spans, level, **kwargs):
+    super().__init__(spans, **kwargs)
+    self.level = level
+
   @property
   def tag(self):
-    return 'h' + self.meta.get('level', '3')
+    return f"h{self.level}"
 
 
 class ParagraphElement(Element):
@@ -123,12 +129,9 @@ class CodeBlockElement(Element):
   @property
   def props(self):
     p = { 'class': 'code' }
-    if 'lang' in self.meta:
-      p['lang'] = self.meta['lang']
+    if 'lang' in self.attrs:
+      p['lang'] = self.attrs['lang']
     return p
 
-
-
-
 class CommentElement(Element):
-  tag = 'hidden'
+  tag = 'cmt'

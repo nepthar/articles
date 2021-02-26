@@ -1,3 +1,6 @@
+jordan: parker
+
+
 Writing Improvement Proposal: Articles
 J. Parker <nepthar@gmail.com>                                      March 2021
 
@@ -111,6 +114,11 @@ Blocks
 
   How do we know the code block ended? A code block ends either when the
   document itself ends, or we return to a lower level of indentation.
+
+  Another example block type:
+
+    tex: Figure 1: Something something bad at math
+    \int\frac{sin(x)}{2}
 
 
 Lists
