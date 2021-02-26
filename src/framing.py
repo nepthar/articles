@@ -115,17 +115,16 @@ class EmptyFrame(Frame):
     return f"<EmptyFrame lines={self.empty_count}>"
 
 
-class UnknownFrame(Frame):
-  """ An unknown frame will continue to accumulate until an empty line """
+class InvalidFrame(Frame):
+  """ An invalid frame will continue to accumulate until an empty line """
   pass
 
 
-# class InvalidFrame(Frame):
-#   Prefixes = ['\t', '  \t', ' ']
-
-
 class MetadataFrame(Frame):
-
+  """ A special frame containing metadata info for the article. This can
+      only be the first frame at the top of the document and must follow
+      the KeyValue format.
+  """
   def belongs(self, line):
     return not self.finished and KeyValue.KVRegex.match(line)
 
@@ -152,14 +151,14 @@ class ListFrame(Frame):
   MaxEmptyLines = 1
 
 
-class BacktrackingFrames(Frame):
+class PossibleFrame(Frame):
   """ A backtracking frame is used when there is more than one possibility for
       the current frame. Right now, it's just used for the first frame as
-      either "Metadata" or "Title"
+      either metadata, a title, or empty space.
   """
   def __init__(self, potentials):
     self.frames = potentials
-    self.frames.append(UnknownFrame())
+    self.frames.append(InvalidFrame())
 
   def belongs(self, line):
     frames_belongs = [f for f in self.frames if f.belongs(line)]
@@ -186,9 +185,11 @@ class LineFramer(Handler):
     return sorted(ret, reverse=True, key=lambda x: len(x[0]))
 
   def __init__(self, frame_classes=None):
+    # NB: The top of the article could be empty space, metadata, or a title frame
+    #     So, we use the PossibleFrame to try them all and see which wins.
     fcs = frame_classes if frame_classes else Frame.__subclasses__()
     self.prefix_map = LineFramer.prefix_map(fcs)
-    self.frame = BacktrackingFrames([EmptyFrame(0), MetadataFrame(), TitleFrame('')])
+    self.frame = PossibleFrame([EmptyFrame(0), MetadataFrame(), TitleFrame('')])
     self.empty_count = 0
 
   def handle(self, line):
@@ -207,12 +208,6 @@ class LineFramer(Handler):
     return [ret] if ret else []
 
   def _nextFrame(self, line):
-    out = self.__nextFrame(line)
-
-    print(f"In: {line}, out: {out}")
-    return out
-
-  def __nextFrame(self, line):
     if not line:
       # Empty count has already been incremented for this line, which
       # will be sent to the frame right away, so subtract one
@@ -222,4 +217,4 @@ class LineFramer(Handler):
       if match_prefix(pfx, line):
         return frame_class(prefix=pfx)
 
-    return UnknownFrame()
+    return InvalidFrame()
