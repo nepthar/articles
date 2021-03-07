@@ -1,4 +1,4 @@
-from spans import *
+
 
 class Element:
   """ An Element is the Articles representation of bits of a document.
@@ -43,8 +43,14 @@ class Element:
 
     return d
 
+  def debug(self):
+    ret = [self.__str__()]
+    ret.extend(f" |{s.text}" for s in self.spans)
+    return '\n'.join(ret)
+
+
   def __str__(self):
-    return f'{self.__class__.__name__}(id={self.pid} {self.preview()})'
+    return f'{self.__class__.__name__}({self.preview()})'
 
   def __repr__(self):
     return f'<{self.__class__.__name__} {self.pid}>'
@@ -53,35 +59,36 @@ class Element:
     return ''.join(s.text for s in self.spans)
 
 
-class MetadataElement(Element):
-  tag = 'metadata'
+class BreakElement(Element):
+  def __init__(self, kind, **kwargs):
+    super().__init__([], **kwargs)
+    self.kind = kind
+    self.tag = f'break-{kind}'
 
-  def __init__(self, md):
-    super().__init__([], **md)
+
+class InvalidElement(Element):
+  tag = 'invalid'
+  def __init__(self, spans, **kwargs):
+    super().__init__(spans, **kwargs)
+    self.exception = kwargs.get('exception')
 
 
 class UnknownElement(Element):
   tag = 'unknown'
 
-  def __init__(self, spans, frame):
-    super().__init__(spans)
-    self.frame = frame
+
+class MetadataElement(Element):
+  tag = 'metadata'
+  def __init__(self, md):
+    super().__init__([], **md)
 
 
-class ImageElement(Element):
-  tag = 'img'
-
-  @property
-  def attrs(self):
-    return self.from_kw('src', 'alt')
+class CommentElement(Element):
+  tag = 'cmt'
 
 
-class BreakElement(Element):
-  tag = 'bk'
-
-
-class HeadingElement(Element):
-  def __init__(self, spans, level, **kwargs):
+class TitleElement(Element):
+  def __init__(self, spans, level=1, **kwargs):
     super().__init__(spans, **kwargs)
     self.level = level
 
@@ -90,48 +97,17 @@ class HeadingElement(Element):
     return f"h{self.level}"
 
 
+class NotImplementedElement(Element):
+  tag = 'future'
+
+
 class ParagraphElement(Element):
   tag = 'p'
 
 
-class NoteElement(Element):
-  tag = 'note'
-
-  @property
-  def props(self):
-    return {
-      'class': 'attn',
-      'level': self.props.get('level', 'info')
-    }
+class BlockElement(Element):
+  tag = 'block'
 
 
-class FootnoteElement(Element):
-  tag = 'note'
-  props = { 'class': 'footer' }
-
-
-class MarginNoteElement(Element):
-  tag = 'note'
-  props = { 'class': 'margin' }
-
-
-class BlockQuoteElement(Element):
-  tag = 'blockquote'
-
-
-class FixedWidthBlockElement(Element):
-  tag = 'pre'
-
-
-class CodeBlockElement(Element):
-  tag = 'pre'
-
-  @property
-  def props(self):
-    p = { 'class': 'code' }
-    if 'lang' in self.attrs:
-      p['lang'] = self.attrs['lang']
-    return p
-
-class CommentElement(Element):
-  tag = 'cmt'
+class ListElement(Element):
+  tag = 'list'

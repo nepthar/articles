@@ -3,28 +3,6 @@ import re
 from .pipeline import Handler
 from .misc import spy, KeyValue
 
-
-def match_prefix(prefix, line):
-  """ Match line against a prefix, except the line must exactly match or
-      match without whitespace after
-  """
-
-  lp = len(prefix)
-  ll = len(line)
-
-  if ll < lp:
-    return False
-
-  if ll == lp:
-    return prefix == line
-
-  if ll > lp and line.startswith(prefix):
-    nc = line[lp:lp+1]
-    return nc == '' or not nc.isspace()
-
-  return False
-
-
 class Frame:
   # The prefixes, if any, that this frame may begin with
   Prefixes = []
@@ -56,7 +34,7 @@ class Frame:
     if line:
       # nonempty line
       if self.prefix is not None:
-        return match_prefix(self.prefix, line)
+        return line.startswith(self.prefix)
 
     else:
       # empty line, must be under max empty lines
@@ -64,13 +42,6 @@ class Frame:
         return False
 
     return True
-
-  def _match_prefix(self, line):
-    """ Line must start with the prefix and have no extra whitespace """
-    if not line.startswith(prefix):
-      return False
-
-    return not Frame.WhitespaceCheck.match(line[self.lenp:])
 
   def finish(self):
     """ Signal that this frame is finished and return the frame to use
@@ -126,7 +97,7 @@ class MetadataFrame(Frame):
       the KeyValue format.
   """
   def belongs(self, line):
-    return not self.finished and KeyValue.KVRegex.match(line)
+    return super().belongs(line) and KeyValue.KVRegex.match(line)
 
 
 class CommentFrame(Frame):
@@ -208,13 +179,18 @@ class LineFramer(Handler):
     return [ret] if ret else []
 
   def _nextFrame(self, line):
+    r = self.__nextFrame(line)
+    print(f'nf: {r} {line}')
+    return r
+
+  def __nextFrame(self, line):
     if not line:
       # Empty count has already been incremented for this line, which
       # will be sent to the frame right away, so subtract one
-      return EmptyFrame(self.empty_count - 1)
+      return EmptyFrame(self.empty_count)
 
     for pfx, frame_class in self.prefix_map:
-      if match_prefix(pfx, line):
+      if line.startswith(pfx):
         return frame_class(prefix=pfx)
 
     return InvalidFrame()

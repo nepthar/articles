@@ -1,140 +1,94 @@
-
-
+from .spans import FixedSpanner, ProseSpanner, PoetrySpanner
+from .elements import *
+from .framing import *
+from .pipeline import Handler
 
 class Decoder:
-  """ Decodes a Frame to one or more elements """
-  kind = None
-  spanner = None
+  """ This class converts a frame into zero or more elements. Decoders
+      should be 1:N with frames - that is, each frame has exactly 1 decoder.
+      Without overriding `decode`, it provides a simple way with some sane
+      defaults
+  """
 
-  def canDecode(self, frame):
-    return frame.kind == self.kind
+  FrameClass = None
+  ElementClass = NotImplementedElement
+  Spanner = FixedSpanner
+
+  def mk_element(self, frame, spans):
+    return self.ElementClass(spans)
+
+  def span(self, lines):
+    if self.Spanner:
+      return self.Spanner.spanLines(lines)
 
   def decode(self, frame):
-    return None
+    spans = self.span(frame.lines)
+    return [self.mk_element(frame, spans)]
 
-  def tryDecode(self, frame):
-    if self.canDecode(frame):
-      result = self.decode(frame)
-      if result is None:
-        cn = self.__class__.__name__
-        raise ValueError(f'{cn} claimed to be able to decode, but failed')
-      return self.decode(frame)
-    else:
-      return None
+
+class EmptyDecoder(Decoder):
+  FrameClass = EmptyFrame
+
+  def decode(self, frame):
+    kind = 'minor' if frame.empty_count < 2 else 'section'
+    return [BreakElement(kind)]
+
+
+class InvalidDecoder(Decoder):
+  FrameClass = InvalidFrame
+  ElementClass = InvalidElement
 
 
 class MetadataDecoder(Decoder):
-  kind = Kind.Title
-
-  def __init__(self):
-    self.done = False
-
-  def canDecode(self, frame):
-    return not self.done
-
+  FrameClass = MetadataFrame
   def decode(self, frame):
-    # Only attempt to decode the first frame seen
-    self.done = True
-
-    md = {}
-    for line in frame.lines:
-      k, v = KeyValue.extract(line)
-      if not k:
-        return None
-      md[k] = v
-
-    return [MetadataElement(md)]
-
-
-class ParagraphDecoder(Decoder):
-  noParagraphChar = '.'
-  kind = Kind.Body
-  spanner = ProseSpanner()
-
-  def decode(self, frame):
-    lines = frame.lines
-    if len(lines) == 1 and lines[0] == self.noParagraphChar:
-      return ()
-    else:
-      return [ParagraphElement(self.spanner.span(lines))]
+    return [MetadataElement({})]
 
 
 class CommentDecoder(Decoder):
-  kind = Kind.Comment
-  spanner = ProseSpanner()
-
-  def decode(self, frame):
-    return [CommentElement(self.spanner.span(frame.lines))]
-
-
-class BreakDecoder(Decoder):
-  kind = Kind.Break
-  spanner = None
-  Response = (BreakElement([]),)
-
-  def decode(self, frame):
-    return self.Response
+  FrameClass = CommentFrame
+  ElementClass = CommentElement
+  Spanner = ProseSpanner
 
 
 class TitleDecoder(Decoder):
-  kind = Kind.Title
-  spanner = ProseSpanner()
-
-  def __init__(self, style=None):
-    self.style = style if style else {}
-
-  def decode(self, frame):
-    spans = self.spanner.span(frame.lines)
-
-    # We must have exactly one span at this point for the title.
-    if len(spans) != 1:
-      return None
-
-    return [HeadingElement(spans)]
+  FrameClass = TitleFrame
+  ElementClass = TitleElement
 
 
-class BlockDecodeDispatcher(Decoder):
-  kind = Kind.Block
-
-  def __init__(self, decoders=None, default=None):
-    if decoders is None:
-      decoders = []
-
-    self.decodeMap = { d.kind: d for d in decoders }
-    if default:
-      self.default = self.decodeMap[default]
-    else:
-      self.default = None
-
-  def addDecoder(self, decoder):
-    self.decodeMap[decoder.kind] = decoder
-
-  def setDefault(self, default):
-    self.default = self.decodeMap[default]
-
-  def decode(self, frame):
-    key, argString = KeyValue.extract(frame.lines[0])
-    if key and key in self.decodeMap:
-      return self.decodeMap[key].decodeBlock(frame.lines[1:], argString)
-    elif self.default:
-      return self.default.decodeBlock(frame.lines, None)
-    else:
-      return None
+class ParagraphDecoder(Decoder):
+  FrameClass = ParagraphFrame
+  ElementClass = ParagraphElement
+  Spanner = ProseSpanner
 
 
-class FrameDecoder(PipelineElement):
+class BlockDecoder(Decoder):
+  FrameClass = BlockFrame
+  ElementClass = BlockElement
+
+class ListDecoder(Decoder):
+  FrameClass = ListFrame
+  ElementClass = ListElement
+
+
+class FrameDecoder(Handler):
+
   """ Convert raw frames into document elements """
-  def __init__(self, decoders):
-    self.decoders = decoders
+  def __init__(self, decoders=None):
+    if decoders is None:
+      decs = [dClass() for dClass in Decoder.__subclasses__()]
+    else:
+      decs = decoders
+
+    self.decoders = {d.FrameClass: d for d in decs}
 
   def handle(self, frame):
-    for decoder in self.decoders:
-      elements = decoder.tryDecode(frame)
-      if elements is not None:
-        for e in elements:
-          self.next.handle(e)
-        return
+    # Dispatch based on frame
+    dec = self.decoders[frame.__class__]
 
-    Log.warn("Unable to decode {}", frame)
-    elem = UnknownElement(Spanner.Fixed.span(frame.lines),frame)
-    self.next.handle(elem)
+    # TODO: Try/Catch -> invalid frame
+
+    if dec:
+      return dec.decode(frame)
+    else:
+      return [UnknownElement(FixedSpanner.span(frame.lines))]

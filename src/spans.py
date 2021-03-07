@@ -2,7 +2,7 @@
 import re
 
 from typing import NamedTuple
-from misc import Log, flatten
+#from misc import Log, flatten
 
 
 
@@ -51,11 +51,11 @@ def collectProse(lines):
   result = []
   cur = []
   for line in lines:
-    if line is '':
+    if line:
+      cur.append(line)
+    else:
       result.append(Span(' '.join(cur)))
       cur = []
-    else:
-      cur.append(line)
 
   if cur:
     result.append(Span(' '.join(cur)))
@@ -98,84 +98,86 @@ class LinesSpanner:
     return LinesSpanner(self.collect, spanners)
 
 
-class RegexMatchSpanner:
-  """ Generate spans that match a given regex. For each instance of the match
-      toSpan is invoked with the match as its argument. Each match is expected
-      to result in a single span or None.
+# class RegexMatchSpanner:
+#   """ Generate spans that match a given regex. For each instance of the match
+#       toSpan is invoked with the match as its argument. Each match is expected
+#       to result in a single span or None.
 
-      This allows for matching against a general/more simple regex and then
-      later rejecting.
-  """
-  regex = None
-  toSpan = None
+#       This allows for matching against a general/more simple regex and then
+#       later rejecting.
+#   """
+#   regex = None
+#   toSpan = None
 
-  def span(self, text):
-    results = []
-    cur = 0
+#   def span(self, text):
+#     results = []
+#     cur = 0
 
-    for match in re.finditer(self.regex, text):
-      span = self.toSpan(match)
+#     for match in re.finditer(self.regex, text):
+#       span = self.toSpan(match)
 
-      if span is not None:
-        (s, e) = match.span()
+#       if span is not None:
+#         (s, e) = match.span()
 
-        if s != cur:
-          results.append(Span(text[cur:s]))
+#         if s != cur:
+#           results.append(Span(text[cur:s]))
 
-        results.append(span)
-        cur = e
+#         results.append(span)
+#         cur = e
 
-    if cur != len(text):
-      results.append(Span(text[cur:]))
+#     if cur != len(text):
+#       results.append(Span(text[cur:]))
 
-    return results
-
-
-class MuckdownSpanner(RegexMatchSpanner):
-  """ Add markdown style stuff. A broken clock is right twice a day """
-
-  DefaultStyleMap = {
-    '*': 'b',
-    '_': 'u',
-    '/': 'i',
-    '~': 'stk'
-  }
-
-  def __init__(self, styleMap=DefaultStyleMap):
-    chars = ''.join(f'\\{k}' for k in styleMap.keys())
-    self.regex = re.compile(
-      f'([{chars}])' + f'([^{chars}]+?)' + r'(\1)')
-
-  def toSpan(self, match):
-    print(match.groups())
-    return Span('!!' + match.groups()[0])
+#     return results
 
 
-class SimpleLinkSpanner(RegexMatchSpanner):
-  """ Match carrot links. The link slug must not start or end with whitespace,
-      so it matches these possile situations:
-      1. A single non-whitespasce character
-      2. Non whitespace at the start and end, matching as few characters between
-  """
-  regex = re.compile(r'<(\S|\S.*?\S)>')
+# class MuckdownSpanner(RegexMatchSpanner):
+#   """ Add markdown style stuff. A broken clock is right twice a day """
 
-  def toSpan(self, match):
-    print(match.groups())
-    return Span('!!' + match.groups()[0])
+#   DefaultStyleMap = {
+#     '*': 'b',
+#     '_': 'u',
+#     '/': 'i',
+#     '~': 'stk'
+#   }
+
+#   def __init__(self, styleMap=DefaultStyleMap):
+#     chars = ''.join(f'\\{k}' for k in styleMap.keys())
+#     self.regex = re.compile(
+#       f'([{chars}])' + f'([^{chars}]+?)' + r'(\1)')
+
+#   def toSpan(self, match):
+#     print(match.groups())
+#     return Span('!!' + match.groups()[0])
 
 
-class LongLinkStyleSpanner(RegexMatchSpanner):
-  """ An unsophisticated regex to look for long form links and spans. Can have
-      mismatches, which are reported by returning None. Should run before the
-      SimpleLinkSpanner.
-  """
-  regex = re.compile(r"''.+?''[<{].+?[}>]")
+# class SimpleLinkSpanner(RegexMatchSpanner):
+#   """ Match carrot links. The link slug must not start or end with whitespace,
+#       so it matches these possile situations:
+#       1. A single non-whitespasce character
+#       2. Non whitespace at the start and end, matching as few characters between
+#   """
+#   regex = re.compile(r'<(\S|\S.*?\S)>')
 
-  def toSpan(self, match):
-    print(match.groups())
-    return Span('!!' + match.groups()[0])
+#   def toSpan(self, match):
+#     print(match.groups())
+#     return Span('!!' + match.groups()[0])
+
+
+# class LongLinkStyleSpanner(RegexMatchSpanner):
+#   """ An unsophisticated regex to look for long form links and spans. Can have
+#       mismatches, which are reported by returning None. Should run before the
+#       SimpleLinkSpanner.
+#   """
+#   regex = re.compile(r"''.+?''[<{].+?[}>]")
+
+#   def toSpan(self, match):
+#     print(match.groups())
+#     return Span('!!' + match.groups()[0])
 
 
 Span.Empty = Span('')
+FixedSpanner = LinesSpanner(collectPoetry, [])
+SimpleProse = LinesSpanner(collectProse, [])
 ProseSpanner = LinesSpanner(collectProse, [])
 PoetrySpanner = LinesSpanner(collectPoetry, [])
