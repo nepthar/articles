@@ -1,7 +1,7 @@
-todo:
+HEY JORDAN!
 
-- Finalize lists (block vs paragraph)
-- Finalize links/spans. I think you can just ask people at this point
-- Code it up, you idiot.
+Everything up to Elements -> Article works! Look at run.py
 
-(This should be a simple list)p
+What are you going to do after that?
+
+Perhaps consider deleting old code.

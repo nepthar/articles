@@ -1,7 +1,7 @@
 import re
 
 from .pipeline import Handler
-from .misc import spy, KeyValue
+from .misc import KeyValue
 
 class Frame:
   # The prefixes, if any, that this frame may begin with
@@ -95,6 +95,8 @@ class MetadataFrame(Frame):
   """ A special frame containing metadata info for the article. This can
       only be the first frame at the top of the document and must follow
       the KeyValue format.
+
+      TODO: Make this yaml
   """
   def belongs(self, line):
     return super().belongs(line) and KeyValue.KVRegex.match(line)
@@ -180,7 +182,6 @@ class LineFramer(Handler):
 
   def _nextFrame(self, line):
     r = self.__nextFrame(line)
-    print(f'nf: {r} {line}')
     return r
 
   def __nextFrame(self, line):

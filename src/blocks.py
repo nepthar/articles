@@ -1,4 +1,4 @@
-from spans import Spanner
+#from spans import Spanner
 from elements import *
 
 class BlockDecoder:

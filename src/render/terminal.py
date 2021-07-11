@@ -1,7 +1,7 @@
-from ..pipeline import PipelineElement
+from ..pipeline import Handler
 
 
-class RawTextRenderer(PipelineElement):
+class RawTextRenderer(Handler):
   """ Render the article as an article """
 
   def handle(self, article):

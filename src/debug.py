@@ -1,6 +1,6 @@
-from pipeline import PipelineElement
+from pipeline import Handler
 
-class AnyPrinter(PipelineElement):
+class AnyPrinter(Handler):
   def __init__(self):
     self.i = 0
 
@@ -11,14 +11,14 @@ class AnyPrinter(PipelineElement):
     print("<flush>")
 
 
-class LinePrinter(PipelineElement):
+class LinePrinter(Handler):
   def handle(self, line):
     print(line)
 
   def finish(self):
     pass
 
-class ElementDumper(PipelineElement):
+class ElementDumper(Handler):
   def __init__(self):
     self.i = 0
 
@@ -40,7 +40,7 @@ class ElementDumper(PipelineElement):
     return self.next.finish()
 
 
-class FrameDumper(PipelineElement):
+class FrameDumper(Handler):
   def __init__(self):
     self.frames = []
 
@@ -59,7 +59,7 @@ class FrameDumper(PipelineElement):
     return self.next.finish()
 
 
-class Accumulator(PipelineElement):
+class Accumulator(Handler):
   def __init__(self):
     self.accum = []
 
@@ -67,7 +67,7 @@ class Accumulator(PipelineElement):
     self.accum.append(element)
 
 
-class HTMLFrameDumper(PipelineElement):
+class HTMLFrameDumper(Handler):
   def __init__(self):
     self.i = 0
 

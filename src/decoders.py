@@ -4,10 +4,11 @@ from .framing import *
 from .pipeline import Handler
 
 class Decoder:
-  """ This class converts a frame into zero or more elements. Decoders
-      should be 1:N with frames - that is, each frame has exactly 1 decoder.
-      Without overriding `decode`, it provides a simple way with some sane
-      defaults
+  """
+  This class converts a frame into zero or more elements. Decoders
+  should be 1:N with frames - that is, each frame has exactly 1 decoder.
+  Without overriding `decode`, it provides a simple way with some sane
+  defaults
   """
 
   FrameClass = None
@@ -65,6 +66,7 @@ class ParagraphDecoder(Decoder):
 class BlockDecoder(Decoder):
   FrameClass = BlockFrame
   ElementClass = BlockElement
+
 
 class ListDecoder(Decoder):
   FrameClass = ListFrame

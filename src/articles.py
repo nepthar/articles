@@ -1,11 +1,38 @@
 from collections import Counter
 
-from elements import *
-from pipeline import PipelineElement
+from pipeline import Handler
 
 """
 Decision: We have to figure out how to deal with new sections. Maybe I should
 just pass them along to the renderer? Hm...
+"""
+
+"""
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Tufte CSS</title>
+    <link rel="stylesheet" href="tufte.css"/>
+    <link rel="stylesheet" href="latex.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <article>
+      <h1 id="the-title">The Title</h1>
+      <p class="subtitle">The Subtitle</p>
+      <secion>
+        <p>First paragraph...</p>
+        ...
+      </section>
+      <section>
+        <h2 id="major-section">Major Section</h2>
+        <p>Major Section Intro</p>
+        <h3 id="major-section--minor-section">Minor Section</h3>
+        <p>minor section content>
+      </section>
+    </article>
+  </body>
+</html>
 """
 
 class Section:
@@ -29,7 +56,7 @@ class Article:
     return self.meta['title']
 
 
-class ArticleBuilder(PipelineElement):
+class ArticleBuilder(Handler):
 
   def __init__(self):
     self.article = Article()
@@ -67,7 +94,5 @@ class ArticleBuilder(PipelineElement):
 
 
   def finish(self):
-    self.newSection()
-    self.next.handle(self.article)
-    return self.next.finish()
+    return self.article
 

@@ -1,6 +1,6 @@
 import html
 
-from pipeline import PipelineElement
+from pipeline import Handler
 from spans import Span
 import ..styles as st
 
@@ -68,7 +68,7 @@ def spanToHTML(span, styletab):
 def elementToHTML(element, styletab):
 
 
-class SimpleHTMLRenderer(PipelineElement):
+class SimpleHTMLRenderer(Handler):
   HeaderTemplate = """
   <!DOCTYPE html>
   <html lang="en">
