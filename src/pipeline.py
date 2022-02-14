@@ -6,7 +6,7 @@ import logging
 # I alternatively considered having each handler have a "next" handler, and
 # instead of returning results, it would call "next" for each result it created.
 # I decied against this ultimately because I think it results in the absolute
-# simplest handler/pipelines.
+# simplest handler/pipelines. (and it fucks with the stack)
 
 class Handler:
   """ An abstraction for dealing with data in chunks. A handler is the class

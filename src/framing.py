@@ -1,7 +1,7 @@
 import re
 
-from .pipeline import Handler
-from .misc import KeyValue
+from pipeline import Handler
+from misc import KeyValue
 
 class Frame:
   # The prefixes, if any, that this frame may begin with

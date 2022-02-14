@@ -1,7 +1,7 @@
-from .spans import FixedSpanner, ProseSpanner, PoetrySpanner
-from .elements import *
-from .framing import *
-from .pipeline import Handler
+from spans import FixedSpanner, ProseSpanner, PoetrySpanner
+from elements import *
+from framing import *
+from pipeline import Handler
 
 class Decoder:
   """

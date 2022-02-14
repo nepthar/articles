@@ -1,10 +1,7 @@
-jordan: parker
-meta: data
-this.that: something else whatever
+article: Writing Improvement Proposal: Articles
+author: J. Parker <netphar@gmail.com>
+date: March 2021
 
-
-Writing Improvement Proposal: Articles
-J. Parker <nepthar@gmail.com>                                      March 2021
 
   Hi there. This is text formatting strategy that I'm working on called
   Articles. I want to be able to write in plain text and then publish it to a
