@@ -37,6 +37,8 @@ just pass them along to the renderer? Hm...
 
 class Section:
   def __init__(self):
+    self.title = None
+    self.slug = None
     self.elements = []
 
   def __repr__(self):
@@ -45,11 +47,10 @@ class Section:
 
 
 class Article:
-  def __init__(self):
-    self.meta = {}
-    self.body = []
-    self.links = {}
-    self.sections = []
+  def __init__(self, meta, preamble, sections):
+    self.meta = meta
+    self.preamble = preamble
+    self.sections = sections
 
   @property
   def title(self):
@@ -59,40 +60,29 @@ class Article:
 class ArticleBuilder(Handler):
 
   def __init__(self):
-    self.article = Article()
-    self.idCounts = Counter()
+    self.preamble = []
+    self.sections = []
+    self.section = None
+    # Why would there be more than one of these?
+    self.md = {}
+
+  def handle(e):
+    if isinstance(e, MetadataElement):
+      self.md = e.attrs
+    elif isinstance(e, BreakElement):
+      self.finish_secion()
+    else:
+      self.section.elements.append(e)
+
+  def finish_secion(self):
+    if self.section:
+      self.sections.append(self.section)
     self.section = Section()
 
-  def applyElementRules(self, element):
-    num = self.idCounts[element.kind]
-    element.pid = f'{element.kind}{num}'
-    self.idCounts[element.kind] += 1
-
-    # Heading-specific stuff
-    if element.kind == 'h':
-      element.ids.append(element.fullText())
-
-      if not self.section.elements:
-        element.meta['level'] = '2'
-
-  def newSection(self):
-    if self.section.elements:
-      self.article.sections.append(self.section)
-      self.section = Section()
-
-  def handle(self, element):
-    self.applyElementRules(element)
-
-    if isinstance(element, MetadataElement):
-      self.article.meta = element.meta
-
-    elif isinstance(element, BreakElement):
-      self.newSection()
-
-    else:
-      self.section.elements.append(element)
-
-
   def finish(self):
-    return self.article
+    self.finish_secion()
+    a = Article(self.preamble, self.sections)
+    return [Article(
+      self.md, self.preamble, self.sections
+    )]
 

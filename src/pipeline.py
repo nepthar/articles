@@ -28,11 +28,11 @@ class Handler:
     """
     return []
 
-  def spy(self, file=sys.stderr):
+  def spy(self, name=None):
     """ Return a handler that behaves like this one, except it prints out the
         input and results to STDERR or the specified file
     """
-    return SpyHandler(self, file)
+    return SpyHandler(self, name)
 
   def __str__(self):
     return self.__class__.__name__

@@ -1,4 +1,4 @@
-
+from pipeline import Handler
 
 class Element:
   """ An Element is the Articles representation of bits of a document.
@@ -6,31 +6,17 @@ class Element:
   """
   tag = None
   PreviewLength = 8
-  attrs = {}
-
-  @staticmethod
-  def preview_text(inThing):
-    if not inThing:
-      return '<empty>'
-
-    if isinstance(inThing, str):
-      if len(inThing) <= Element.PreviewLength:
-        return inThing
-      else:
-        return inThing[:Element.PreviewLength] + '..'
-
-    return Element.preview_text(str(inThing))
 
   def __init__(self, spans, **kwargs):
     assert(isinstance(spans, list))
     self.spans = spans
-    self.kwargs = kwargs
+    self.attrs = kwargs
     self.ids = []
-    self.pid = '-'
+    self.pid = "-"
 
   def preview(self):
     if not self.spans:
-      return "<empty>"
+      return ''
     else:
       pv = self.spans[0].text[:self.PreviewLength]
       return f"\"{pv}..\""
@@ -48,7 +34,6 @@ class Element:
     ret.extend(f" |{s.text}" for s in self.spans)
     return '\n'.join(ret)
 
-
   def __str__(self):
     return f'{self.__class__.__name__}({self.preview()})'
 
@@ -60,10 +45,16 @@ class Element:
 
 
 class BreakElement(Element):
-  def __init__(self, kind, **kwargs):
+  tag = 'break'
+  def __init__(self, **kwargs):
     super().__init__([], **kwargs)
-    self.kind = kind
-    self.tag = f'break-{kind}'
+
+
+# class BreakElement(Element):
+#   # TODO: This appears to never be used. Consider scrapping it
+#   tag = 'minor-break'
+#   def __init__(self, **kwargs):
+#     super().__init__([], **kwargs)
 
 
 class InvalidElement(Element):
@@ -80,7 +71,8 @@ class UnknownElement(Element):
 class MetadataElement(Element):
   tag = 'metadata'
   def __init__(self, md):
-    super().__init__([], **md)
+    super().__init__([])
+    self.attrs = md
 
 
 class CommentElement(Element):
@@ -95,6 +87,9 @@ class TitleElement(Element):
   @property
   def tag(self):
     return f"h{self.level}"
+
+  def __str__(self):
+    return f"TitleElement(lvl={self.level})"
 
 
 class NotImplementedElement(Element):
@@ -111,3 +106,18 @@ class BlockElement(Element):
 
 class ListElement(Element):
   tag = 'list'
+
+
+class IdentifyElements(Handler):
+  # TODO: Maybe don't use?
+
+  def __init__(self, prefix=''):
+    self.prefix = ''
+    self.counts = {} # TOOD: Defaultdict
+
+  def handle(self, item):
+    tag = item.tag
+    count = self.counts.get(tag, 0)
+    self.counts[tag] = count + 1
+    item.pid = f"{self.prefix}{tag}-{count}"
+    return [item]

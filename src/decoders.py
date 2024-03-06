@@ -3,6 +3,7 @@ from elements import *
 from framing import *
 from pipeline import Handler
 
+
 class Decoder:
   """
   This class converts a frame into zero or more elements. Decoders
@@ -31,8 +32,7 @@ class EmptyDecoder(Decoder):
   FrameClass = EmptyFrame
 
   def decode(self, frame):
-    kind = 'minor' if frame.empty_count < 2 else 'section'
-    return [BreakElement(kind)]
+    return [BreakElement(empty_count=frame.empty_count)]
 
 
 class InvalidDecoder(Decoder):
@@ -43,7 +43,12 @@ class InvalidDecoder(Decoder):
 class MetadataDecoder(Decoder):
   FrameClass = MetadataFrame
   def decode(self, frame):
-    return [MetadataElement({})]
+    d = {}
+    for line in frame.lines:
+      k, v = KeyValue.extract(line)
+      if k:
+        d[k] = v
+    return [MetadataElement(d)]
 
 
 class CommentDecoder(Decoder):
@@ -74,7 +79,6 @@ class ListDecoder(Decoder):
 
 
 class FrameDecoder(Handler):
-
   """ Convert raw frames into document elements """
   def __init__(self, decoders=None):
     if decoders is None:

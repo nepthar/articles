@@ -1,7 +1,7 @@
 {
-  "wrap_width": 80,
+  "wrap_width": 76,
   "tab_size": 2,
   "spell_check": true,
   "word_wrap": "true",
-  "rulers": [2, 4, 80]
+  "rulers": [2, 4, 76]
 }

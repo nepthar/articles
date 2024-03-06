@@ -63,6 +63,9 @@ class Frame:
     ret.extend(f" |{l}" for l in self.lines)
     return '\n'.join(ret)
 
+  def text(self):
+    return '\n'.join(self.lines)
+
 
 class EmptyFrame(Frame):
   """ A special kind of frame that consists only of empty lines """

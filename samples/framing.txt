@@ -1,19 +1,19 @@
-Input Article
----------------- article.txt -------------------------------------------
-title: This is a simple test article
+title: This tests framing
 author: Jordan Parker <nepthar@gmail.com>
 extra.meta: data
 
 
+I'm not sure what this will be.
+
+
+
+
 Section 1 - Live and Let Die.
 
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-  incididunt ut labore et dolore magna aliqua. Elit pellentesque habitant morbis
-  tristique senectus et netus et. Felis bibendum ut tristique et egestas quis
-  ipsum suspendisse. Mi proin sed libero enim sed faucibus turpis in. Commodo
-  nulla facilisi nullam vehicula ipsum a arcu cursus vitae. Facilisi etiam
-  dignissim diam quis enim. Venenatis tellus in metus vulputate eu scelerisque
-  felis imperdiet.
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmo incididunt ut labore et dolore magna aliqua. Elit pellentesque habitant morbis tristique senectus et netus et. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Mi proin sed libero enim sed faucibus turpis in. Commodo nulla facilisi nullam vehicula ipsum a arcu cursus vitae. Facilisi etiam dignissim diam quis enim. Venenatis tellus in metus vulputate eu scelerisque felis imperdiet.
+  That was all one long paragraph. This will be globbed up into it as well.
+
+  This is a separate paragraph.
 
 Section 1.1
 
@@ -75,70 +75,3 @@ Wow, here's the second line of the title.
 
 The End.
 
---------------------------- End of article.txt -------------------------
-
-Below are the frames for article.txt
-
-=== Frame 0: Metadata ==================================================
-title: This is a simple test article
-author: Jordan Parker <nepthar@gmail.com>
-extra.meta: data
-========================================================================
-
-=== Frame 1: Section Break =============================================
-========================================================================
-
-=== Frame 2: Heading ===================================================
-Section 1 - Live and Let Die.
-========================================================================
-
-=== Frame 3: Paragraph =================================================
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod incididunt ut labore et dolore magna aliqua. Elit pellentesque habitant morbis tristique senectus et netus et. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Mi proin sed libero enim sed faucibus turpis in. Commodo nulla facilisi nullam vehicula ipsum a arcu cursus vitae. Facilisi etiam dignissim diam quis enim. Venenatis tellus in metus vulputate eu scelerisque felis imperdiet.
-========================================================================
-
-=== Frame 4: Heading ===================================================
-Section 1.1
-========================================================================
-
-=== Frame 5: Paragraph =================================================
-Lorem ipsum dolor sit amet. whatever.
-========================================================================
-
-=== Frame 6: Block =====================================================
-This is a second ending quote. We must make sure it does not
-gobble up the two lines separating this from
-the start of Section 2.
-========================================================================
-
-=== Frame 7: Section Break =============================================
-========================================================================
-
-=== Frame 8: Heading ===================================================
-Section 2 - Live and Let Diet
-========================================================================
-
-=== Frame 9: Paragraph =================================================
-Somthing
-========================================================================
-
-=== Frame 10: Block ====================================================
-The default blockquote. Just indented, no hints as to what it is.
-A poem
-  A song
-    The default.
-These linebreaks should be preserved along with
-  the indents.
-
-This is not a new section. It's part of the previous block
-
-This, however, is is a new quote block. It's separated from the previous
-blockquote by that little period up there to the left.
-========================================================================
-
-=== Frame 11: Section Break ============================================
-========================================================================
-
-== Frame 12: Heading ===================================================
-Section 3 - A multiple line section:
-Wow, here's the second line of the title.
-========================================================================

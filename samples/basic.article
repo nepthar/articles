@@ -27,7 +27,7 @@ The second Major Section
   This is the second major section. It's going to talk about paragraphs,
   titles, and sections. The most basic of Article's features.
 
-Major Section 2, Minor Section 1: Titles
+ Major Section 2, Minor Section 1: Titles
 
   There are two types of section headings, major and minor. At the top of
   this document, "Abstract" is a major heading while the title of this
@@ -45,7 +45,7 @@ Major Section 2, Minor Section 1: Titles
   three logical levels of sections. Beyond that, the base Article system
   won't support anything more deeply nested.
 
-Paragraphs
+ Paragraphs
 
   Paragraphs are very simple and (I think?) quite similar to markdown.
   Standard "plain" paragraph text is distinguished by the fact that it is
@@ -62,7 +62,7 @@ Paragraphs
   As an example, this sentence and the one below it are a paragraph. I like
   turtles.
 
-Comments
+ Comments
 
   Sometimes, it might be useful to leave comments in your writing that don't get published. Articles turns lines that start with '// ' or '  // ' to become comments and will group them together like paragraphs. Put differently, comments can exist at either the "title level" or "paragraph level" of indentation.
 
@@ -119,6 +119,14 @@ Blocks
     tex: Figure 1: Something something bad at math
     \int\frac{sin(x)}{2}
 
+  And finally one that supports a future enhancement:
+
+    table: "Deaths by County"
+    County     Deaths   Another
+    Jefferson  12       Wheels
+    Somewhere  45       Burritos
+    Else       33       11111
+
 
 Lists
 
@@ -148,3 +156,4 @@ Lists
 
 
 
+  I think I sitll can't solve the problem of text reflow. Perhaps when somethings like this gets saved, it should rearrange the text
