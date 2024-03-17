@@ -83,9 +83,13 @@ class Pipeline(Handler):
   def _on_data(self, data):
     """ Run the actual pipeline, optionally calling finish on handlers """
     finish = len(data) == 0
+    data = []
 
     for h in self.handlers:
-      data = [o for i in data for o in h.handle(i)]
+      for item in data:
+        output = h.handle(item)
+        if output:
+
       if finish:
         data.extend(h.finish())
 

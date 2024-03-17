@@ -33,11 +33,12 @@ class ElementDumper(Handler):
     l.append('\n')
     print('\n'.join(l))
     self.i += 1
+    return [elem]
 
 
   def finish(self):
     print("-- finish --")
-    return self.next.finish()
+    return []
 
 
 class FrameDumper(Handler):
@@ -56,7 +57,7 @@ class FrameDumper(Handler):
         print('\n'.join(f"  |{l}" for l in f.lines))
 
       print('')
-    return self.next.finish()
+    return []
 
 
 class Accumulator(Handler):

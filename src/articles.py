@@ -52,9 +52,13 @@ class Article:
     self.preamble = preamble
     self.sections = sections
 
+  @staticmethod
+  def empty():
+    return Article({},[],[])
+
   @property
   def title(self):
-    return self.meta['title']
+    return self.meta.get('title')
 
 
 class ArticleBuilder(Handler):
@@ -63,7 +67,6 @@ class ArticleBuilder(Handler):
     self.preamble = []
     self.sections = []
     self.section = None
-    # Why would there be more than one of these?
     self.md = {}
 
   def handle(e):
@@ -81,7 +84,6 @@ class ArticleBuilder(Handler):
 
   def finish(self):
     self.finish_secion()
-    a = Article(self.preamble, self.sections)
     return [Article(
       self.md, self.preamble, self.sections
     )]

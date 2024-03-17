@@ -1,10 +1,11 @@
 import html
 
 from spans import Span
+from pipeline import Handler
 import sys
 
 
-class Renderer:
+class Renderer(Handler):
   pass
 
 

@@ -28,6 +28,17 @@ def flatten(iterable):
     yield from i
 
 
+def to_iterable(x):
+  """ Turn anything into an iterable """
+  if isinstance(x, (list, tuple)):
+    return x
+
+  if x:
+    return (x,)
+
+  return ()
+
+
 class KeyValue:
   """
   Key<>Value pairs with strict rules for simplicitiy.

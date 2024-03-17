@@ -52,9 +52,9 @@ in_handlers = [
   ElementsPrinter(),
   ArticleBuilder(),
   SimpleHTMLRenderer(),
-  StdoutPrinter()
+  StdoutPrinter(),
 #  AnythingPrinter(),
-#  Tail()
+  #Tail()
 ]
 
 

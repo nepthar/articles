@@ -1,10 +1,2 @@
 HEY JORDAN!
 
-Everything up to Elements -> Article works! Look at run.py
-
-What are you going to do after that?
- - Make it just work end to end
- - Have any "unrenderable" elements render as fixed text
- - Use multiple CSS classes
-
-Perhaps consider deleting old code.
