@@ -27,7 +27,7 @@ The second Major Section
   This is the second major section. It's going to talk about paragraphs,
   titles, and sections. The most basic of Article's features.
 
- Major Section 2, Minor Section 1: Titles
+Major Section 2, Minor Section 1: Titles
 
   There are two types of section headings, major and minor. At the top of
   this document, "Abstract" is a major heading while the title of this
@@ -45,7 +45,7 @@ The second Major Section
   three logical levels of sections. Beyond that, the base Article system
   won't support anything more deeply nested.
 
- Paragraphs
+Paragraphs
 
   Paragraphs are very simple and (I think?) quite similar to markdown.
   Standard "plain" paragraph text is distinguished by the fact that it is
@@ -62,7 +62,7 @@ The second Major Section
   As an example, this sentence and the one below it are a paragraph. I like
   turtles.
 
- Comments
+Comments
 
   Sometimes, it might be useful to leave comments in your writing that don't get published. Articles turns lines that start with '// ' or '  // ' to become comments and will group them together like paragraphs. Put differently, comments can exist at either the "title level" or "paragraph level" of indentation.
 

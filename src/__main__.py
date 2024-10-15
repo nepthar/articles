@@ -30,46 +30,14 @@ class ElementsPrinter(SimpleHandler):
     print(f"{element.pid}: {element.attrs}")
 
 
-class HeadingElementPromoter(SimpleHandler):
-  last = None
-
-  def handle(self, i):
-    if type(i) is TitleElement and type(self.last) is not BreakElement:
-      i.level = 2
-
-    self.last = i
-    return [i]
-
-
-
-class Take(Handler):
-  def __init__(self, count):
-    self.i = 0
-    self.count = count
-
-  def handle(self, item):
-    if self.i < self.count:
-      self.i += 1
-      return [item]
-    else:
-      return []
-
-
 in_handlers = [
   RightStripCharacters(),
   LineFramer(),
   FrameDecoder(),
-  #DebugPrinter(),
-#  TagsAttrs()
-  #IdentifyElements(),
-  HeadingElementPromoter().spy(),
-  #ElementsPrinter(),
-  #DebugPrinter(),
   ArticleBuilder(),
   SimpleHTMLRenderer(),
   StdoutPrinter()
 ]
-
 
 
 def test_thingy():

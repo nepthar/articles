@@ -81,6 +81,12 @@ class ArticleBuilder(Handler):
 
   def finish_secion(self):
     if self.section:
+
+      # "Demote" subsections
+      for e in self.section.elements[1:]:
+        if isinstance(e, TitleElement):
+          e.level = 2
+
       self.sections.append(self.section)
     self.section = Section()
 
