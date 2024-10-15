@@ -6,6 +6,7 @@ class Element:
   """
   tag = None
   PreviewLength = 8
+  lines = []
 
   def __init__(self, spans, **kwargs):
     assert(isinstance(spans, list))
@@ -46,6 +47,7 @@ class Element:
 
 class BreakElement(Element):
   tag = 'break'
+  lines = []
   def __init__(self, **kwargs):
     super().__init__([], **kwargs)
 

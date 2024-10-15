@@ -71,7 +71,7 @@ class SimpleHandler(Handler):
     return () if ret is None else [ret]
 
 
-class Pipeline(Handler):
+class Pipeline:
   """ A pipeline is an ordered sequence of handlers. The pipeline accumulates
       results as it goes and makes them available via the results method.
   """
@@ -80,20 +80,23 @@ class Pipeline(Handler):
     self.results = []
     self.handlers = handlers if handlers else list()
 
-  def _on_data(self, data):
+  def _on_data(self, data, finish=False):
     """ Run the actual pipeline, optionally calling finish on handlers """
-    finish = len(data) == 0
-    data = []
 
     for h in self.handlers:
+      next_data = []
       for item in data:
         output = h.handle(item)
         if output:
+          next_data.extend(output)
 
       if finish:
-        data.extend(h.finish())
+        next_data.extend(h.finish())
+
+      data = next_data
 
     return data
+
 
   def append(self, next_handler):
     self.handlers.append(next_handler)
@@ -108,11 +111,17 @@ class Pipeline(Handler):
     self.results.extend(ret)
     return ret
 
-  def results(self):
-    return self.accum
-
   def process(self, iterable):
+
     for item in iterable:
       self.handle(item)
-    self.finish()
+
+    self.results.extend(self._on_data([], finish=True))
+
     return self.results
+
+
+  # def process2(self, iterable):
+
+
+

@@ -4,13 +4,13 @@ import sys
 from framing import *
 from pipeline import *
 from decoders import FrameDecoder
-from elements import IdentifyElements
+from elements import IdentifyElements, TitleElement, BreakElement
 from articles import ArticleBuilder
 from render import *
 
-# import logging
+import logging
 
-# logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 class RightStripCharacters(SimpleHandler):
   function = lambda x: x.rstrip('\r\n\t ')
@@ -30,6 +30,18 @@ class ElementsPrinter(SimpleHandler):
     print(f"{element.pid}: {element.attrs}")
 
 
+class HeadingElementPromoter(SimpleHandler):
+  last = None
+
+  def handle(self, i):
+    if type(i) is TitleElement and type(self.last) is not BreakElement:
+      i.level = 2
+
+    self.last = i
+    return [i]
+
+
+
 class Take(Handler):
   def __init__(self, count):
     self.i = 0
@@ -47,20 +59,20 @@ in_handlers = [
   RightStripCharacters(),
   LineFramer(),
   FrameDecoder(),
+  #DebugPrinter(),
 #  TagsAttrs()
-  IdentifyElements(),
-  ElementsPrinter(),
+  #IdentifyElements(),
+  HeadingElementPromoter().spy(),
+  #ElementsPrinter(),
+  #DebugPrinter(),
   ArticleBuilder(),
   SimpleHTMLRenderer(),
-  StdoutPrinter(),
-#  AnythingPrinter(),
-  #Tail()
+  StdoutPrinter()
 ]
 
 
 
 def test_thingy():
-
   with open(sys.argv[1]) as file:
     return Pipeline(in_handlers).process(file)
 
@@ -71,4 +83,3 @@ def test_thingy():
 
 
 x = test_thingy()
-# def test_other_thingy():

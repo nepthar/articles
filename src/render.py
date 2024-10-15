@@ -1,5 +1,6 @@
 import html
 
+from elements import Element
 from spans import Span
 from pipeline import Handler
 import sys
@@ -8,6 +9,15 @@ import sys
 class Renderer(Handler):
   pass
 
+class PythonRenderer(Renderer):
+
+  HeaderTemplate = """
+  # This should be python code
+  """
+
+  def __init__(self):
+    self.parts = []
+    self.sections = 0
 
 class SimpleHTMLRenderer(Renderer):
 
@@ -34,9 +44,10 @@ class SimpleHTMLRenderer(Renderer):
   def __init__(self):
     self.parts = []
     self.sections = 0
+    self.written = []
 
   def write(self, part):
-    self.next.handle(part)
+    self.written.append(part)
 
   def spanText(self, spans):
     parts = []
@@ -52,12 +63,12 @@ class SimpleHTMLRenderer(Renderer):
 
     return ''.join(parts)
 
-  def renderBody(self, e):
-    k = e.kind
+  def renderBody(self, e: Element):
+    k = e.tag
 
     text = html.escape(self.spanText(e.spans))
 
-    if k == 'h':
+    if k == 'h1' or k == 'h2':
       self.write(self.Heading.format(lvl=e.level, id=e.pid, text=text))
 
     elif k == 'p':
@@ -91,4 +102,4 @@ class SimpleHTMLRenderer(Renderer):
     self.write("</article></body></html>")
 
   def finish(self):
-    self.next.finish()
+    return self.written

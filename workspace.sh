@@ -7,6 +7,8 @@ workspace="articles"
 # commands prefixed with 'articles' will be run from the same dir as
 # this file in a subshell.
 
+source ./src/.venv/bin/activate
+
 articles.test-basic() {
   python3 ./src < ./samples/basic.article
 }

@@ -35,6 +35,10 @@ class EmptyDecoder(Decoder):
     return [BreakElement(empty_count=frame.empty_count)]
 
 
+class BreakDecoder(Decoder):
+  FrameClass = BreakElement
+
+
 class InvalidDecoder(Decoder):
   FrameClass = InvalidFrame
   ElementClass = InvalidElement
@@ -90,11 +94,11 @@ class FrameDecoder(Handler):
 
   def handle(self, frame):
     # Dispatch based on frame
-    dec = self.decoders[frame.__class__]
+    dec = self.decoders.get(frame.__class__)
 
     # TODO: Try/Catch -> invalid frame
 
     if dec:
       return dec.decode(frame)
     else:
-      return [UnknownElement(FixedSpanner.span(frame.lines))]
+      return [UnknownElement(FixedSpanner.spanLines(frame.lines))]

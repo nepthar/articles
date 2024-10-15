@@ -1,6 +1,7 @@
 from collections import Counter
 
 from pipeline import Handler
+from elements import *
 
 """
 Decision: We have to figure out how to deal with new sections. Maybe I should
@@ -69,13 +70,14 @@ class ArticleBuilder(Handler):
     self.section = None
     self.md = {}
 
-  def handle(e):
+  def handle(self, e):
     if isinstance(e, MetadataElement):
       self.md = e.attrs
     elif isinstance(e, BreakElement):
       self.finish_secion()
     else:
       self.section.elements.append(e)
+    return []
 
   def finish_secion(self):
     if self.section:
