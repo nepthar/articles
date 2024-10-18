@@ -53,9 +53,14 @@ Epigraphs
 
   As always, these design choices are merely one approach that Tufte CSS provides by default. Other approaches, such as changing color on click or mouseover, or using highlighting or color instead of underlining to denote links, could also be made to work. The goal is to make sentences readable without interference from links, as well as to make links immediately identifiable even by casual web users.
 
-   - Eggs
-   - Milk
-   - Butter
+  + Eggs:
+    Yeah, alright. I guess this works okay.
+
+  + Milk:
+    Something else.
+
+  + Butter:
+    How can we define this.
 
     quote:
     The English language . . . becomes ugly and inaccurate because our thoughts are foolish, but the slovenliness of our language makes it easier for us to have foolish thoughts.
@@ -74,9 +79,9 @@ Epigraphs
 
 Sidenotes, Footnotes, and Marginal Notes
 
-  One of the most distinctive features of Tufte’s style is his extensive use of sidenotes<n> Sidenotes are like footnotes, except they don’t force the reader to jump their eye to the bottom of the page, but instead display off to the side in the margin. Perhaps you have noticed their use in this document already. You are very astute.
+  One of the most distinctive features of Tufte’s style is his extensive use of sidenotes<burritos> Sidenotes are like footnotes, except they don’t force the reader to jump their eye to the bottom of the page, but instead display off to the side in the margin. Perhaps you have noticed their use in this document already. You are very astute.
 
-    side:
+    sidenote: <burritos>
     This is a sidenote
 
   Sidenotes are a great example of the web not being like print. On sufficiently large viewports, Tufte CSS uses the margin for sidenotes, margin notes, and small figures. On smaller viewports, elements that would go in the margin are hidden until the user toggles them into view. The goal is to present related but not necessary information such as asides or citations as close as possible to the text that references them. At the same time, this secondary information should stay out of the way of the eye, not interfering with the progression of ideas in the main text.

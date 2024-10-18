@@ -1,6 +1,6 @@
 import html
 
-from elements import Element
+from elements import *
 from spans import Span
 from pipeline import Handler
 import sys
@@ -8,6 +8,74 @@ import sys
 
 class Renderer(Handler):
   pass
+
+#   # Section decorations
+#   def header(self, article):
+#     pass
+
+#   def footer(self, article):
+#     pass
+
+#   def pre_section(self, section):
+#     pass
+
+#   def post_section(self, section):
+#     pass
+
+#   def page_break(self, e):
+#     pass
+
+#   def footnote(self, e):
+#     pass
+
+#   # Unusual elements - errors, comments
+#   def unknown(self, e):
+#     """ An unknown or reserved future element """
+#     pass
+
+#   def invalid(self, e):
+#     """ An element that failed to parse """
+#     pass
+
+#   def comment(self, e):
+#     """ A comment left in the article """
+#     pass
+
+#   # Normal elements
+#   def title(self, e):
+#     pass
+
+#   def paragraph(self, e):
+#     pass
+
+#   def o_list(self, e):
+#     pass
+
+#   def u_list(self, e):
+#     pass
+
+#   def span(self, span):
+#     pass
+
+#   def dispatch_body(self, e: Element):
+#     match e:
+#       case TitleElement:
+#         return self.title(e)
+#       case ParagraphElement:
+#         return self.paragraph(e)
+#       case OrderedListElement:
+#         return self.o_list(e)
+#       case
+
+
+#   def dispatch_block(self, e: BlockElement):
+
+
+#   def handle(self, article):
+#     self.results = []
+#     self.results.append()
+
+
 
 class PythonRenderer(Renderer):
 
@@ -61,7 +129,7 @@ class SimpleHTMLRenderer(Renderer):
       for style in s.style:
         parts.append(f'</{s}>')
 
-    return ''.join(parts)
+    return '\n'.join(parts)
 
   def renderBody(self, e: Element):
     k = e.tag
@@ -80,7 +148,7 @@ class SimpleHTMLRenderer(Renderer):
     elif k == 'code':
       self.write(self.Code.format(text))
 
-    elif k == 'pre':
+    elif k == 'pre' or k == 'block':
       self.write(self.Pre.format(text))
 
     else:

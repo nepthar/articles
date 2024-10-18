@@ -5,6 +5,36 @@ from typing import NamedTuple
 #from misc import Log, flatten
 
 
+class Collector:
+  @staticmethod
+  def collect(lines):
+    raise NotImplementedError
+
+class PoetryCollector(Collector):
+  @staticmethod
+  def collect(lines):
+    """ Aggregate lines of text preserving line breaks """
+    return [Span(x) for x in lines]
+
+
+class ProseCollector(Collector):
+  @staticmethod
+  def collect(lines):
+    """ Aggregate lines of text without preserving line breaks """
+    result = []
+    cur = []
+    for line in lines:
+      if line:
+        cur.append(line)
+      else:
+        result.append(Span(' '.join(cur)))
+        cur = []
+
+    if cur:
+      result.append(Span(' '.join(cur)))
+
+    return result
+
 
 class Style(NamedTuple):
   ident: str
@@ -68,34 +98,34 @@ def collectPoetry(lines):
   return [Span(x) for x in lines]
 
 
-class LinesSpanner:
-  """ Runs lines of text through a list of spanners. Once a spanner
-      has assigned either a style or a link to a span, it is not fed through
-      the rest.
-  """
+# class LinesSpanner:
+#   """ Runs lines of text through a list of spanners. Once a spanner
+#       has assigned either a style or a link to a span, it is not fed through
+#       the rest.
+#   """
 
-  def __init__(self, textLinesCollector, spanners):
-    self.collect = textLinesCollector
-    self.spanners = spanners
+#   def __init__(self, textLinesCollector, spanners):
+#     self.collect = textLinesCollector
+#     self.spanners = spanners
 
-  def spanLines(self, lines):
-    spans = self.collect(lines)
+#   def spanLines(self, lines):
+#     spans = self.collect(lines)
 
-    for spanner in self.spanners:
-      newSpans = []
-      for span in spans:
-        if span.isPlain():
-          newSpans.extend(spanner.span(span.text))
-        else:
-          newSpans.append(span)
-      spans = newSpans
+#     for spanner in self.spanners:
+#       newSpans = []
+#       for span in spans:
+#         if span.isPlain():
+#           newSpans.extend(spanner.span(span.text))
+#         else:
+#           newSpans.append(span)
+#       spans = newSpans
 
-    return spans
+#     return spans
 
-  def withSpanner(self, spanner):
-    spanners = self.spanners.copy()
-    spanners.append(spanner)
-    return LinesSpanner(self.collect, spanners)
+#   def withSpanner(self, spanner):
+#     spanners = self.spanners.copy()
+#     spanners.append(spanner)
+#     return LinesSpanner(self.collect, spanners)
 
 
 # class RegexMatchSpanner:
@@ -177,7 +207,7 @@ class LinesSpanner:
 
 
 Span.Empty = Span('')
-FixedSpanner = LinesSpanner(collectPoetry, [])
-SimpleProse = LinesSpanner(collectProse, [])
-ProseSpanner = LinesSpanner(collectProse, [])
-PoetrySpanner = LinesSpanner(collectPoetry, [])
+# FixedSpanner = LinesSpanner(collectPoetry, [])
+# SimpleProse = LinesSpanner(collectProse, [])
+# ProseSpanner = LinesSpanner(collectProse, [])
+# PoetrySpanner = LinesSpanner(collectPoetry, [])

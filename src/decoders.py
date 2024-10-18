@@ -1,8 +1,14 @@
-from spans import FixedSpanner, ProseSpanner, PoetrySpanner
+#from spans import FixedSpanner, ProseSpanner, PoetrySpanner, Collector
+from spans import PoetryCollector, ProseCollector
 from elements import *
 from framing import *
 from pipeline import Handler
 
+import re
+
+
+PoetrySpanner = 3
+ProseSpanner = 4
 
 class Decoder:
   """
@@ -14,17 +20,22 @@ class Decoder:
 
   FrameClass = None
   ElementClass = NotImplementedElement
-  Spanner = FixedSpanner
+  Collector = PoetryCollector
+  #Spanners = FixedSpanner
 
   def mk_element(self, frame, spans):
     return self.ElementClass(spans)
 
-  def span(self, lines):
-    if self.Spanner:
-      return self.Spanner.spanLines(lines)
+  # # def span(self, lines):
+  # #   if self.Spanner:
+  # #     return self.Spanner.spanLines(lines)
+
+  # # This is its own function for ease of overriding
+  # def collect(self, lines):
+  #   return self.Collector(lines)
 
   def decode(self, frame):
-    spans = self.span(frame.lines)
+    spans = self.Collector.collect(frame.lines)
     return [self.mk_element(frame, spans)]
 
 
@@ -74,7 +85,20 @@ class ParagraphDecoder(Decoder):
 
 class BlockDecoder(Decoder):
   FrameClass = BlockFrame
-  ElementClass = BlockElement
+  DirectiveRegex = re.compile(r'^([\w]+):( (.*))?$')
+
+  def decode(self, frame):
+    spans = PoetryCollector.collect(frame.lines)
+    directive = 'unknown'
+    args = ()
+
+    dmatch = self.DirectiveRegex.match(spans[0].text)
+    if dmatch:
+      (directive, _, args) = dmatch.groups()
+      spans = spans[1:]
+
+    be = BlockElement(directive, args, spans)
+    return [be]
 
 
 class ListDecoder(Decoder):
@@ -101,4 +125,4 @@ class FrameDecoder(Handler):
     if dec:
       return dec.decode(frame)
     else:
-      return [UnknownElement(FixedSpanner.spanLines(frame.lines))]
+      return [UnknownElement(PoetryCollector.collect(frame.lines))]

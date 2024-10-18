@@ -29,4 +29,29 @@ First Subtitle (H2)
 
 Second Subtitle (H2)
 
+  // I wasn't sure if I should actually
   This ends here That's all folks
+
+  This section also contains a list:
+
+  - Milk
+  - Butter
+  - Cheese
+
+Third Subtitle, on blocks.
+
+  Now, here's a few blocks:
+
+    quote:
+    Know when to hold 'em and when to fold 'em.
+
+  and
+
+    code:
+    y = [y * 2 for y in range(3)]
+
+  and
+
+    img: images/out_of_dogs.jpg
+
+  I think they need de-denting to frame properly. This means you can't have two blocks in a row, but we're working on that.

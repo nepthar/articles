@@ -52,13 +52,6 @@ class BreakElement(Element):
     super().__init__([], **kwargs)
 
 
-# class BreakElement(Element):
-#   # TODO: This appears to never be used. Consider scrapping it
-#   tag = 'minor-break'
-#   def __init__(self, **kwargs):
-#     super().__init__([], **kwargs)
-
-
 class InvalidElement(Element):
   tag = 'invalid'
   def __init__(self, spans, **kwargs):
@@ -68,6 +61,14 @@ class InvalidElement(Element):
 
 class UnknownElement(Element):
   tag = 'unknown'
+
+
+class BlockElement(Element):
+  tag = 'block'
+  def __init__(self, directive, args, spans, **kwargs):
+    super().__init__(spans, **kwargs)
+    self.directive = directive
+    self.args = args
 
 
 class MetadataElement(Element):
@@ -102,12 +103,12 @@ class ParagraphElement(Element):
   tag = 'p'
 
 
-class BlockElement(Element):
-  tag = 'block'
-
-
 class ListElement(Element):
-  tag = 'list'
+  tag = 'ulist'
+
+
+class OrderedListElement(Element):
+  tag = 'olist'
 
 
 class IdentifyElements(Handler):
