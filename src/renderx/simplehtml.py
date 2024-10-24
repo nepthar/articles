@@ -1,6 +1,6 @@
 # import html
 
-# from spans import Span
+# from text import Span
 
 
 # def st(a, b):

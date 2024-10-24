@@ -71,6 +71,10 @@ class BlockElement(Element):
     self.args = args
 
 
+class FixedTextElement(Element):
+  tag = 'pre'
+
+
 class MetadataElement(Element):
   tag = 'metadata'
   def __init__(self, md):

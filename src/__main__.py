@@ -7,6 +7,7 @@ from decoders import FrameDecoder
 from elements import IdentifyElements, TitleElement, BreakElement
 from articles import ArticleBuilder
 from render import *
+from blocks import *
 
 import logging
 
@@ -34,6 +35,7 @@ in_handlers = [
   RightStripCharacters(),
   LineFramer(),
   FrameDecoder(),
+  BlockDirectiveHandler(),
   ArticleBuilder(),
   SimpleHTMLRenderer(),
   StdoutPrinter()

@@ -1,7 +1,7 @@
 import html
 
 from elements import *
-from spans import Span
+from text import Span
 from pipeline import Handler
 import sys
 

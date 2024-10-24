@@ -1,68 +1,54 @@
-#from spans import Spanner
-from elements import *
+from text import Span
+from elements import BlockElement, FixedTextElement
+from pipeline import Handler
 
-class BlockDecoder:
-  # The block identifier prefix ("quote: ")
-  kind = None
 
-  def decodeBlock(self, blockLines, argString):
+class BlockProcessor:
+  def process(self, args, spans):
     raise NotImplementedError
 
 
-class SimpleBlockDecoder(BlockDecoder):
-  kind = None
-  spanner = None
-  element = None
+# class CodeDecoder(BlockDecoder):
+#   kind = 'code'
+#   spanner = Spanner.Fixed
 
-  def decodeBlock(self, lines, argString):
-    e = self.element(self.spanner.span(lines))
-    e.args = argString
-    return (e,)
-
-
-class NoteDecoder(SimpleBlockDecoder):
-  kind = 'note'
-  spanner = Spanner.Prose
-  element = NoteElement
+#   def decodeBlock(self, lines, argString):
+#     e = CodeBlockElement(self.spanner.span(lines))
+#     e.lang = argString
+#     return (e,)
 
 
-class FootnoteDecoder(SimpleBlockDecoder):
-  kind = 'footnote'
-  spanner = Spanner.Prose
-  element = FootnoteElement
+class FixedTextProcessor(BlockProcessor):
+  directive = 'pre'
+
+  def process(self, args, spans):
+
+    return [FixedTextElement(spans)]
 
 
-class MarginNoteDecoder(SimpleBlockDecoder):
-  kind = 'margin'
-  spanner = Spanner.Prose
-  element = MarginNoteElement
+class BlockDirectiveHandler(Handler):
+  """ Runs through the list of registered block handlers """
 
+  def __init__(self, processors={}, fallback=FixedTextProcessor()):
+    self.processors = processors
+    self.fallback = fallback
 
-class InlineNoteDecoder(SimpleBlockDecoder):
-  kind = 'inline'
-  spanner = Spanner.Prose
-  element = InlineNoteElement
+  def register(self, processor):
+    self.processors[processor.directive] = processor
 
+  def handle(self, block_element):
+    if isinstance(block_element, BlockElement):
+      processor = self.processors.get(block_element.directive)
 
-class FixedTextDecoder(SimpleBlockDecoder):
-  kind = 'fixed'
-  spanner = Spanner.Fixed
-  element = FixedWidthBlockElement
+      if processor:
+        return processor.process(block_element.args, block_element.spans)
+      else:
+        spans = [
+          Span(f"unhandled - {block_element.directive}({block_element.args})")
+        ]
+        spans.extend(block_element.spans)
 
+        return self.fallback.process([], spans)
 
-class QuoteDecoder(SimpleBlockDecoder):
-  # TODO: Have this handle quote attribution instead of just being a
-  # simple decoder.
-  kind = 'quote'
-  spanner = Spanner.Fixed
-  element = BlockQuoteElement
-
-
-class CodeDecoder(BlockDecoder):
-  kind = 'code'
-  spanner = Spanner.Fixed
-
-  def decodeBlock(self, lines, argString):
-    e = CodeBlockElement(self.spanner.span(lines))
-    e.lang = argString
-    return (e,)
+    else:
+      return [block_element]

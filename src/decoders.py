@@ -1,5 +1,4 @@
-#from spans import FixedSpanner, ProseSpanner, PoetrySpanner, Collector
-from spans import PoetryCollector, ProseCollector
+from text import PoetryCollector, ProseCollector
 from elements import *
 from framing import *
 from pipeline import Handler
@@ -21,7 +20,7 @@ class Decoder:
   FrameClass = None
   ElementClass = NotImplementedElement
   Collector = PoetryCollector
-  #Spanners = FixedSpanner
+#  Spanners = FixedSpanner
 
   def mk_element(self, frame, spans):
     return self.ElementClass(spans)
@@ -69,7 +68,7 @@ class MetadataDecoder(Decoder):
 class CommentDecoder(Decoder):
   FrameClass = CommentFrame
   ElementClass = CommentElement
-  Spanner = ProseSpanner
+  Collector = ProseCollector
 
 
 class TitleDecoder(Decoder):
@@ -80,7 +79,7 @@ class TitleDecoder(Decoder):
 class ParagraphDecoder(Decoder):
   FrameClass = ParagraphFrame
   ElementClass = ParagraphElement
-  Spanner = ProseSpanner
+  Collector = ProseCollector
 
 
 class BlockDecoder(Decoder):
