@@ -8,14 +8,17 @@ class BlockProcessor:
     raise NotImplementedError
 
 
-# class CodeDecoder(BlockDecoder):
-#   kind = 'code'
-#   spanner = Spanner.Fixed
+class QuoteProcessor(BlockProcessor):
+  pass
 
-#   def decodeBlock(self, lines, argString):
-#     e = CodeBlockElement(self.spanner.span(lines))
-#     e.lang = argString
-#     return (e,)
+
+class CodeProcessor(BlockProcessor):
+  directive = 'code'
+
+  def decodeBlock(self, lines, argString):
+    e = CodeBlockElement(self.spanner.span(lines))
+    e.lang = argString
+    return (e,)
 
 
 class FixedTextProcessor(BlockProcessor):

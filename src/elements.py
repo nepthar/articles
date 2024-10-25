@@ -13,7 +13,6 @@ class Element:
     self.spans = spans
     self.attrs = kwargs
     self.ids = []
-    self.pid = "-"
 
   def preview(self):
     if not self.spans:

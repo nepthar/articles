@@ -119,9 +119,3 @@ class Pipeline:
     self.results.extend(self._on_data([], finish=True))
 
     return self.results
-
-
-  # def process2(self, iterable):
-
-
-

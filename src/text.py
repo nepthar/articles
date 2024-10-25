@@ -12,6 +12,7 @@ class Collector:
   def collect(lines):
     raise NotImplementedError
 
+
 class PoetryCollector(Collector):
   @staticmethod
   def collect(lines):
@@ -41,6 +42,7 @@ class ProseCollector(Collector):
 class Style(NamedTuple):
   ident: str
   description: str
+
 
 Styles = {s.ident: s for s in [
   Style('b', 'bold/emphasis'),
@@ -78,7 +80,6 @@ class Span:
     return f'Span({self.preview()})'
 
 
-
 class Stylizer:
   # The
   Priority = 100
@@ -93,3 +94,9 @@ class NoopStyleizer:
   def apply(self, span):
     return [span]
 
+
+class InlineMarkdownStyleizer(Stylizer):
+  """ Handlines inline markdown styling - bold, italic, strikethrough """
+  def apply(self, span):
+    ## TODO
+    return [span]
