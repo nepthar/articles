@@ -1,0 +1,61 @@
+article: Simple Blocks
+title: A simple test of stuff
+
+
+  A quote block
+
+    quote:
+    A bird in the hand saves 2
+
+  Another banger of a quote.
+
+    quote:
+    To be or not to be; that is the question
+      ~ Mark Twain
+
+  A code block.
+
+    code: python
+    print("hello world")
+
+  fixed text:
+
+    fixed:
+    +-------------+
+    |    Hello    |
+    +-------------+
+
+  Image:
+
+    image: path/to/image.jpg
+    alt: It's an image of the path of a jpeg.
+    align: inline
+
+  Attn:
+
+    attn: warning
+    You're being noticed
+
+  Footer:
+
+    footnote: [figure-1]
+    I wonder how david foster wallace would feel about this
+
+  Inline Note [on-hobbits] that I've written:
+
+    note: [on-hobbits]
+    hobbits are bad
+
+  References:
+
+    links:
+    [1]: www.wikipedia.org
+    [2]: Another thing.
+
+  An unspecified block:
+
+    What's up guys. This is just some poetry, I guess
+    How's
+    it
+    looking?
+
