@@ -1,6 +1,7 @@
 import html
 
 from elements import *
+from block_elements import *
 from text import Span
 from pipeline import Handler
 import sys
@@ -105,7 +106,8 @@ class SimpleHTMLRenderer(Renderer):
   Quote = '<blockquote><p>{}</p></blockquote>'
   Code = '<code>{}</code>'
   Pre = '<pre>{}</pre>'
-  Unknown = "<h3>Unknown Frame {kind}</h3><pre>{text}</pre>"
+  UnknownBlock = "<h3>Unknown Block Element: {kind}</h3><pre>{text}</pre>"
+  Unknown = "<h3>Unknown Element: {kind}</h3><pre>{text}</pre>"
   FooterTemplate = "</html>"
 
 
@@ -131,7 +133,48 @@ class SimpleHTMLRenderer(Renderer):
 
     return '\n'.join(parts)
 
+
   def renderBody(self, e: Element):
+    text = html.escape(self.spanText(e.spans))
+
+    match e:
+      case TitleElement():
+        self.write(self.Heading.format(lvl=e.level, id=e.pid, text=text))
+      case ParagraphElement():
+        self.write(self.Paragraph.format(text))
+      case QuoteElement():
+        self.write(self.Quote.format(text))
+      case CodeElement():
+        self.write(self.Code.format(text))
+      case FixedTextElement():
+        self.write(self.Pre.format(text))
+
+      case ListElement():
+        if e.ordered:
+          self.write('<ol>')
+        else:
+          self.write('<ul>')
+        for item_spans in e.items:
+          item_text = html.escape(self.spanText(item_spans))
+          self.write(f'<li>{item_text}</li>')
+        if e.ordered:
+          self.write('</ol>')
+        else:
+          self.write('</ul>')
+
+      case BlockElement():
+        self.write(self.UnknownBlock.format(kind=e.directive, text=text))
+
+      case Element():
+        kind = e.__class__.__name__
+        self.write(self.Unknown.format(kind=kind, text=text))
+
+      case other:
+        raise Exception(f"Got something that wasn't an element: {other}")
+
+
+
+  def renderBody2(self, e: Element):
     k = e.tag
 
     text = html.escape(self.spanText(e.spans))

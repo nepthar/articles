@@ -123,7 +123,7 @@ class BlockFrame(Frame):
 
 
 class ListFrame(Frame):
-  Prefixes = ['   ']
+  Prefixes = ['   ', ' ' * 5, ' ' * 6]
   MaxEmptyLines = 1
 
 

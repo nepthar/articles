@@ -7,6 +7,7 @@ class Element:
   tag = None
   PreviewLength = 8
   lines = []
+  pid = None
 
   def __init__(self, spans, **kwargs):
     assert(isinstance(spans, list))
@@ -53,6 +54,7 @@ class BreakElement(Element):
 
 class InvalidElement(Element):
   tag = 'invalid'
+
   def __init__(self, spans, **kwargs):
     super().__init__(spans, **kwargs)
     self.exception = kwargs.get('exception')
@@ -72,6 +74,10 @@ class BlockElement(Element):
 
 class FixedTextElement(Element):
   tag = 'pre'
+
+
+class QuoteElement(Element):
+  tag = 'quote'
 
 
 class MetadataElement(Element):
@@ -107,11 +113,16 @@ class ParagraphElement(Element):
 
 
 class ListElement(Element):
-  tag = 'ulist'
+  tag = 'list'
 
+  def __init__(self, items, ordered, **kwargs):
+    spans = []
+    for i in items:
+      spans.extend(i)
+    super().__init__(spans)
+    self.ordered = ordered
+    self.items = items
 
-class OrderedListElement(Element):
-  tag = 'olist'
 
 
 class IdentifyElements(Handler):

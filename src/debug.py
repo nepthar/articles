@@ -52,7 +52,7 @@ class FrameDumper(Handler):
   def finish(self):
     for i, f in enumerate(self.frames):
 
-      print(f"{i}: {f.kind.name} Frame")
+      print(f"{i}: {f.__class__.__name__}")
       if f.lines:
         print('\n'.join(f"  |{l}" for l in f.lines))
 

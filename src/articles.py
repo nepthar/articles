@@ -59,7 +59,7 @@ class Article:
 
   @property
   def title(self):
-    return self.meta.get('title')
+    return self.meta.get('article')
 
 
 class ArticleBuilder(Handler):
@@ -67,7 +67,7 @@ class ArticleBuilder(Handler):
   def __init__(self):
     self.preamble = []
     self.sections = []
-    self.section = None
+    self.section = Section()
     self.md = {}
 
   def handle(self, e):

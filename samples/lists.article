@@ -1,0 +1,104 @@
+article: List test
+author: J. Parker <netphar@gmail.com>
+date: Fall, 2024
+
+
+Basic list types
+
+  Lists can be made with several types of prefixes: -, o, *, {number}., '+.'.
+
+Compact Lists
+
+  A compact list has one item per line. Each line starts with a prefix.
+  You have to use the same prefix for all items. The list below has two spaces between the bullet and the text.
+
+   -  eggs
+   -  milk
+   -  goats
+
+  And now here's one with just a space:
+
+   - eggs
+   - milk
+   - goats
+
+  Are these both valid lists? Honestly, I'm not sure.
+
+Sparse List
+
+   - Eggs, the kind that you had back in those days when you were on the farm and everything was perfect and great.
+
+   - Milk, ideally form some kind of weird bird. I guess. Notice how these items can wrap to align the start of the text? That's just done so it looks neat and tidy.
+
+   - You could also use dashes, or whatever you like.
+
+  The next list contains the same content, but it's hard-wrapped at around 78 columns.
+
+   -  Eggs, the kind that you had back in those days when you were on the
+      farm and everything was perfect and great.
+
+   -  Milk, ideally form some kind of weird bird. I guess. Notice how these
+      items can wrap to align the start of the text? That's just done so it
+      looks neat and tidy.
+
+   -  You could also use dashes, or whatever you like.
+
+Compact lists with hard wrap
+
+   -  This is the first item in the list. The other items that follow will
+      be hard wrapped and compacted.
+   -  Second item. Here it is!
+   -  Finally the third item. The third item also takes up more than one
+      line.
+
+Compact list with soft wrap
+
+  There really shouldn't be a problem here. Text editors with word wrap on are going to have a problem rendering this correctly in plain text. But that's OK, I think.
+
+   -  This is the first item in the list. The other items that follow will be hard wrapped and compacted.
+   -  Second item. Here it is!
+   -  Finally the third item. The third item also takes up more than one line.
+
+Different prefixes
+
+  The letter o.
+
+   o  Eggs
+   o  Milk
+   o  Cheese
+
+  An asterisk, although I hate this one.
+
+   * Eggs
+   * Milk
+   * Cheese
+
+  A number with a period.
+
+   1. Eggs
+   2. Milk
+   3. Cheese
+
+  A letter with a period
+
+   a. Eggs
+   b. Milk
+   c. Cheese
+
+Unhanded Edge Cases
+
+  mixed prefix lists
+
+   -  eggs
+   b. milk
+   3. cheese
+   o  tacos
+
+  mixed indentation lists
+
+   - eggs
+   -  milk
+   - cheese
+
+
+

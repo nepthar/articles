@@ -6,9 +6,6 @@ from pipeline import Handler
 import re
 
 
-PoetrySpanner = 3
-ProseSpanner = 4
-
 class Decoder:
   """
   This class converts a frame into zero or more elements. Decoders
@@ -20,7 +17,6 @@ class Decoder:
   FrameClass = None
   ElementClass = NotImplementedElement
   Collector = PoetryCollector
-#  Spanners = FixedSpanner
 
   def mk_element(self, frame, spans):
     return self.ElementClass(spans)
