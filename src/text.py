@@ -1,28 +1,19 @@
 from typing import NamedTuple
 
 
-class Collector:
-  """
-    There are only two kinds of collectors: One that preserves line breaks
-    and one that doesn't. I've called them "poetry" and "prose".
+"""
+Collectors
+There are only two kinds of collectors: One that preserves line breaks
+and one that doesn't. I've called them "poetry" and "prose".
 
-    Prose is designed to be "reflowed", that is adjust to the view width.
-  """
-  @staticmethod
-  def collect(lines):
-    raise NotImplementedError
+Prose is designed to be "reflowed", that is adjust to the view width.
+"""
 
+def collect_poetry(lines):
+  """ Aggregate lines of text preserving line breaks """
+  return [Span(x) for x in lines]
 
-class PoetryCollector(Collector):
-  @staticmethod
-  def collect(lines):
-    """ Aggregate lines of text preserving line breaks """
-    return [Span(x) for x in lines]
-
-
-class ProseCollector(Collector):
-  @staticmethod
-  def collect(lines):
+def collect_prose(lines):
     """ Aggregate lines of text without preserving line breaks """
     result = []
     cur = []

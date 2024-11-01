@@ -1,4 +1,4 @@
-from text import PoetryCollector, ProseCollector
+from text import collect_poetry, collect_prose
 from elements import *
 from framing import *
 from pipeline import Handler
@@ -16,21 +16,14 @@ class Decoder:
 
   FrameClass = None
   ElementClass = NotImplementedElement
-  Collector = PoetryCollector
+  Collector = collect_poetry
 
   def mk_element(self, frame, spans):
     return self.ElementClass(spans)
 
-  # # def span(self, lines):
-  # #   if self.Spanner:
-  # #     return self.Spanner.spanLines(lines)
-
-  # # This is its own function for ease of overriding
-  # def collect(self, lines):
-  #   return self.Collector(lines)
-
   def decode(self, frame):
-    spans = self.Collector.collect(frame.lines)
+    # Collector otherwise tries call this with self as the first arg.
+    spans = self.Collector.__func__(frame.lines)
     return [self.mk_element(frame, spans)]
 
 
@@ -64,7 +57,7 @@ class MetadataDecoder(Decoder):
 class CommentDecoder(Decoder):
   FrameClass = CommentFrame
   ElementClass = CommentElement
-  Collector = ProseCollector
+  Collector = collect_prose
 
 
 class TitleDecoder(Decoder):
@@ -75,7 +68,7 @@ class TitleDecoder(Decoder):
 class ParagraphDecoder(Decoder):
   FrameClass = ParagraphFrame
   ElementClass = ParagraphElement
-  Collector = ProseCollector
+  Collector = collect_prose
 
 
 class BlockDecoder(Decoder):

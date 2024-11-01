@@ -4,7 +4,8 @@ from pipeline import Handler
 from misc import KeyValue
 
 class Frame:
-  # The prefixes, if any, that this frame may begin with
+  # The prefixes, if any, that this frame may begin with. These prefixes
+  # are stripped from the frame.
   Prefixes = []
 
   # The number of empty lines that may be present in this frame before
@@ -55,8 +56,7 @@ class Frame:
     return self
 
   def __repr__(self):
-    pfx = 'None' if self.prefix is None else f"'{self.prefix}'"
-    return f"<{self.__class__.__name__} lines={len(self.lines)} prefix={pfx}>"
+    return f"<{self.__class__.__name__} lines={len(self.lines)} prefix={self.prefix}>"
 
   def debug(self):
     ret = [self.__repr__()]

@@ -1,6 +1,6 @@
 from enum import Enum
 
-from text import PoetryCollector, ProseCollector
+from text import collect_poetry, collect_prose
 from elements import *
 from framing import ListFrame
 from pipeline import Handler
@@ -18,24 +18,25 @@ class ListDecoder(Decoder):
   """
   FrameClass = ListFrame
 
-
-  # These prefixes start a new item in a list
+  # These start a new ordered list item
   OrderedPatterns = [
     ('alnum', r"[a-zA-Z0-9]\."),
-    ('plus', r"\+")
+    ('plus',  r"\+")
   ]
 
+  # These start a new unordered list item
   UnorderedPatterns = [
     ('dash', r"\-"),
-    ('star', r"\*")
+    ('star', r"\*"),
+    ('o',    r"o")
   ]
 
   @staticmethod
   def to_regex(part):
     return re.compile(r"^" + part + r"\s+")
 
-
   def __init__(self):
+    # TODO: This seems messy, consider reworking
     self.o_patterns = {
       name: ListDecoder.to_regex(p) for name, p in self.OrderedPatterns
     }
@@ -52,7 +53,7 @@ class ListDecoder(Decoder):
 
   def _finish_item(self):
     if self.current_item:
-      self.items.append(ProseCollector.collect(self.current_item))
+      self.items.append(collect_prose(self.current_item))
     self.current_item = []
 
   def _set_prefix(self, first_line):
@@ -75,7 +76,7 @@ class ListDecoder(Decoder):
     self._set_prefix(frame.lines[0])
 
     if self.prefix is None:
-      return [InvalidElement(PoetryCollector.collect(frame.lines))]
+      return [InvalidElement(collect_poetry.collect(frame.lines))]
 
     pr = self.prefix[1]
 
@@ -96,7 +97,8 @@ class ListDecoder(Decoder):
           self.current_item.append(cut_line)
 
         else:
-          # Otherwise strip whitespace and append
+          # Otherwise strip whitespace and append. I think this works
+          # okay, but I doubt I've covered every edge case.
           self.current_item.append(line.strip())
 
     # Finish any existing item

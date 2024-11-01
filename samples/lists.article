@@ -24,6 +24,14 @@ Compact Lists
 
   Are these both valid lists? Honestly, I'm not sure.
 
+Indentation
+
+  Lists should start with three spaces, then the item prefix, then an additional amount of spaces, then the item itself. Here's a mixed indent:
+
+   - eggs
+   -  milk
+   - cheese
+
 Sparse List
 
    - Eggs, the kind that you had back in those days when you were on the farm and everything was perfect and great.
@@ -93,12 +101,5 @@ Unhanded Edge Cases
    b. milk
    3. cheese
    o  tacos
-
-  mixed indentation lists
-
-   - eggs
-   -  milk
-   - cheese
-
 
 

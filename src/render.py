@@ -165,6 +165,9 @@ class SimpleHTMLRenderer(Renderer):
       case BlockElement():
         self.write(self.UnknownBlock.format(kind=e.directive, text=text))
 
+      case UnknownElement():
+        self.write(self.Unknown.format(kind="Undecodeable", text=text))
+
       case Element():
         kind = e.__class__.__name__
         self.write(self.Unknown.format(kind=kind, text=text))
