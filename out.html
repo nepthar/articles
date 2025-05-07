@@ -1,0 +1,90 @@
+
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Writing Improvement Proposal: Articles</title>
+    <link rel="stylesheet" href="tufte.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  </head>
+<body><article>
+<h1>Writing Improvement Proposal: Articles</h1>
+<section>
+</section>
+<section>
+<p>Hi there. This is text formatting strategy that I&#x27;m working on called Articles. I want to be able to write in plain text and then publish it to a blog or something. I&#x27;d like your feedback on the structure and visual clarity of the spec. By the way, this part of the document is called the &quot;preamble&quot;. Cool.</p>
+<h2 id="None">Abstract</h2>
+<p>I keep notes in text, and I want something that I can publish. I like some, but not all parts of markdown. The goal of Articles (working title) is to take all of the good parts of markdown without the visually awful title stuff and make a &quot;plain text first&quot; opinionated, easily parseable format for long form writing, documentation, etc.</p>
+<p>Articles takes a lot of inspiration from RFCs, which I think are a good example of succinct, visually clear writing. In fact, I plan to write an RFC formatter.</p>
+</section>
+<section>
+<h1 id="None">The second Major Section</h1>
+<p>This is the second major section. It&#x27;s going to talk about paragraphs, titles, and sections. The most basic of Article&#x27;s features.</p>
+<h2 id="None">Major Section 2, Minor Section 1: Titles</h2>
+<p>There are two types of section headings, major and minor. At the top of this document, &quot;Abstract&quot; is a major heading while the title of this current section, &quot;Major Section 2, Minor Section 1: Titles&quot;, is a minor heading. The difference is in how much visual space comes before the heading.</p>
+<p>Titles are easily distinguished from the rest of the text because they are not indented at all. Two consecutive empty lines (or three consecutive newline characters) form a &quot;major section break&quot;. Any title that comes right after a &quot;major section break&quot; is considered a Major Title, while other titles are minor titles.</p>
+<p>If you were writing something extremely lengthy, like a book, you would do something like have each chapter as its own article file, thus giving you three logical levels of sections. Beyond that, the base Article system won&#x27;t support anything more deeply nested.</p>
+<h2 id="None">Paragraphs</h2>
+<p>Paragraphs are very simple and (I think?) quite similar to markdown. Standard &quot;plain&quot; paragraph text is distinguished by the fact that it is indented by two spaces, giving it some nice visual separation from titles.</p>
+<p>Although in this article, I use an empty line (minor section break) between titles and paragraphs, it is not necessary.</p>
+<p>Note that if you write two paragraphs without an empty line separating them, Articles will consider them to be the same paragraph. This allows you to either word-wrap using your text editor or manually, whichever you like.</p>
+<p>As an example, this sentence and the one below it are a paragraph. I like turtles.</p>
+<h2 id="None">Comments</h2>
+<p>Sometimes, it might be useful to leave comments in your writing that don&#x27;t get published. Articles turns lines that start with &#x27;// &#x27; or &#x27;  // &#x27; to become comments and will group them together like paragraphs. Put differently, comments can exist at either the &quot;title level&quot; or &quot;paragraph level&quot; of indentation.</p>
+<h3>Unknown Element: CommentElement</h3><pre>This is a paragraph level comment. It will be framed together with the line below. Comment text flows like paragraph text.</pre>
+<p>This is a paragraph below the comment.</p>
+<h3>Unknown Element: CommentElement</h3><pre>Here is an example of a title-level comment. Do we wish to keep the section below?</pre>
+<h2 id="None">Unused Title Section</h2>
+<h3>Unknown Element: CommentElement</h3><pre>There&#x27;s nothing helpful to say here. No content, just comments</pre>
+<h2 id="None">Blocks</h2>
+<p>The third major, and arguably the most interesting component of Articles is block text. &quot;Block Text&quot; behaves very differently from regular text. It&#x27;s the mechanism by which one can things like quotes, poetry, lyrics, images, tables, code blocks, etc.</p>
+<p>Blocks are indented by 4 spaces. Here&#x27;s an example:</p>
+<h3>Unknown Element: FixedTextElement</h3><pre>unhandled - unknown(())
+This is a block quote
+isn&#x27;t it nice
+it keeps all these linebreaks
+so just indent twice :)</pre>
+<p>This is a very simple block quote which will be handled by Article&#x27;s &quot;default block decoder&quot; which will be sure to preserve line breaks in the text.</p>
+<p>But that&#x27;s just the beginning. Whenever a block is encountered, the first line is examined to see if there is a block directive. In the following example, there is a &#x27;code&#x27; block directive given.</p>
+<h3>Unknown Element: FixedTextElement</h3><pre>unhandled - code(python, 3.8)
+def select_decoder(name, *args)
+  # Fetch the right decoder for the given name and args.
+  # In the case of this particular block, this function would be called
+  # with:
+  # name = &#x27;code&#x27;
+  # args = [&#x27;python&#x27;, &#x27;3.8&#x27;]
+
+
+  # Uh oh, there&#x27;s two empty newlines there. But that&#x27;s okay, blocks
+  # are immune to section breaks!
+return CodeDecoder(args[0])</pre>
+<p>How do we know the code block ended? A code block ends either when the document itself ends, or we return to a lower level of indentation.</p>
+<p>Another example block type:</p>
+<h3>Unknown Element: FixedTextElement</h3><pre>unhandled - tex(Figure 1: Something something bad at math)
+\int\frac{sin(x)}{2}</pre>
+<p>And finally one that supports a future enhancement:</p>
+<h3>Unknown Element: FixedTextElement</h3><pre>unhandled - table(&quot;Deaths by County&quot;)
+County     Deaths   Another
+Jefferson  12       Wheels
+Somewhere  45       Burritos
+Else       33       11111</pre>
+<h2 id="None">Lists</h2>
+<p>Lists are created by indenting one more space than a paragraph. Following along, a Title has an indent of 0, a paragraph has an indent of 2, a list has an indent of 3, and a block has an indent of 4+. Is this confusing? Maybe. But we&#x27;re going to go with it for now.</p>
+<p>There are two types of lists in text form and they&#x27;re purely cosmetic: compact and sparse. A compact list is like as shopping list where the items are very brief:</p>
+<ul>
+<li>eggs</li>
+<li>milk</li>
+<li>goats</li>
+</ul>
+<p>A sparse list is what you&#x27;d use to contain more data. The only difference is that there are spaces between the list items.</p>
+<ol>
+<li>Eggs, the kind that you had back in those days when you were on the farm and everything was perfect and great.</li>
+<li>Milk, ideally form some kind of weird bird. I guess. Notice how these items can wrap to align the start of the text? That&#x27;s just done so it looks neat and tidy.</li>
+<li>You could also use dashes, or whatever you like.</li>
+</ol>
+<p>This isn&#x27;t necessary. The spaces between lines may be omitted - the list parser will understand.</p>
+</section>
+<section>
+<p>I think I sitll can&#x27;t solve the problem of text reflow. Perhaps when somethings like this gets saved, it should rearrange the text</p>
+</section>
+</article></body></html>

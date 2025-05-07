@@ -24,7 +24,7 @@ Getting Started
 
 Fundamentals
 
-Setions and Headings
+Sections and Headings
 
   Organize your document with an article element inside your body tag. Inside that, use section tags around each logical grouping of text and headings.
 

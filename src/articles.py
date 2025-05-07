@@ -2,6 +2,7 @@ from collections import Counter
 
 from pipeline import Handler
 from elements import *
+from text import NoopStyleizer
 
 """
 Decision: We have to figure out how to deal with new sections. Maybe I should
@@ -59,29 +60,44 @@ class Article:
 
   @property
   def title(self):
-    return self.meta.get('article')
+    return self.meta.get('article') or self.meta.get('title', 'Untitled Article')
 
 
 class ArticleBuilder(Handler):
 
-  def __init__(self):
+  def __init__(self, stylizer=None):
     self.preamble = []
     self.sections = []
     self.section = Section()
     self.md = {}
+    self.stylizer = stylizer if stylizer is not None else NoopStyleizer()
 
   def handle(self, e):
     if isinstance(e, MetadataElement):
       self.md = e.attrs
     elif isinstance(e, BreakElement):
-      self.finish_secion()
+      self.finish_section()
     else:
+      # Apply styling to the element's spans
+      if hasattr(e, 'spans') and e.spans:
+        styled_spans = []
+        for span in e.spans:
+          styled_spans.extend(self.stylizer.apply(span))
+        e.spans = styled_spans
+        
+      # For list elements, apply styling to each item's spans
+      if isinstance(e, ListElement) and hasattr(e, 'items'):
+        for i, item_spans in enumerate(e.items):
+          styled_item_spans = []
+          for span in item_spans:
+            styled_item_spans.extend(self.stylizer.apply(span))
+          e.items[i] = styled_item_spans
+          
       self.section.elements.append(e)
     return []
 
-  def finish_secion(self):
-    if self.section:
-
+  def finish_section(self):
+    if self.section and self.section.elements:
       # "Demote" subsections
       for e in self.section.elements[1:]:
         if isinstance(e, TitleElement):
@@ -91,7 +107,7 @@ class ArticleBuilder(Handler):
     self.section = Section()
 
   def finish(self):
-    self.finish_secion()
+    self.finish_section()
     return [Article(
       self.md, self.preamble, self.sections
     )]

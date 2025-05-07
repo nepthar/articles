@@ -76,7 +76,7 @@ class BlockDecoder(Decoder):
   DirectiveRegex = re.compile(r'^([\w]+):( (.*))?$')
 
   def decode(self, frame):
-    spans = PoetryCollector.collect(frame.lines)
+    spans = collect_poetry(frame.lines)
     directive = 'unknown'
     args = ()
 

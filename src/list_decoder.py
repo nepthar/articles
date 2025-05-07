@@ -1,14 +1,19 @@
-from enum import Enum
+from collections import namedtuple
+import re
 
 from text import collect_poetry, collect_prose
 from elements import *
 from framing import ListFrame
 from pipeline import Handler
-
 from decoders import Decoder
 
 
-import re
+class ItemPattern:
+  def __init__(self, name, regex, order_type):
+    self.name = name
+    self.regex = re.compile(r"^" + regex + r"\s+")
+    self.order_type = order_type
+
 
 class ListDecoder(Decoder):
   """
@@ -18,67 +23,66 @@ class ListDecoder(Decoder):
   """
   FrameClass = ListFrame
 
-  # These start a new ordered list item
-  OrderedPatterns = [
-    ('alnum', r"[a-zA-Z0-9]\."),
-    ('plus',  r"\+")
-  ]
-
-  # These start a new unordered list item
-  UnorderedPatterns = [
-    ('dash', r"\-"),
-    ('star', r"\*"),
-    ('o',    r"o")
+  # Sorted list of prefixes to look for which indicate a new list item
+  ItemPatterns = [
+    ## TODO: Add roman numerals here
+    ItemPattern('lc',   r"[a-z]{1,2}\.",  'a'),
+    ItemPattern('uc',   r"[A-Z]{1,2}\.",  'A'),
+    ItemPattern('plus', r"\+",            '1'),
+    ItemPattern('num',  r"[0-9]{1,3}\.",  '1'),
+    ItemPattern('dash', r"\-",            None),
+    ItemPattern('star', r"\*",            None),
+    ItemPattern('o',    r"o",             None),
   ]
 
   @staticmethod
   def to_regex(part):
     return re.compile(r"^" + part + r"\s+")
 
-  def __init__(self):
-    # TODO: This seems messy, consider reworking
-    self.o_patterns = {
-      name: ListDecoder.to_regex(p) for name, p in self.OrderedPatterns
-    }
-
-    self.u_patterns = {
-      name: ListDecoder.to_regex(p) for name, p in self.UnorderedPatterns
-    }
+  def __init__(self, patterns=None):
+    self.patterns = patterns if patterns is not None else self.ItemPatterns
+    self._reset()
 
   def _reset(self):
     self.current_item = []
     self.items = []
     self.ordered = False
-    self.prefix = None
+    self.type = None
 
   def _finish_item(self):
     if self.current_item:
       self.items.append(collect_prose(self.current_item))
     self.current_item = []
 
-  def _set_prefix(self, first_line):
-    for name, ptrn in self.u_patterns.items():
-      if re.match(ptrn, first_line):
-        self.prefix = (name, ptrn)
-        return
+  def _find_item_pattern(self, first_line):
+    for ipattern in self.patterns:
+      if ipattern.regex.match(first_line):
+        return ipattern
+    return None
 
-    for name, ptrn in self.o_patterns.items():
-      if re.match(ptrn, first_line):
-        self.ordered = True
-        self.prefix = (name, ptrn)
-        return
+  def _discover_prefix(self, first_line):
+    """
+    Discover the list item prefix pattern from the first line.
+    Returns a tuple of (pattern, regex) or None if no pattern matches.
+    """
+    pattern = self._find_item_pattern(first_line)
+    if pattern:
+      self.ordered = pattern.order_type is not None
+      self.type = pattern.order_type
+      return (pattern, pattern.regex)
+    return None
 
   def decode(self, frame):
     if len(frame.lines) == 0:
       return [InvalidElement("Empty list frame")]
 
     self._reset()
-    self._set_prefix(frame.lines[0])
+    prefix = self._discover_prefix(frame.lines[0])
 
-    if self.prefix is None:
-      return [InvalidElement(collect_poetry.collect(frame.lines))]
+    if prefix is None:
+      return [InvalidElement(collect_poetry(frame.lines))]
 
-    pr = self.prefix[1]
+    pr = prefix[1]
 
     for line in frame.lines:
 
@@ -104,7 +108,7 @@ class ListDecoder(Decoder):
     # Finish any existing item
     self._finish_item()
 
-    return [ListElement(self.items, ordered=self.ordered)]
+    return [ListElement(self.items, order_type=self.type)]
 
 
 

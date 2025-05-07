@@ -70,8 +70,6 @@ Comments
   // the line below. Comment text flows like paragraph text.
   This is a paragraph below the comment.
 
-// Here is an example of a title-level comment. Do we wish to keep the
-// section below?
 Unused Title Section
 
   // There's nothing helpful to say here. No content, just comments

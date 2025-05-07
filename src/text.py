@@ -1,4 +1,5 @@
 from typing import NamedTuple
+import re
 
 
 """
@@ -87,7 +88,65 @@ class NoopStyleizer:
 
 
 class InlineMarkdownStyleizer(Stylizer):
-  """ Handlines inline markdown styling - bold, italic, strikethrough """
+  """ Handles inline markdown styling - bold, italic, strikethrough, code """
+  
+  # Define patterns for markdown-style formatting
+  PATTERNS = [
+    # Bold with double asterisks: **bold**
+    (r'\*\*(.*?)\*\*', ['b']),
+    # Italic with single asterisks: *italic*
+    (r'\*(.*?)\*', ['i']),
+    # Bold with double underscores: __bold__
+    (r'__(.*?)__', ['b']),
+    # Italic with single underscores: _italic_
+    (r'_(.*?)_', ['i']),
+    # Strikethrough with double tildes: ~~strikethrough~~
+    (r'~~(.*?)~~', ['stk']),
+    # Inline code with backticks: `code`
+    (r'`(.*?)`', ['var']),
+    # Links with markdown format: [text](url)
+    (r'\[(.*?)\]\((.*?)\)', ['l']),
+  ]
+  
   def apply(self, span):
-    ## TODO
-    return [span]
+    """
+    Apply markdown styling to a span, breaking it into multiple spans as needed.
+    Returns a list of styled spans.
+    """
+    if span.is_plain() is False:
+      # If the span already has styling, don't process it further
+      return [span]
+      
+    text = span.text
+    result = []
+    last_end = 0
+    
+    # Process each pattern
+    for pattern, styles in self.PATTERNS:
+      # Find all matches for this pattern
+      for match in re.finditer(pattern, text):
+        start, end = match.span()
+        
+        # If there's text before this match, add it as a plain span
+        if start > last_end:
+            result.append(Span(text[last_end:start]))
+        
+        # Handle links specially
+        if 'l' in styles and len(match.groups()) > 1:
+            # For links, the first group is the text and the second is the URL
+            result.append(Span(match.group(1), link=match.group(2), style=styles))
+        else:
+            # For other styles, apply the style to the content
+            result.append(Span(match.group(1), style=styles))
+        
+        last_end = end
+    
+    # Add any remaining text
+    if last_end < len(text):
+        result.append(Span(text[last_end:]))
+    
+    # If no styling was applied, return the original span
+    if not result:
+        return [span]
+    
+    return result

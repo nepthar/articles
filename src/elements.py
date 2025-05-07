@@ -4,6 +4,11 @@ class Element:
   """ An Element is the Articles representation of bits of a document.
       It typically mirrors HTML/CSS concepts - tags, for instance
   """
+
+  # The tag is used to auto-generate an ID for this element. The ID can
+  # always be overridden. But, for instance, a paragraph will have an ID
+  # of "p-N", where p comes from the ParagraphElement.tag and 'N' is the
+  # paragraph number
   tag = None
   PreviewLength = 8
   lines = []
@@ -115,12 +120,12 @@ class ParagraphElement(Element):
 class ListElement(Element):
   tag = 'list'
 
-  def __init__(self, items, ordered, **kwargs):
+  def __init__(self, items, order_type, **kwargs):
     spans = []
     for i in items:
       spans.extend(i)
     super().__init__(spans)
-    self.ordered = ordered
+    self.order_type = order_type
     self.items = items
 
 
