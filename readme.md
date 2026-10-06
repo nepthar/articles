@@ -18,6 +18,26 @@ Usage
     articles render post.article
     articles render post.article -o -
 
+  Make a site. A site is a folder with a site.conf file, posts in
+  articles/<year>/, and pages in pages/.
+
+    articles init mysite --author "Your Name"
+
+  Inside the site folder, make a draft post or a page. Every post starts
+  as a draft with an empty "published:" date.
+
+    articles new "My First Post"
+    articles new --page "Now"
+
+  Publish a draft. This sets "published:" to today and moves the file to
+  the folder of the current year if it is not there already.
+
+    articles publish articles/2026/my-first-post.article
+
+  Check every post for metadata problems, such as a bad date:
+
+    articles check
+
   Run the tests from the repository root:
 
     python3 -m unittest discover -s test
