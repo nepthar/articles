@@ -7,7 +7,7 @@ import os
 import sys
 import glob
 import logging
-from src.__main__ import create_pipeline
+from articles.cli import render_text
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -21,11 +21,11 @@ def process_article(input_file, output_dir):
     
     logger.info(f"Processing {input_file} -> {output_file}")
     
-    pipeline = create_pipeline(output_file)
-    
     try:
         with open(input_file, 'r') as f:
-            pipeline.process(f)
+            html = render_text(f)
+        with open(output_file, 'w') as f:
+            f.write(html)
         return True
     except Exception as e:
         logger.error(f"Error processing {input_file}: {e}")

@@ -1,4 +1,4 @@
-from pipeline import Handler
+from .pipeline import Handler
 
 class Element:
   """ An Element is the Articles representation of bits of a document.
@@ -127,6 +127,10 @@ class ListElement(Element):
     super().__init__(spans)
     self.order_type = order_type
     self.items = items
+
+  @property
+  def ordered(self):
+    return self.order_type is not None
 
 
 

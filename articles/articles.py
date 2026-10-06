@@ -1,8 +1,8 @@
 from collections import Counter
 
-from pipeline import Handler
-from elements import *
-from text import NoopStyleizer
+from .pipeline import Handler
+from .elements import *
+from .text import NoopStyleizer
 
 """
 Decision: We have to figure out how to deal with new sections. Maybe I should

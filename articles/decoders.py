@@ -1,7 +1,7 @@
-from text import collect_poetry, collect_prose
-from elements import *
-from framing import *
-from pipeline import Handler
+from .text import collect_poetry, collect_prose
+from .elements import *
+from .framing import *
+from .pipeline import Handler
 
 import re
 
@@ -77,21 +77,17 @@ class BlockDecoder(Decoder):
 
   def decode(self, frame):
     spans = collect_poetry(frame.lines)
-    directive = 'unknown'
-    args = ()
+    directive = None
+    args = []
 
     dmatch = self.DirectiveRegex.match(spans[0].text)
     if dmatch:
-      (directive, _, args) = dmatch.groups()
+      (directive, _, argstr) = dmatch.groups()
+      args = [a.strip() for a in argstr.split(',')] if argstr else []
       spans = spans[1:]
 
     be = BlockElement(directive, args, spans)
     return [be]
-
-
-class ListDecoder(Decoder):
-  FrameClass = ListFrame
-  ElementClass = ListElement
 
 
 class FrameDecoder(Handler):
@@ -113,4 +109,4 @@ class FrameDecoder(Handler):
     if dec:
       return dec.decode(frame)
     else:
-      return [UnknownElement(PoetryCollector.collect(frame.lines))]
+      return [UnknownElement(collect_poetry(frame.lines))]
