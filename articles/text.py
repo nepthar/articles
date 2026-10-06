@@ -22,11 +22,11 @@ def collect_prose(lines):
       if line:
         cur.append(line)
       else:
-        result.append(Span(' '.join(cur)))
+        result.append(Span(' '.join(cur), prose=True))
         cur = []
 
     if cur:
-      result.append(Span(' '.join(cur)))
+      result.append(Span(' '.join(cur), prose=True))
 
     return result
 
@@ -50,11 +50,15 @@ Styles = {s.ident: s for s in [
 ]}
 
 class Span:
-  """A Span represents a bit of text with the same style or link"""
-  def __init__(self, text, link=None, style=None):
+  """A Span represents a bit of text with the same style or link.
+     A prose span comes from collect_prose and may get inline styling.
+     Other spans (poetry, block lines) keep their text as written.
+  """
+  def __init__(self, text, link=None, style=None, prose=False):
     self.text = text
     self.style = style if style else []
     self.link = link
+    self.prose = prose
 
   def is_plain(self):
     return len(self.style) == 0 and self.link is None
@@ -108,8 +112,8 @@ class InlineMarkdownStyleizer(Stylizer):
   Styles = {'var': 'var', 'b': 'b', 'b2': 'b', 'stk': 'stk', 'i': 'i', 'i2': 'i'}
 
   def apply(self, span):
-    """ Split a plain span into a list of plain and styled spans """
-    if not span.is_plain():
+    """ Split a plain prose span into a list of plain and styled spans """
+    if not span.prose or not span.is_plain():
       return [span]
 
     text = span.text
@@ -119,13 +123,13 @@ class InlineMarkdownStyleizer(Stylizer):
     for match in self.TOKEN.finditer(text):
       start, end = match.span()
       if start > last_end:
-        result.append(Span(text[last_end:start]))
+        result.append(Span(text[last_end:start], prose=True))
 
       if match.group('ltext') is not None:
-        result.append(Span(match.group('ltext'), link=match.group('lurl'), style=['l']))
+        result.append(Span(match.group('ltext'), link=match.group('lurl'), style=['l'], prose=True))
       else:
         name = match.lastgroup
-        result.append(Span(match.group(name), style=[self.Styles[name]]))
+        result.append(Span(match.group(name), style=[self.Styles[name]], prose=True))
 
       last_end = end
 
@@ -133,6 +137,6 @@ class InlineMarkdownStyleizer(Stylizer):
       return [span]
 
     if last_end < len(text):
-      result.append(Span(text[last_end:]))
+      result.append(Span(text[last_end:], prose=True))
 
     return result

@@ -136,6 +136,10 @@ class TestInlineStyles(unittest.TestCase):
     html = render("Title\n\n   - **eggs**\n")
     self.assertIn('<li><strong>eggs</strong></li>', html)
 
+  def test_titles_are_styled(self):
+    html = render("A *Big* Title\n\n  Text.\n")
+    self.assertIn('A <em>Big</em> Title</h1>', html)
+
   def test_blocks_are_not_styled(self):
     html = render("Title\n\n    code: python\n    x = a*b*c\n")
     self.assertIn('<pre><code>x = a*b*c</code></pre>', html)

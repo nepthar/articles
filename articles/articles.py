@@ -78,9 +78,9 @@ class ArticleBuilder(Handler):
     elif isinstance(e, BreakElement):
       self.finish_section()
     else:
-      # Apply styling to prose elements only. Blocks keep their text as is,
-      # so code like `a*b*c` does not turn into italics.
-      if isinstance(e, (ParagraphElement, TitleElement)) and e.spans:
+      # Apply styling to the element's spans. The stylizer only changes
+      # prose spans, so blocks like code keep their text as written.
+      if e.spans:
         styled_spans = []
         for span in e.spans:
           styled_spans.extend(self.stylizer.apply(span))
