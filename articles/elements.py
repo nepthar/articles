@@ -120,12 +120,14 @@ class ParagraphElement(Element):
 class ListElement(Element):
   tag = 'list'
 
-  def __init__(self, items, order_type, **kwargs):
+  def __init__(self, items, order_type, start=1, **kwargs):
     spans = []
     for i in items:
       spans.extend(i)
     super().__init__(spans)
+    # One of '1', 'a', 'A' (like the HTML ol type) or None if unordered
     self.order_type = order_type
+    self.start = start
     self.items = items
 
   @property

@@ -118,23 +118,38 @@ class SimpleHTMLRenderer(Renderer):
   def write(self, part):
     self.written.append(part)
 
-  def spanText(self, spans):
-    parts = []
-    for s in spans:
+  # Inline style -> HTML tag. Links ('l') are handled separately.
+  StyleTags = {
+    'b': 'strong',
+    'i': 'em',
+    'u': 'u',
+    'stk': 's',
+    'sub': 'sub',
+    'sup': 'sup',
+    'var': 'code',
+  }
 
-      for style in s.style:
-        parts.append(f'<{style}>')
+  def spanHtml(self, span):
+    """ One span as HTML. The text is escaped; the tags are not. """
+    text = html.escape(span.text)
+    for style in span.style:
+      if style == 'l':
+        text = f'<a href="{html.escape(span.link or "", quote=True)}">{text}</a>'
+      elif style in self.StyleTags:
+        tag = self.StyleTags[style]
+        text = f'<{tag}>{text}</{tag}>'
+    return text
 
-      parts.append(s.text)
-
-      for style in s.style:
-        parts.append(f'</{s}>')
-
-    return '\n'.join(parts)
+  def spanText(self, spans, sep=''):
+    """ Join spans as HTML. Prose pieces join with no separator. Lines of
+        a block join with a newline.
+    """
+    return sep.join(self.spanHtml(s) for s in spans)
 
 
   def renderBody(self, e: Element):
-    text = html.escape(self.spanText(e.spans))
+    text = self.spanText(e.spans)
+    lines = self.spanText(e.spans, '\n')
 
     match e:
       case TitleElement():
@@ -142,66 +157,42 @@ class SimpleHTMLRenderer(Renderer):
       case ParagraphElement():
         self.write(self.Paragraph.format(text))
       case QuoteElement():
-        self.write(self.Quote.format(text))
+        self.write(self.Quote.format(lines))
       case CodeElement():
-        self.write(self.Code.format(text))
+        self.write(self.Code.format(lines))
       case FixedTextElement():
-        self.write(self.Pre.format(text))
+        self.write(self.Pre.format(lines))
 
       case CommentElement():
         # Comments are notes for the writer. They are not published.
         pass
 
       case ListElement():
-        if e.ordered:
-          self.write('<ol>')
-        else:
-          self.write('<ul>')
+        tag = 'ol' if e.ordered else 'ul'
+        attrs = ''
+        if e.ordered and e.order_type != '1':
+          attrs += f' type="{e.order_type}"'
+        if e.ordered and e.start != 1:
+          attrs += f' start="{e.start}"'
+        self.write(f'<{tag}{attrs}>')
         for item_spans in e.items:
-          item_text = html.escape(self.spanText(item_spans))
-          self.write(f'<li>{item_text}</li>')
-        if e.ordered:
-          self.write('</ol>')
-        else:
-          self.write('</ul>')
+          self.write(f'<li>{self.spanText(item_spans)}</li>')
+        self.write(f'</{tag}>')
 
       case BlockElement():
-        self.write(self.UnknownBlock.format(kind=e.directive, text=text))
+        self.write(self.UnknownBlock.format(kind=e.directive, text=lines))
 
       case UnknownElement():
-        self.write(self.Unknown.format(kind="Undecodeable", text=text))
+        self.write(self.Unknown.format(kind="Undecodeable", text=lines))
 
       case Element():
         kind = e.__class__.__name__
-        self.write(self.Unknown.format(kind=kind, text=text))
+        self.write(self.Unknown.format(kind=kind, text=lines))
 
       case other:
         raise Exception(f"Got something that wasn't an element: {other}")
 
 
-
-  def renderBody2(self, e: Element):
-    k = e.tag
-
-    text = html.escape(self.spanText(e.spans))
-
-    if k == 'h1' or k == 'h2':
-      self.write(self.Heading.format(lvl=e.level, id=e.pid, text=text))
-
-    elif k == 'p':
-      self.write(self.Paragraph.format(text))
-
-    elif k in set(('q', 'mn', 'in', 'fn', 'note')):
-      self.write(self.Quote.format(text))
-
-    elif k == 'code':
-      self.write(self.Code.format(text))
-
-    elif k == 'pre' or k == 'block':
-      self.write(self.Pre.format(text))
-
-    else:
-      self.write(self.Unknown.format(kind=k, text=text))
 
   def handle(self, article):
     headerString = self.HeaderTemplate.format(title=article.title)

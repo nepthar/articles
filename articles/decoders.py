@@ -63,6 +63,7 @@ class CommentDecoder(Decoder):
 class TitleDecoder(Decoder):
   FrameClass = TitleFrame
   ElementClass = TitleElement
+  Collector = collect_prose
 
 
 class ParagraphDecoder(Decoder):

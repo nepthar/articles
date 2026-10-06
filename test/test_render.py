@@ -59,7 +59,90 @@ class TestElements(unittest.TestCase):
 
   def test_ordered_list(self):
     html = render("Title\n\n   1. eggs\n   2. milk\n")
-    self.assertIn('<ol>', html)
+    self.assertIn('<ol>\n<li>eggs</li>\n<li>milk</li>\n</ol>', html)
+
+
+class TestLists(unittest.TestCase):
+  def test_one_or_two_spaces_after_bullet(self):
+    html = render("Title\n\n   - eggs\n   -  milk\n   - cheese\n")
+    self.assertIn('<ul>\n<li>eggs</li>\n<li>milk</li>\n<li>cheese</li>\n</ul>', html)
+
+  def test_letter_list_type(self):
+    html = render("Title\n\n   a. eggs\n   b. milk\n")
+    self.assertIn('<ol type="a">', html)
+
+  def test_upper_letter_list_type(self):
+    html = render("Title\n\n   A. eggs\n   B. milk\n")
+    self.assertIn('<ol type="A">', html)
+
+  def test_list_start(self):
+    html = render("Title\n\n   3. eggs\n   4. milk\n")
+    self.assertIn('<ol start="3">', html)
+
+  def test_prefix_change_starts_new_list(self):
+    html = render("Title\n\n   -  eggs\n   b. milk\n   3. cheese\n   o  tacos\n")
+    self.assertIn('<ul>\n<li>eggs</li>\n</ul>\n<ol type="a" start="2">\n<li>milk</li>\n</ol>', html)
+    self.assertIn('<ol start="3">\n<li>cheese</li>\n</ol>\n<ul>\n<li>tacos</li>\n</ul>', html)
+
+  def test_hard_wrapped_items(self):
+    html = render(
+      "Title\n\n"
+      "   -  First item that\n"
+      "      wraps.\n"
+      "   -  Second.\n"
+    )
+    self.assertIn('<li>First item that wraps.</li>\n<li>Second.</li>', html)
+
+  def test_wrapped_line_that_looks_like_an_item(self):
+    # The continuation starts with "o " but is indented, so it is not an item.
+    html = render(
+      "Title\n\n"
+      "   -  Some text that ends with the letter\n"
+      "      o and keeps going.\n"
+    )
+    self.assertIn('<li>Some text that ends with the letter o and keeps going.</li>', html)
+
+  def test_sparse_list(self):
+    html = render("Title\n\n   1. eggs\n\n   2. milk\n")
+    self.assertIn('<ol>\n<li>eggs</li>\n<li>milk</li>\n</ol>', html)
+
+
+class TestInlineStyles(unittest.TestCase):
+  def test_bold_and_italic(self):
+    html = render("Title\n\n  A **bold** and *italic* word.\n")
+    self.assertIn('<p>A <strong>bold</strong> and <em>italic</em> word.</p>', html)
+
+  def test_underscores(self):
+    html = render("Title\n\n  __bold__ _italic_ snake_case_name\n")
+    self.assertIn('<p><strong>bold</strong> <em>italic</em> snake_case_name</p>', html)
+
+  def test_code_and_strike(self):
+    html = render("Title\n\n  Run `a*b*c` not ~~this~~.\n")
+    self.assertIn('<p>Run <code>a*b*c</code> not <s>this</s>.</p>', html)
+
+  def test_link(self):
+    html = render("Title\n\n  See [the site](https://example.com/?a=1&b=2).\n")
+    self.assertIn('<a href="https://example.com/?a=1&amp;b=2">the site</a>', html)
+
+  def test_text_is_escaped(self):
+    html = render("Title\n\n  1 < 2 and **<b>**\n")
+    self.assertIn('<p>1 &lt; 2 and <strong>&lt;b&gt;</strong></p>', html)
+
+  def test_lone_asterisks_stay(self):
+    html = render("Title\n\n  2 * 3 * 4\n")
+    self.assertIn('<p>2 * 3 * 4</p>', html)
+
+  def test_styles_in_list_items(self):
+    html = render("Title\n\n   - **eggs**\n")
+    self.assertIn('<li><strong>eggs</strong></li>', html)
+
+  def test_titles_are_styled(self):
+    html = render("A *Big* Title\n\n  Text.\n")
+    self.assertIn('A <em>Big</em> Title</h1>', html)
+
+  def test_blocks_are_not_styled(self):
+    html = render("Title\n\n    code: python\n    x = a*b*c\n")
+    self.assertIn('<pre><code>x = a*b*c</code></pre>', html)
 
 
 class TestCommand(unittest.TestCase):
