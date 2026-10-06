@@ -1,7 +1,6 @@
-from collections import namedtuple
 import re
 
-from .text import collect_poetry, collect_prose
+from .text import Span, collect_poetry, collect_prose
 from .elements import *
 from .framing import ListFrame
 from .pipeline import Handler
@@ -35,90 +34,75 @@ class ListDecoder(Decoder):
     ItemPattern('o',    r"o",             None),
   ]
 
-  @staticmethod
-  def to_regex(part):
-    return re.compile(r"^" + part + r"\s+")
-
   def __init__(self, patterns=None):
     self.patterns = patterns if patterns is not None else self.ItemPatterns
-    self._reset()
 
-  def _reset(self):
-    self.current_item = []
-    self.items = []
-    self.ordered = False
-    self.type = None
-
-  def _finish_item(self):
-    if self.current_item:
-      self.items.append(collect_prose(self.current_item))
-    self.current_item = []
-
-  def _find_item_pattern(self, first_line):
+  def _find_item_pattern(self, line):
+    """ Return the pattern that starts a list item on this line, or None.
+        Only a line with no leading whitespace can start an item. Indented
+        lines continue the current item, so wrapped text never starts a
+        new item by accident.
+    """
+    if not line or line[0].isspace():
+      return None
     for ipattern in self.patterns:
-      if ipattern.regex.match(first_line):
+      if ipattern.regex.match(line):
         return ipattern
     return None
 
-  def _discover_prefix(self, first_line):
-    """
-    Discover the list item prefix pattern from the first line.
-    Returns a tuple of (pattern, regex) or None if no pattern matches.
-    """
-    pattern = self._find_item_pattern(first_line)
-    if pattern:
-      self.ordered = pattern.order_type is not None
-      self.type = pattern.order_type
-      return (pattern, pattern.regex)
-    return None
+  @staticmethod
+  def _start(pattern, line):
+    """ The number of the first item, for lists that do not start at 1 """
+    marker = line.split(None, 1)[0].rstrip('.')
+    if pattern.name == 'num':
+      return int(marker)
+    if pattern.name in ('lc', 'uc') and len(marker) == 1:
+      return ord(marker.lower()) - ord('a') + 1
+    return 1
 
   def decode(self, frame):
     if len(frame.lines) == 0:
-      return [InvalidElement("Empty list frame")]
+      return [InvalidElement([Span("Empty list frame")])]
 
-    self._reset()
-    prefix = self._discover_prefix(frame.lines[0])
-
-    if prefix is None:
+    if self._find_item_pattern(frame.lines[0]) is None:
       return [InvalidElement(collect_poetry(frame.lines))]
 
-    pr = prefix[1]
+    lists = []      # finished ListElements
+    items = []      # items of the current list
+    current = []    # lines of the current item
+    pattern = None  # item pattern of the current list
+    start = 1
+
+    def finish_item():
+      if current:
+        items.append(collect_prose(current))
+      current.clear()
+
+    def finish_list():
+      finish_item()
+      if items:
+        lists.append(ListElement(list(items), order_type=pattern.order_type, start=start))
+      items.clear()
 
     for line in frame.lines:
+      if not line:
+        finish_item()
+        continue
 
-      if len(line) == 0:
-        self._finish_item()
+      found = self._find_item_pattern(line)
+      if found is None:
+        # A continuation of the current item
+        current.append(line.strip())
+        continue
 
-      else:
-        m = re.match(pr, line)
+      if found is not pattern:
+        # A different prefix starts a new list
+        finish_list()
+        pattern = found
+        start = self._start(found, line)
 
-        if m:
-          # This means we've matched the item prefix
-          self._finish_item()
+      finish_item()
+      current.append(line[found.regex.match(line).end():])
 
-          # Strip the prefix off and append it to the current item
-          cut_line = line[m.span()[1]:]
-          self.current_item.append(cut_line)
-
-        else:
-          # Otherwise strip whitespace and append. I think this works
-          # okay, but I doubt I've covered every edge case.
-          self.current_item.append(line.strip())
-
-    # Finish any existing item
-    self._finish_item()
-
-    return [ListElement(self.items, order_type=self.type)]
-
-
-
-
-
-
-
-
-
-
-
-
-
+    finish_list()
+    return lists

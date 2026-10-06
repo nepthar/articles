@@ -88,65 +88,51 @@ class NoopStyleizer:
 
 
 class InlineMarkdownStyleizer(Stylizer):
-  """ Handles inline markdown styling - bold, italic, strikethrough, code """
-  
-  # Define patterns for markdown-style formatting
-  PATTERNS = [
-    # Bold with double asterisks: **bold**
-    (r'\*\*(.*?)\*\*', ['b']),
-    # Italic with single asterisks: *italic*
-    (r'\*(.*?)\*', ['i']),
-    # Bold with double underscores: __bold__
-    (r'__(.*?)__', ['b']),
-    # Italic with single underscores: _italic_
-    (r'_(.*?)_', ['i']),
-    # Strikethrough with double tildes: ~~strikethrough~~
-    (r'~~(.*?)~~', ['stk']),
-    # Inline code with backticks: `code`
-    (r'`(.*?)`', ['var']),
-    # Links with markdown format: [text](url)
-    (r'\[(.*?)\]\((.*?)\)', ['l']),
-  ]
-  
+  """ Handles inline markdown styling - bold, italic, strikethrough, code
+      and links. Styles do not nest. Underscores inside a word (snake_case)
+      are not styling.
+  """
+
+  # Alternatives are tried left to right at each position, so code comes
+  # first: `**x**` stays as code.
+  TOKEN = re.compile(
+    r"`(?P<var>[^`]+?)`"
+    r"|\[(?P<ltext>[^\]]+?)\]\((?P<lurl>[^)\s]+?)\)"
+    r"|\*\*(?P<b>.+?)\*\*"
+    r"|(?<!\w)__(?P<b2>.+?)__(?!\w)"
+    r"|~~(?P<stk>.+?)~~"
+    r"|\*(?P<i>[^*\s](?:.*?[^*\s])?)\*"
+    r"|(?<!\w)_(?P<i2>[^_\s](?:.*?[^_\s])?)_(?!\w)"
+  )
+
+  Styles = {'var': 'var', 'b': 'b', 'b2': 'b', 'stk': 'stk', 'i': 'i', 'i2': 'i'}
+
   def apply(self, span):
-    """
-    Apply markdown styling to a span, breaking it into multiple spans as needed.
-    Returns a list of styled spans.
-    """
-    if span.is_plain() is False:
-      # If the span already has styling, don't process it further
+    """ Split a plain span into a list of plain and styled spans """
+    if not span.is_plain():
       return [span]
-      
+
     text = span.text
     result = []
     last_end = 0
-    
-    # Process each pattern
-    for pattern, styles in self.PATTERNS:
-      # Find all matches for this pattern
-      for match in re.finditer(pattern, text):
-        start, end = match.span()
-        
-        # If there's text before this match, add it as a plain span
-        if start > last_end:
-            result.append(Span(text[last_end:start]))
-        
-        # Handle links specially
-        if 'l' in styles and len(match.groups()) > 1:
-            # For links, the first group is the text and the second is the URL
-            result.append(Span(match.group(1), link=match.group(2), style=styles))
-        else:
-            # For other styles, apply the style to the content
-            result.append(Span(match.group(1), style=styles))
-        
-        last_end = end
-    
-    # Add any remaining text
-    if last_end < len(text):
-        result.append(Span(text[last_end:]))
-    
-    # If no styling was applied, return the original span
+
+    for match in self.TOKEN.finditer(text):
+      start, end = match.span()
+      if start > last_end:
+        result.append(Span(text[last_end:start]))
+
+      if match.group('ltext') is not None:
+        result.append(Span(match.group('ltext'), link=match.group('lurl'), style=['l']))
+      else:
+        name = match.lastgroup
+        result.append(Span(match.group(name), style=[self.Styles[name]]))
+
+      last_end = end
+
     if not result:
-        return [span]
-    
+      return [span]
+
+    if last_end < len(text):
+      result.append(Span(text[last_end:]))
+
     return result
