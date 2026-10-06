@@ -1,9 +1,9 @@
 import html
 
-from elements import *
-from block_elements import *
-from text import Span
-from pipeline import Handler
+from .elements import *
+from .block_elements import *
+from .text import Span
+from .pipeline import Handler
 import sys
 
 
@@ -90,21 +90,20 @@ class PythonRenderer(Renderer):
 
 class SimpleHTMLRenderer(Renderer):
 
-  HeaderTemplate = """
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8"/>
-    <title>{title}</title>
-    <link rel="stylesheet" href="tufte.css"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  </head>"""
+  HeaderTemplate = """<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>{title}</title>
+  <link rel="stylesheet" href="tufte.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+</head>"""
   Heading = '<h{lvl} id="{id}">{text}</h{lvl}>'
   BeginSection = '<section>'
   EndSection = '</section>'
   Paragraph = '<p>{}</p>'
   Quote = '<blockquote><p>{}</p></blockquote>'
-  Code = '<code>{}</code>'
+  Code = '<pre><code>{}</code></pre>'
   Pre = '<pre>{}</pre>'
   UnknownBlock = "<h3>Unknown Block Element: {kind}</h3><pre>{text}</pre>"
   Unknown = "<h3>Unknown Element: {kind}</h3><pre>{text}</pre>"
@@ -148,6 +147,10 @@ class SimpleHTMLRenderer(Renderer):
         self.write(self.Code.format(text))
       case FixedTextElement():
         self.write(self.Pre.format(text))
+
+      case CommentElement():
+        # Comments are notes for the writer. They are not published.
+        pass
 
       case ListElement():
         if e.ordered:

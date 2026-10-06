@@ -1,4 +1,4 @@
-from pipeline import Handler
+from .pipeline import Handler
 
 class AnyPrinter(Handler):
   def __init__(self):

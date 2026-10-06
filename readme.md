@@ -6,6 +6,23 @@ Articles
   an effort to mix the two in a more visually appealing way.
 
 
+Usage
+
+  Install the articles command with uv:
+
+    uv tool install git+https://github.com/nepthar/articles
+
+  Render one article to an HTML file next to it. Use "-o -" to print the
+  HTML instead.
+
+    articles render post.article
+    articles render post.article -o -
+
+  Run the tests from the repository root:
+
+    python3 -m unittest discover -s test
+
+
 Paragraphs
 
   Paragraphs are indented two spaces. All single newlines are removed and

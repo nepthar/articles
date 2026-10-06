@@ -1,11 +1,11 @@
 from collections import namedtuple
 import re
 
-from text import collect_poetry, collect_prose
-from elements import *
-from framing import ListFrame
-from pipeline import Handler
-from decoders import Decoder
+from .text import collect_poetry, collect_prose
+from .elements import *
+from .framing import ListFrame
+from .pipeline import Handler
+from .decoders import Decoder
 
 
 class ItemPattern:

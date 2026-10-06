@@ -1,14 +1,13 @@
-from elements import Element, BlockElement as BaseBlockElement
+from .elements import Element, BlockElement as BaseBlockElement
 import re
-from misc import KeyValue
+from .misc import KeyValue
 
 
 class BlockElement(BaseBlockElement):
   directive = 'block'
 
   def __init__(self, args, spans):
-    super().__init__(spans)
-    self.args = args
+    super().__init__(self.directive, args, spans)
 
 
 class CodeElement(BlockElement):

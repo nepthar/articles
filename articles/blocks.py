@@ -1,7 +1,7 @@
-from text import Span, collect_prose
-from elements import BlockElement, FixedTextElement
-from block_elements import *
-from pipeline import Handler
+from .text import Span, collect_prose
+from .elements import BlockElement as RawBlockElement, InvalidElement
+from .block_elements import *
+from .pipeline import Handler
 
 
 class BlockProcessor:
@@ -31,7 +31,7 @@ class FixedTextProcessor(BlockProcessor):
   directive = 'pre'
 
   def process(self, args, spans):
-    return [FixedTextElement(spans)]
+    return [FixedTextElement(args, spans)]
 
 
 class FigureProcessor(BlockProcessor):
@@ -98,11 +98,14 @@ class BlockDirectiveHandler(Handler):
     self.processors[processor.directive] = processor
 
   def handle(self, block_element):
-    if isinstance(block_element, BlockElement):
+    # Only raw blocks from BlockDecoder. Processed blocks subclass it.
+    if type(block_element) is RawBlockElement:
       processor = self.processors.get(block_element.directive)
 
       if processor:
         return processor.process(block_element.args, block_element.spans)
+      elif block_element.directive is None:
+        return self.fallback.process([], block_element.spans)
       else:
         spans = [
           Span(f"unhandled - {block_element.directive}({block_element.args})")
