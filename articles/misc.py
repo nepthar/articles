@@ -43,13 +43,13 @@ class KeyValue:
   """
   Key<>Value pairs with strict rules for simplicitiy.
   1. Keys must be \w(alphanumeric or underscore) chars or a period
-  2. Values can't contain newline characters and must be present (for
-     boolean things, use "key: true" or similar)
+  2. Values can't contain newline characters. A value may be empty
+     ("published:"), which reads as the empty string.
   3. Format is key: value. The ': ' is specifically looked for
   """
 
   # https://regexr.com
-  KVRegex = re.compile(r'^([\w\.]+): (.*)$')
+  KVRegex = re.compile(r'^([\w\.]+):(?: (.*))?$')
 
   Invalid = (None, None)
 
@@ -57,7 +57,8 @@ class KeyValue:
   def extract(line):
     ex = KeyValue.KVRegex.match(line)
     if ex:
-      return ex.groups()
+      key, value = ex.groups()
+      return key, value or ''
     else:
       return KeyValue.Invalid
 

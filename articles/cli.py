@@ -15,6 +15,7 @@ from .elements import IdentifyElements
 from .articles import ArticleBuilder
 from .render import SimpleHTMLRenderer
 from .text import InlineMarkdownStyleizer
+from . import site as sitemod
 
 
 logger = logging.getLogger(__name__)
@@ -72,6 +73,37 @@ def render(args):
   return 0
 
 
+def init(args):
+  site = sitemod.init_site(args.folder, title=args.title, author=args.author or '')
+  print(f'Made a new site in {os.path.relpath(site.root)}')
+  return 0
+
+
+def new(args):
+  site = sitemod.Site.find()
+  if args.page:
+    path = site.new_page(args.title)
+  else:
+    path = site.new_post(args.title)
+  print(os.path.relpath(path))
+  return 0
+
+
+def publish(args):
+  site = sitemod.Site.find(os.path.dirname(os.path.abspath(args.file)))
+  path = site.publish(args.file)
+  print(os.path.relpath(path))
+  return 0
+
+
+def check(args):
+  site = sitemod.Site.find()
+  problems = site.check()
+  for p in problems:
+    print(p)
+  return 1 if problems else 0
+
+
 def main(argv=None):
   parser = argparse.ArgumentParser(prog='articles', description='Articles text format tools')
   parser.add_argument('-d', '--debug', action='store_true', help='Enable debug logging')
@@ -82,6 +114,28 @@ def main(argv=None):
   render_cmd.add_argument('-o', '--output', help="Output HTML file, or '-' for stdout")
   render_cmd.set_defaults(func=render)
 
+  init_cmd = commands.add_parser('init', help='Make a new site folder')
+  init_cmd.add_argument('folder', help='Folder for the new site')
+  init_cmd.add_argument('--title', help='Site title (default: the folder name)')
+  init_cmd.add_argument('--author', help='Default author for new posts')
+  init_cmd.set_defaults(func=init)
+
+  new_cmd = commands.add_parser('new', help='Make a new draft post, or a page with --page')
+  new_cmd.add_argument('title', help='Title of the post or page')
+  new_cmd.add_argument('--page', action='store_true', help='Make a page instead of a post')
+  new_cmd.set_defaults(func=new)
+
+  publish_cmd = commands.add_parser('publish', help='Publish a draft post with today\'s date')
+  publish_cmd.add_argument('file', help='The draft post file')
+  publish_cmd.set_defaults(func=publish)
+
+  check_cmd = commands.add_parser('check', help='Check every post for metadata problems')
+  check_cmd.set_defaults(func=check)
+
   args = parser.parse_args(argv)
   logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
-  return args.func(args)
+  try:
+    return args.func(args)
+  except sitemod.SiteError as e:
+    print(f'articles: {e}', file=sys.stderr)
+    return 1
