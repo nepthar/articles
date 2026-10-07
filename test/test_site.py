@@ -186,5 +186,31 @@ class TestCommands(unittest.TestCase):
       self.assertIn('No site.conf found', result.stderr)
 
 
+
+class TestExampleSite(unittest.TestCase):
+  """ The fake blog in example/ must stay valid. Use it to try changes by
+      hand: cd example && articles check
+  """
+  def setUp(self):
+    self.site = s.Site(os.path.join(ROOT, 'example'))
+
+  def test_example_checks_clean(self):
+    self.assertEqual(self.site.check(), [])
+
+  def test_example_posts(self):
+    posts = self.site.posts()
+    self.assertEqual(len(posts), 7)
+    self.assertEqual([p.slug for p in posts if p.is_draft], ['half-finished-idea'])
+    self.assertEqual({p.folder_year for p in posts}, {'2024', '2025', '2026'})
+
+  def test_example_renders(self):
+    from articles.cli import render_text
+    pages = [os.path.join(self.site.path('pages'), f) for f in os.listdir(self.site.path('pages'))]
+    for path in self.site.post_paths() + pages:
+      with self.subTest(path=os.path.relpath(path, ROOT)):
+        with open(path) as f:
+          self.assertIn('</html>', render_text(f))
+
+
 if __name__ == '__main__':
   unittest.main()

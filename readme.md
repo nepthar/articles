@@ -38,6 +38,12 @@ Usage
 
     articles check
 
+  The example/ folder is a fake blog for trying changes by hand. It has
+  posts over three years, a draft, pages, and every list and block form.
+
+    cd example
+    articles check
+
   Run the tests from the repository root:
 
     python3 -m unittest discover -s test

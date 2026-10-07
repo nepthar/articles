@@ -1,0 +1,13 @@
+article: Hello, World
+author: Jordan Parker
+drafted: 2024-02-20
+published: 2024-03-02
+
+
+  This is the first post. It is short on purpose. The oldest post on the
+  site, so it has no "previous" link.
+
+Why a Blog
+
+  I wanted a place to put long notes. Markdown never looked right to me in
+  a terminal, so I made my own format.

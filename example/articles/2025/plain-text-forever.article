@@ -1,0 +1,42 @@
+article: Plain Text Forever
+author: Jordan Parker
+drafted: 2025-02-01
+published: 2025-02-14
+
+
+  Why I keep my writing in plain text, and a tour of the inline styles
+  that Articles supports.
+
+Inline Styles
+
+  You can write **bold**, *italic*, __also bold__, _also italic_,
+  ~~strikethrough~~, and `inline code`. A link looks like
+  [the Articles repo](https://github.com/nepthar/articles). Underscores in
+  a word like snake_case_name stay as they are. So does math like 2 * 3 * 4.
+
+Blocks
+
+  A block with no directive keeps its line breaks:
+
+    Roses are plain text,
+    violets are too,
+    nothing to render,
+    nothing to do.
+
+  A code block keeps its text exactly. Inline styles do not apply here:
+
+    code: python
+    def area(w, h):
+        return w*h*1  # the *s stay as written
+
+  A quote:
+
+    quote: Somebody Wise
+    Plain text outlives every format
+    that tried to replace it.
+
+
+The Long View
+
+  This section comes after a major section break (two empty lines), so it
+  is a major section.

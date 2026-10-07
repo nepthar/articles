@@ -1,0 +1,68 @@
+article: List Torture Test
+drafted: 2025-05-20
+published: 2025-06-01
+
+
+  Every list form the parser knows. Use this post to check list rendering.
+
+Compact
+
+   - eggs
+   - milk
+   - goats
+
+Two Spaces After the Bullet
+
+   -  eggs
+   -  milk
+   -  goats
+
+Mixed Spacing
+
+   - eggs
+   -  milk
+   - cheese
+
+Sparse and Hard Wrapped
+
+   -  Eggs, the kind that you had back in those days when you were on the
+      farm and everything was perfect and great.
+
+   -  Milk, ideally from some kind of weird bird. Notice how these items
+      wrap to align with the start of the text.
+
+Ordered Types
+
+   1. one
+   2. two
+
+   a. one
+   b. two
+
+   A. one
+   B. two
+
+   3. starts at three
+   4. four
+
+Other Bullets
+
+   o  Eggs
+   o  Milk
+
+   * Eggs
+   * Milk
+
+Mixed Prefixes
+
+  Each prefix change starts a new list, so this is four lists:
+
+   -  eggs
+   b. milk
+   3. cheese
+   o  tacos
+
+Styles in Items
+
+   -  **bold** item
+   -  item with `code` and a [link](https://example.com)
